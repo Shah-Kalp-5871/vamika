@@ -1,0 +1,67 @@
+/* Layout */
+.page-wrapper {
+    padding: 16px;
+    padding-bottom: 90px; /* for bottom nav */
+    background: #FAFAFA;
+    min-height: 100vh;
+}
+
+/* Header icons */
+header iconify-icon {
+    color: #475569;
+}
+
+/* Typography */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FAFAFA;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 3px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #E4E4E7;
+    border-radius: 20px;
+}
+
+/* Product card */
+.product-card.selected {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.1);
+}
+
+/* Filter chip */
+.filter-chip {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.filter-chip.active {
+    background: #4F46E5;
+    color: #fff;
+}
+
+
+
+/* Active nav state */
+.nav-item.active {
+    color: #4F46E5;
+}
+.nav-item.active .nav-icon {
+    color: #4F46E5;
+}
+
+/* Inputs */
+.discount-input:focus {
+    outline: none;
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}

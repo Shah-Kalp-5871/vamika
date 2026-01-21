@@ -1,0 +1,55 @@
+/* Bottom Navigation Styles */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 2px solid #e0e0e0;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    max-width: 768px;
+    margin: 0 auto;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 11px;
+    padding: 5px 10px;
+    flex: 1;
+    transition: all 0.3s;
+    border-radius: 8px;
+    margin: 0 2px;
+}
+
+.nav-item:hover {
+    color: #4CAF50;
+    background: #f8f9fa;
+}
+
+.nav-item.active {
+    color: #4CAF50;
+    background: #e8f5e8;
+}
+
+.nav-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    transition: transform 0.3s;
+}
+
+.nav-item.active .nav-icon {
+    transform: translateY(-2px);
+}
+
+/* Main content padding for bottom nav */
+.main-content {
+    padding-bottom: 130px;
+}
