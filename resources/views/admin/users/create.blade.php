@@ -178,6 +178,36 @@ $pageConfig = [
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
+    /* Password Toggle Styles */
+    .password-wrapper {
+        position: relative;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #94A3B8;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        z-index: 10;
+    }
+    
+    .password-toggle:hover {
+        color: #6366F1;
+    }
+
+    .form-input.pr-10 {
+        padding-right: 2.5rem;
+    }
+
     .form-input::placeholder {
         color: #9CA3AF;
     }
@@ -329,24 +359,23 @@ $pageConfig = [
 
                    <div class="form-group">
                         <label class="form-label">Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area" required>
+                        <select class="form-input" name="area_id" required>
                             <option value="">Select area</option>
-                            <option value="Gandhi Nagar" {{ old('area') == 'Gandhi Nagar' ? 'selected' : '' }}>Gandhi Nagar</option>
-                            <option value="Laxmi Nagar" {{ old('area') == 'Laxmi Nagar' ? 'selected' : '' }}>Laxmi Nagar</option>
-                            <option value="Preet Vihar" {{ old('area') == 'Preet Vihar' ? 'selected' : '' }}>Preet Vihar</option>
-                            <option value="Shahdara" {{ old('area') == 'Shahdara' ? 'selected' : '' }}>Shahdara</option>
-                            <option value="Mayur Vihar" {{ old('area') == 'Mayur Vihar' ? 'selected' : '' }}>Mayur Vihar</option>
-                            <option value="Karol Bagh" {{ old('area') == 'Karol Bagh' ? 'selected' : '' }}>Karol Bagh</option>
+                            @foreach($areas as $area)
+                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
+                                    {{ $area->name }}
+                                </option>
+                            @endforeach
                         </select>
-                        @error('area')
+                        @error('area_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Address</label>
+                        <label class="form-label">Address <span class="form-required">*</span></label>
                         <input type="text" class="form-input" name="address" placeholder="Enter full address"
-                               value="{{ old('address') }}">
+                               value="{{ old('address') }}" required>
                         @error('address')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -354,7 +383,12 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Password <span class="form-required">*</span></label>
-                        <input type="password" class="form-input" name="password" placeholder="Set password" required>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-input pr-10" name="password" placeholder="Set password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                            </button>
+                        </div>
                         @error('password')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -362,8 +396,13 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Confirm Password <span class="form-required">*</span></label>
-                        <input type="password" class="form-input" name="password_confirmation" 
-                               placeholder="Confirm password" required>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-input pr-10" name="password_confirmation" 
+                                   placeholder="Confirm password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -426,16 +465,15 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Assigned Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area" required>
+                        <select class="form-input" name="area_id" required>
                             <option value="">Select area</option>
-                            <option value="Gandhi Nagar" {{ old('area') == 'Gandhi Nagar' ? 'selected' : '' }}>Gandhi Nagar</option>
-                            <option value="Laxmi Nagar" {{ old('area') == 'Laxmi Nagar' ? 'selected' : '' }}>Laxmi Nagar</option>
-                            <option value="Preet Vihar" {{ old('area') == 'Preet Vihar' ? 'selected' : '' }}>Preet Vihar</option>
-                            <option value="Shahdara" {{ old('area') == 'Shahdara' ? 'selected' : '' }}>Shahdara</option>
-                            <option value="Mayur Vihar" {{ old('area') == 'Mayur Vihar' ? 'selected' : '' }}>Mayur Vihar</option>
-                            <option value="Karol Bagh" {{ old('area') == 'Karol Bagh' ? 'selected' : '' }}>Karol Bagh</option>
+                            @foreach($areas as $area)
+                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
+                                    {{ $area->name }}
+                                </option>
+                            @endforeach
                         </select>
-                        @error('area')
+                        @error('area_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
@@ -451,7 +489,12 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Password <span class="form-required">*</span></label>
-                        <input type="password" class="form-input" name="password" placeholder="Set password" required>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-input pr-10" name="password" placeholder="Set password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                            </button>
+                        </div>
                         @error('password')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -459,8 +502,13 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Confirm Password <span class="form-required">*</span></label>
-                        <input type="password" class="form-input" name="password_confirmation" 
-                               placeholder="Confirm password" required>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-input pr-10" name="password_confirmation" 
+                                   placeholder="Confirm password" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -483,6 +531,19 @@ $pageConfig = [
 @section('scripts')
 <script>
     let selectedUserType = '';
+
+    function togglePassword(button) {
+        const input = button.parentElement.querySelector('input');
+        const icon = button.querySelector('iconify-icon');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('icon', 'lucide:eye-off');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('icon', 'lucide:eye');
+        }
+    }
 
     function selectUserType(type, element) {
         selectedUserType = type;

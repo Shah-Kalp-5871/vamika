@@ -14,8 +14,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',  // <-- ADD THIS
+        'role',
+        'phone',
+        'avatar',
+        'status',
+        'employee_id',
+        'area_id',
     ];
+
+    public function managedShops()
+    {
+        return $this->hasMany(Shop::class, 'salesperson_id');
+    }
 
     protected $hidden = [
         'password',
@@ -30,10 +40,24 @@ class User extends Authenticatable
         ];
     }
 
-    // Helper methods to check roles
-    public function isAdmin()
+    public function area()
     {
-        return $this->role === 'admin';
+        return $this->belongsTo(Area::class);
+    }
+
+    public function shop()
+    {
+        return $this->hasOne(Shop::class);
+    }
+
+    public function salespersonOrders()
+    {
+        return $this->hasMany(Order::class, 'salesperson_id');
+    }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class, 'salesperson_id');
     }
 
     public function isSalesperson()
@@ -43,6 +67,6 @@ class User extends Authenticatable
 
     public function isShopOwner()
     {
-        return $this->role === 'shop_owner';
+        return $this->role === 'shop-owner';
     }
 }

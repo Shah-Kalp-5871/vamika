@@ -362,7 +362,7 @@ $pageConfig = [
                 style="animation-delay: 0.1s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="shopOwners">0</p>
+                        <p class="text-2xl font-semibold text-slate-900 tracking-tight">{{ $totalShopOwners }}</p>
                         <p class="text-xs text-slate-500 font-medium mt-1">Shop Owners</p>
                     </div>
                     <div class="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
@@ -375,7 +375,7 @@ $pageConfig = [
                 style="animation-delay: 0.2s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="salespersons">0</p>
+                        <p class="text-2xl font-semibold text-slate-900 tracking-tight">{{ $totalSalespersons }}</p>
                         <p class="text-xs text-slate-500 font-medium mt-1">Salespersons</p>
                     </div>
                     <div class="p-2 bg-blue-50 rounded-lg border border-blue-100">
@@ -388,10 +388,15 @@ $pageConfig = [
         <!-- Search & Add Bar -->
         <div class="flex flex-col lg:flex-row gap-4">
             <div class="relative flex-1">
-                <iconify-icon icon="lucide:search" width="16"
-                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
-                <input type="text" class="search-input" id="userSearch"
-                    placeholder="Search by name, email, phone, or shop...">
+                <form action="{{ route('admin.users.index') }}" method="GET" class="w-full">
+                    <iconify-icon icon="lucide:search" width="16"
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
+                    <input type="text" name="search" class="search-input" value="{{ request('search') }}"
+                        placeholder="Search by name, email, phone, or shop..." onchange="this.form.submit()">
+                    @if(request('role'))
+                        <input type="hidden" name="role" value="{{ request('role') }}">
+                    @endif
+                </form>
             </div>
             <a href="{{ route('admin.users.create') }}" class="btn-primary">
                 <iconify-icon icon="lucide:plus" width="16"></iconify-icon>
@@ -399,20 +404,20 @@ $pageConfig = [
             </a>
         </div>
 
-        <!-- User Tabs - Removed Admin tab -->
+        <!-- User Tabs -->
         <div class="user-tabs">
-            <button class="user-tab" data-type="all" onclick="filterUsers('all', this)">
+            <a href="{{ route('admin.users.index') }}" class="user-tab {{ !request('role') ? 'active' : '' }}">
                 <iconify-icon icon="lucide:users"></iconify-icon>
                 All Users
-            </button>
-            <button class="user-tab" data-type="shop-owner" onclick="filterUsers('shop-owner', this)">
+            </a>
+            <a href="{{ route('admin.users.index', ['role' => 'shop-owner']) }}" class="user-tab {{ request('role') == 'shop-owner' ? 'active' : '' }}">
                 <iconify-icon icon="lucide:store"></iconify-icon>
                 Shop Owners
-            </button>
-            <button class="user-tab" data-type="salesperson" onclick="filterUsers('salesperson', this)">
+            </a>
+            <a href="{{ route('admin.users.index', ['role' => 'salesperson']) }}" class="user-tab {{ request('role') == 'salesperson' ? 'active' : '' }}">
                 <iconify-icon icon="lucide:briefcase"></iconify-icon>
                 Salespersons
-            </button>
+            </a>
         </div>
 
         <!-- Users Table -->
@@ -430,9 +435,115 @@ $pageConfig = [
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
-                        <!-- Users will be loaded here -->
-                    </tbody>
+                        @forelse($users as $user)
+                        <tr class="animate-slide-up" style="animation-delay: 0.1s;">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="user-avatar" style="background: {{ $user->role == 'shop-owner' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' }}">
+                                        {{ substr($user->name, 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-slate-900">{{ $user->name }}</h4>
+                                        <p class="text-xs text-slate-500 mt-0.5">{{ $user->email }}</p>
+                                        @if($user->role == 'shop-owner' && $user->shop)
+                                            <p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:store" width="12" class="mr-1"></iconify-icon> {{ $user->shop->name }}</p>
+                                        @elseif($user->role == 'salesperson' && $user->employee_id)
+                                            <p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:id-card" width="12" class="mr-1"></iconify-icon> {{ $user->employee_id }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {{ $user->role == 'shop-owner' ? 'badge-shop' : 'badge-sales' }}">
+                                    <iconify-icon icon="{{ $user->role == 'shop-owner' ? 'lucide:store' : 'lucide:briefcase' }}" 
+                                        width="12" class="mr-1"></iconify-icon>
+                                    {{ $user->role == 'shop-owner' ? 'Shop Owner' : 'Salesperson' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-1 text-sm">
+                                        <iconify-icon icon="lucide:phone" width="14" class="text-slate-400"></iconify-icon>
+                                        <span>{{ $user->phone ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @if($user->area)
+                                <div class="flex items-center gap-1 text-sm">
+                                    <iconify-icon icon="lucide:map-pin" width="14" class="text-slate-400"></iconify-icon>
+                                    <span>{{ $user->area->name }}</span>
+                                </div>
+                                @elseif($user->shop && $user->shop->area)
+                                <div class="flex items-center gap-1 text-sm">
+                                    <iconify-icon icon="lucide:map-pin" width="14" class="text-slate-400"></iconify-icon>
+                                    <span>{{ $user->shop->area->name }}</span>
+                                </div>
+                                @else
+                                <span class="text-slate-400">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge {{ $user->status == 'active' ? 'badge-active' : 'badge-inactive' }}">
+                                    <iconify-icon icon="lucide:{{ $user->status == 'active' ? 'check-circle' : 'x-circle' }}" 
+                                        width="12" class="mr-1"></iconify-icon>
+                                    {{ ucfirst($user->status) }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1 text-sm">
+                                    <iconify-icon icon="lucide:calendar" width="14" class="text-slate-400"></iconify-icon>
+                                    <span>{{ $user->created_at->format('M d, Y') }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex gap-2">
+                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn-secondary">
+                                        <iconify-icon icon="lucide:edit" width="14"></iconify-icon>
+                                        Edit
+                                    </a>
+                                    
+                                    @if($user->role === 'shop-owner')
+                                    <a href="{{ route('admin.shops.analysis', ['shop_id' => $user->shop->id ?? 0]) }}" class="btn-analyze">
+                                        <iconify-icon icon="lucide:bar-chart-2" width="14"></iconify-icon>
+                                        Analyze
+                                    </a>
+                                    @endif
+
+                                    @if($user->role === 'salesperson')
+                                    <a href="{{ route('admin.salespersons.assign.form', ['user_id' => $user->id]) }}" class="btn-secondary" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none;">
+                                        <iconify-icon icon="lucide:map-pin" width="14"></iconify-icon>
+                                        Assign
+                                    </a>
+                                    @endif
+
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                                          onsubmit="return confirm('Are you sure you want to delete this user?');" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-danger">
+                                            <iconify-icon icon="lucide:trash" width="14"></iconify-icon>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center p-4">
+                                <div class="empty-state">
+                                    <iconify-icon icon="lucide:users" width="48" class="mb-4 text-slate-300"></iconify-icon>
+                                    <h4 class="font-medium text-slate-900 mb-2">No Users Found</h4>
+                                    <p class="text-sm text-slate-500 mb-4">Try adjusting your search or add a new user</p>
+                                    <a href="{{ route('admin.users.create') }}" class="btn-primary">
+                                        <iconify-icon icon="lucide:plus" width="16"></iconify-icon>
+                                        Add New User
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                 </table>
             </div>
 
@@ -449,8 +560,8 @@ $pageConfig = [
         </div>
 
         <!-- Pagination -->
-        <div class="pagination" id="pagination">
-            <!-- Pagination buttons will be loaded here -->
+        <div class="mt-4">
+            {{ $users->withQueryString()->links() }}
         </div>
     </main>
 </div>
@@ -458,447 +569,19 @@ $pageConfig = [
 
 @section('scripts')
 <script>
-    let currentTab = 'all';
-    let currentPage = 1;
-    const usersPerPage = 10;
-    let allUsers = [];
-
-    // Sample user data with shopId for shop owners
-    const userData = [
-        {
-            id: 1,
-            name: 'Mohan Singh',
-            email: 'shop@demo.com',
-            phone: '9876543210',
-            type: 'shop-owner',
-            status: 'active',
-            joinDate: '2023-06-15',
-            area: 'Gandhi Nagar',
-            shopName: 'Mohan Kirana Store',
-            shopId: 101,
-            avatar: 'M',
-            avatarColor: '#4ECDC4'
-        },
-        {
-            id: 2,
-            name: 'Ramesh Gupta',
-            email: 'ramesh@shop.com',
-            phone: '9876543211',
-            type: 'shop-owner',
-            status: 'active',
-            joinDate: '2023-07-20',
-            area: 'Gandhi Nagar',
-            shopName: 'Gupta General Store',
-            shopId: 102,
-            avatar: 'R',
-            avatarColor: '#45B7D1'
-        },
-        {
-            id: 3,
-            name: 'Rajesh Kumar',
-            email: 'sales@demo.com',
-            phone: '9876543200',
-            type: 'salesperson',
-            status: 'active',
-            joinDate: '2023-08-10',
-            area: 'Gandhi Nagar',
-            employeeId: 'EMP001',
-            avatar: 'R',
-            avatarColor: '#96CEB4'
-        },
-        {
-            id: 4,
-            name: 'Sunil Bansal',
-            email: 'sunil@shop.com',
-            phone: '9876543212',
-            type: 'shop-owner',
-            status: 'active',
-            joinDate: '2023-08-22',
-            area: 'Shahdara',
-            shopName: 'Bansal Provision',
-            shopId: 103,
-            avatar: 'S',
-            avatarColor: '#FFEAA7'
-        },
-        {
-            id: 5,
-            name: 'Anil Verma',
-            email: 'anil@shop.com',
-            phone: '9876543214',
-            type: 'shop-owner',
-            status: 'inactive',
-            joinDate: '2023-09-05',
-            area: 'Laxmi Nagar',
-            shopName: 'Verma Departmental Store',
-            shopId: 104,
-            avatar: 'A',
-            avatarColor: '#DDA0DD'
-        },
-        {
-            id: 6,
-            name: 'Suresh Patel',
-            email: 'suresh@sales.com',
-            phone: '9876543201',
-            type: 'salesperson',
-            status: 'active',
-            joinDate: '2023-09-15',
-            area: 'Preet Vihar',
-            employeeId: 'EMP002',
-            avatar: 'S',
-            avatarColor: '#98D8C8'
-        },
-        {
-            id: 7,
-            name: 'Rajesh Sharma',
-            email: 'rajesh@shop.com',
-            phone: '9876543213',
-            type: 'shop-owner',
-            status: 'active',
-            joinDate: '2023-10-01',
-            area: 'Preet Vihar',
-            shopName: 'Sharma Super Mart',
-            shopId: 105,
-            avatar: 'R',
-            avatarColor: '#F7DC6F'
-        },
-        {
-            id: 8,
-            name: 'Vikram Singh',
-            email: 'vikram@sales.com',
-            phone: '9876543202',
-            type: 'salesperson',
-            status: 'inactive',
-            joinDate: '2023-10-10',
-            area: 'Laxmi Nagar',
-            employeeId: 'EMP003',
-            avatar: 'V',
-            avatarColor: '#BB8FCE'
-        },
-        {
-            id: 9,
-            name: 'Amit Kumar',
-            email: 'amit@shop.com',
-            phone: '9876543215',
-            type: 'shop-owner',
-            status: 'active',
-            joinDate: '2023-11-05',
-            area: 'Mayur Vihar',
-            shopName: 'Amit Grocery Store',
-            shopId: 106,
-            avatar: 'A',
-            avatarColor: '#FF9F1C'
-        },
-        {
-            id: 10,
-            name: 'Deepak Sharma',
-            email: 'deepak@sales.com',
-            phone: '9876543203',
-            type: 'salesperson',
-            status: 'active',
-            joinDate: '2023-11-20',
-            area: 'Mayur Vihar',
-            employeeId: 'EMP004',
-            avatar: 'D',
-            avatarColor: '#6A0572'
-        },
-        {
-            id: 11,
-            name: 'Sanjay Mehta',
-            email: 'sanjay@shop.com',
-            phone: '9876543216',
-            type: 'shop-owner',
-            status: 'inactive',
-            joinDate: '2023-12-01',
-            area: 'Karol Bagh',
-            shopName: 'Mehta Super Store',
-            shopId: 107,
-            avatar: 'S',
-            avatarColor: '#118AB2'
-        },
-        {
-            id: 12,
-            name: 'Rahul Verma',
-            email: 'rahul@sales.com',
-            phone: '9876543204',
-            type: 'salesperson',
-            status: 'active',
-            joinDate: '2023-12-15',
-            area: 'Karol Bagh',
-            employeeId: 'EMP005',
-            avatar: 'R',
-            avatarColor: '#06D6A0'
-        }
-    ];
-
-    // Initialize when page loads
+    // Animations
     document.addEventListener('DOMContentLoaded', function () {
         // Set current date
         const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+        const currentDateElement = document.getElementById('currentDate');
+        if (currentDateElement) {
+             currentDateElement.textContent = new Date().toLocaleDateString('en-US', dateOptions);
+        }
 
         // Animate cards
         document.querySelectorAll('.animate-slide-up').forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
         });
-
-        loadUsersPage();
-        setupSearch();
     });
-
-    function loadUsersPage() {
-        allUsers = userData;
-        updateStats();
-        filterUsers('all');
-    }
-
-    function updateStats() {
-        const shopOwners = allUsers.filter(u => u.type === 'shop-owner').length;
-        const salespersons = allUsers.filter(u => u.type === 'salesperson').length;
-
-        document.getElementById('shopOwners').textContent = shopOwners;
-        document.getElementById('salespersons').textContent = salespersons;
-    }
-
-    function filterUsers(type, el = null) {
-        currentTab = type;
-        currentPage = 1;
-
-        document.querySelectorAll('.user-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        if (el) {
-            el.classList.add('active');
-        } else {
-            // Default case (page load)
-            document.querySelector('.user-tab[data-type="all"]').classList.add('active');
-        }
-
-        renderUsersTable();
-    }
-
-    function setupSearch() {
-        const searchInput = document.getElementById('userSearch');
-        let searchTimeout;
-
-        searchInput.addEventListener('input', function () {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                currentPage = 1;
-                renderUsersTable();
-            }, 300);
-        });
-    }
-
-    function renderUsersTable() {
-        // Filter users
-        let filteredUsers = allUsers;
-        if (currentTab !== 'all') {
-            filteredUsers = allUsers.filter(user => user.type === currentTab);
-        }
-
-        // Apply search filter
-        const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-        if (searchTerm) {
-            filteredUsers = filteredUsers.filter(user =>
-                user.name.toLowerCase().includes(searchTerm) ||
-                user.email.toLowerCase().includes(searchTerm) ||
-                user.phone.includes(searchTerm) ||
-                (user.shopName && user.shopName.toLowerCase().includes(searchTerm))
-            );
-        }
-
-        // Calculate pagination
-        const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-        const startIndex = (currentPage - 1) * usersPerPage;
-        const endIndex = startIndex + usersPerPage;
-        const pageUsers = filteredUsers.slice(startIndex, endIndex);
-
-        // Show/hide empty state
-        const emptyState = document.getElementById('emptyState');
-        if (filteredUsers.length === 0) {
-            emptyState.style.display = 'flex';
-            document.getElementById('pagination').innerHTML = '';
-            document.getElementById('usersTableBody').innerHTML = '';
-            return;
-        } else {
-            emptyState.style.display = 'none';
-        }
-
-        // Render table
-        const tableBody = document.getElementById('usersTableBody');
-        tableBody.innerHTML = '';
-
-        pageUsers.forEach((user, index) => {
-            const row = document.createElement('tr');
-            row.style.animationDelay = `${index * 0.05}s`;
-            row.style.opacity = '0';
-            row.style.animation = 'slideUp 0.3s ease forwards';
-
-            row.innerHTML = `
-                <td>
-                    <div class="flex items-center gap-3">
-                        <div class="user-avatar" style="background: ${user.avatarColor}">
-                            ${user.avatar}
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-semibold text-slate-900">${user.name}</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">${user.email}</p>
-                            ${user.shopName ? `<p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:store" width="12" class="mr-1"></iconify-icon> ${user.shopName}</p>` : ''}
-                            ${user.employeeId ? `<p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:id-card" width="12" class="mr-1"></iconify-icon> ${user.employeeId}</p>` : ''}
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <span class="badge badge-${user.type}">
-                        <iconify-icon icon="${user.type === 'shop-owner' ? 'lucide:store' : 'lucide:briefcase'}" 
-                            width="12" class="mr-1"></iconify-icon>
-                        ${user.type === 'shop-owner' ? 'Shop Owner' : 'Salesperson'}
-                    </span>
-                </td>
-                <td>
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-1 text-sm">
-                            <iconify-icon icon="lucide:phone" width="14" class="text-slate-400"></iconify-icon>
-                            <span>${user.phone}</span>
-                        </div>
-                        <div class="flex items-center gap-1 text-sm">
-                            <iconify-icon icon="lucide:mail" width="14" class="text-slate-400"></iconify-icon>
-                            <span>${user.email}</span>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    ${user.area ?
-                    `<div class="flex items-center gap-1 text-sm">
-                        <iconify-icon icon="lucide:map-pin" width="14" class="text-slate-400"></iconify-icon>
-                        <span>${user.area}</span>
-                    </div>` :
-                    '<span class="text-slate-400">-</span>'
-                }
-                </td>
-                <td>
-                    <span class="badge badge-${user.status}">
-                        <iconify-icon icon="lucide:${user.status === 'active' ? 'check-circle' : 'x-circle'}" 
-                            width="12" class="mr-1"></iconify-icon>
-                        ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                    </span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 text-sm">
-                        <iconify-icon icon="lucide:calendar" width="14" class="text-slate-400"></iconify-icon>
-                        <span>${user.joinDate}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="flex gap-2">
-                        <button class="btn-secondary" onclick="editUser(${user.id})">
-                            <iconify-icon icon="lucide:edit" width="14"></iconify-icon>
-                            Edit
-                        </button>
-                        ${user.type === 'shop-owner' && user.shopId ?
-                            `<a href="{{ route('admin.shops.analysis') }}?shop_id=${user.shopId}" class="btn-analyze">
-                                <iconify-icon icon="lucide:bar-chart-3" width="14"></iconify-icon>
-                                Analyze
-                            </a>` : ''
-                        }
-                        ${user.type === 'salesperson' ?
-                            `<button class="btn-secondary" onclick="assignAreaShop(${user.id}, '${user.name}')" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none;">
-                                <iconify-icon icon="lucide:map-pin" width="14"></iconify-icon>
-                                Assign
-                            </button>` : ''
-                        }
-                        <button class="btn-danger" onclick="deleteUser(${user.id})">
-                            <iconify-icon icon="lucide:trash" width="14"></iconify-icon>
-                            Delete
-                        </button>
-                    </div>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        // Render pagination
-        renderPagination(totalPages);
-    }
-
-    function renderPagination(totalPages) {
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        if (totalPages <= 1) return;
-
-        // Previous button
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'page-btn';
-        prevBtn.innerHTML = '<iconify-icon icon="lucide:chevron-left" width="16"></iconify-icon>';
-        prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderUsersTable();
-            }
-        };
-        pagination.appendChild(prevBtn);
-
-        // Page numbers
-        const maxVisiblePages = 5;
-        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-        if (endPage - startPage + 1 < maxVisiblePages) {
-            startPage = Math.max(1, endPage - maxVisiblePages + 1);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-            pageBtn.textContent = i;
-            pageBtn.onclick = () => {
-                currentPage = i;
-                renderUsersTable();
-            };
-            pagination.appendChild(pageBtn);
-        }
-
-        // Next button
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'page-btn';
-        nextBtn.innerHTML = '<iconify-icon icon="lucide:chevron-right" width="16"></iconify-icon>';
-        nextBtn.disabled = currentPage === totalPages;
-        nextBtn.onclick = () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderUsersTable();
-            }
-        };
-        pagination.appendChild(nextBtn);
-    }
-
-    function editUser(userId) {
-        const user = allUsers.find(u => u.id === userId);
-        if (user) {
-            // Pass the userId as a parameter to the route helper
-            window.location.href = `{{ route('admin.users.edit', ':id') }}`.replace(':id', userId);
-        }
-    }
-
-    function deleteUser(userId) {
-        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-            // In real app, this would call API
-            allUsers = allUsers.filter(u => u.id !== userId);
-            renderUsersTable();
-            updateStats();
-            showToast({
-                text: 'User deleted successfully',
-                type: 'success'
-            });
-        }
-    }
-
-    function assignAreaShop(userId, userName) {
-        // Redirect to assign area/shop page
-        window.location.href = "{{ route('admin.areas.assign.form') }}?user_id=" + userId + "&name=" + encodeURIComponent(userName);
-    }
 </script>
 @endsection

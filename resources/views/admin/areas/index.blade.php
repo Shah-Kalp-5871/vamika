@@ -379,26 +379,26 @@ $pageConfig = [
         const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', dateOptions);
         
-        // Sample dummy data - replace with actual API call
-        areas = getDummyAreasData();
+        // Load data from server
+        areas = @json($areas);
         originalAreas = [...areas];
         
-        // Initialize areas with additional data
+        // Initialize areas with additional derived data if needed
         areas.forEach((area, index) => {
+            // Ensure pincodes is an array (it might be null or JSON string if not cast properly in model)
+            // But Laravel 'array' cast should handle it.
+            
+            // Mock assignments for now as we haven't implemented assignment logic fully yet
             area.assignedSalespersons = [];
             
-            // Assign random salespersons (0-2 per area)
-            const numAssignments = Math.min(Math.floor(Math.random() * 3), salespersons.length);
-            for (let i = 0; i < numAssignments; i++) {
-                const spIndex = (index + i) % salespersons.length;
-                if (!area.assignedSalespersons.some(sp => sp.id === salespersons[spIndex].id)) {
-                    area.assignedSalespersons.push({...salespersons[spIndex]});
-                }
-            }
+            // Generate description if not present
+            area.description = `Delivery area (Code: ${area.code})`;
             
-            area.status = index % 5 === 0 ? 'inactive' : 'active';
-            area.description = area.description || `Delivery area for ${area.name} with ${area.shops} shops`;
-            area.deliveryCharge = area.deliveryCharge || (50 + Math.floor(Math.random() * 50));
+            // Map shops_count to shops
+            area.shops = area.shops_count || 0;
+            
+            // Mock delivery charge
+            area.deliveryCharge = 50; 
         });
         
         updateAreaStats();
@@ -406,16 +406,7 @@ $pageConfig = [
     }
     
     function getDummyAreasData() {
-        return [
-            { id: 1, name: 'Mumbai Central', pincode: '400008', shops: 150, description: 'Central Mumbai area including business districts', deliveryCharge: 75 },
-            { id: 2, name: 'Andheri East', pincode: '400069', shops: 200, description: 'Commercial and residential area near airport', deliveryCharge: 65 },
-            { id: 3, name: 'Bandra West', pincode: '400050', shops: 120, description: 'Upscale residential and shopping area', deliveryCharge: 80 },
-            { id: 4, name: 'Powai', pincode: '400076', shops: 180, description: 'IT hub with residential complexes', deliveryCharge: 70 },
-            { id: 5, name: 'Thane West', pincode: '400601', shops: 220, description: 'Rapidly developing suburban area', deliveryCharge: 60 },
-            { id: 6, name: 'Vashi', pincode: '400703', shops: 190, description: 'Navi Mumbai business district', deliveryCharge: 55 },
-            { id: 7, name: 'Chembur', pincode: '400071', shops: 140, description: 'Established residential area', deliveryCharge: 70 },
-            { id: 8, name: 'Ghatkopar', pincode: '400077', shops: 210, description: 'Major suburban commercial center', deliveryCharge: 65 }
-        ];
+        return [];
     }
     
     function updateAreaStats() {
@@ -559,11 +550,25 @@ $pageConfig = [
     
     function deleteArea(areaId) {
         if (confirm('Are you sure you want to delete this area?\n\nThis will affect all shops in this area.')) {
-            areas = areas.filter(a => a.id !== areaId);
-            originalAreas = originalAreas.filter(a => a.id !== areaId);
-            updateAreaStats();
-            renderAreasList();
-            showNotification('Area deleted successfully!', 'info');
+            // Create a form to submit DELETE request
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `{{ route('admin.areas.destroy', '') }}/${areaId}`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            const methodField = document.createElement('input');
+            methodField.type = 'hidden';
+            methodField.name = '_method';
+            methodField.value = 'DELETE';
+            form.appendChild(methodField);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
     }
     

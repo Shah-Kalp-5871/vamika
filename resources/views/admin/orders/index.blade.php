@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manage Products')
+@section('title', 'Manage Orders')
 
 
 @php
@@ -10,14 +10,13 @@ $pageConfig = [
 @endphp
 
 @section('styles')
-<link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
 <style>
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
-
+ 
     body {
         font-family: 'Inter', sans-serif;
         background-color: #FAFAFA;
@@ -535,40 +534,40 @@ $pageConfig = [
     <main class="p-4 space-y-4">
         <!-- Mobile Stats Grid -->
         <div class="mobile-stats-grid">
-            <!-- Total Products -->
+            <!-- Total Orders -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:package" width="18" class="text-indigo-600"></iconify-icon>
+                    <iconify-icon icon="lucide:shopping-bag" width="18" class="text-indigo-600"></iconify-icon>
                     <span class="text-xs text-slate-500">Total</span>
                 </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileTotalProducts">0</p>
+                <p class="text-xl font-bold text-slate-900" id="mobileTotalOrders">0</p>
             </div>
 
-            <!-- In Stock -->
+            <!-- Pending -->
+            <div class="mobile-stat-card">
+                <div class="flex items-center justify-between mb-2">
+                    <iconify-icon icon="lucide:clock" width="18" class="text-amber-500"></iconify-icon>
+                    <span class="text-xs text-slate-500">Pending</span>
+                </div>
+                <p class="text-xl font-bold text-slate-900" id="mobilePendingOrders">0</p>
+            </div>
+
+            <!-- Delivered -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
                     <iconify-icon icon="lucide:check-circle" width="18" class="text-emerald-600"></iconify-icon>
-                    <span class="text-xs text-slate-500">In Stock</span>
+                    <span class="text-xs text-slate-500">Delivered</span>
                 </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileInStock">0</p>
+                <p class="text-xl font-bold text-slate-900" id="mobileDeliveredOrders">0</p>
             </div>
 
-            <!-- Low Stock -->
-            <div class="mobile-stat-card">
-                <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:alert-circle" width="18" class="text-amber-500"></iconify-icon>
-                    <span class="text-xs text-slate-500">Low Stock</span>
-                </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileLowStock">0</p>
-            </div>
-
-            <!-- Out of Stock -->
+            <!-- Cancelled -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
                     <iconify-icon icon="lucide:x-circle" width="18" class="text-rose-600"></iconify-icon>
-                    <span class="text-xs text-slate-500">Out of Stock</span>
+                    <span class="text-xs text-slate-500">Cancelled</span>
                 </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileOutOfStock">0</p>
+                <p class="text-xl font-bold text-slate-900" id="mobileCancelledOrders">0</p>
             </div>
         </div>
 
@@ -576,17 +575,9 @@ $pageConfig = [
         <div id="mobileBulkActions" class="mobile-bulk-actions">
             <span class="text-xs font-semibold text-indigo-700" id="mobileSelectedCount">0 selected</span>
             <div class="flex gap-2">
-                <button onclick="bulkExportProducts()" class="mobile-quick-action-btn">
+                <button onclick="bulkExportOrders()" class="mobile-quick-action-btn">
                     <iconify-icon icon="lucide:download" width="12"></iconify-icon>
                     Export
-                </button>
-                <button onclick="bulkUpdateStock()" class="mobile-quick-action-btn">
-                    <iconify-icon icon="lucide:edit" width="12"></iconify-icon>
-                    Update Stock
-                </button>
-                <button onclick="bulkDeleteProducts()" class="mobile-quick-action-btn">
-                    <iconify-icon icon="lucide:trash-2" width="12"></iconify-icon>
-                    Delete
                 </button>
                 <button onclick="clearSelection()" class="mobile-quick-action-btn">
                     <iconify-icon icon="lucide:x" width="12"></iconify-icon>
@@ -597,19 +588,19 @@ $pageConfig = [
 
         <!-- Mobile Quick Actions -->
         <div class="mobile-quick-actions">
-            <button onclick="showAllProducts()" class="mobile-quick-action-btn">
+            <button onclick="showAllOrders()" class="mobile-quick-action-btn">
                 <iconify-icon icon="lucide:grid" width="12"></iconify-icon>
                 All
             </button>
-            <button onclick="showInStock()" class="mobile-quick-action-btn">
-                <iconify-icon icon="lucide:check" width="12"></iconify-icon>
-                In Stock
+            <button onclick="showPendingOrders()" class="mobile-quick-action-btn">
+                <iconify-icon icon="lucide:clock" width="12"></iconify-icon>
+                Pending
             </button>
-            <button onclick="showLowStock()" class="mobile-quick-action-btn">
-                <iconify-icon icon="lucide:alert-circle" width="12"></iconify-icon>
-                Low Stock
+            <button onclick="showDeliveredOrders()" class="mobile-quick-action-btn">
+                <iconify-icon icon="lucide:check-circle" width="12"></iconify-icon>
+                Delivered
             </button>
-            <button onclick="exportToExcel()" class="mobile-quick-action-btn">
+            <button onclick="exportOrders()" class="mobile-quick-action-btn">
                 <iconify-icon icon="lucide:download" width="12"></iconify-icon>
                 Export
             </button>
@@ -627,35 +618,24 @@ $pageConfig = [
                     <div class="relative">
                         <iconify-icon icon="lucide:search" width="14"
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
-                        <input type="text" placeholder="Product name, SKU, category..."
+                        <input type="text" placeholder="Order ID, Shop Name, Status..."
                             class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            id="mobileProductSearch">
+                            id="mobileOrderSearch">
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Category</label>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Status</label>
                         <select class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            id="mobileCategoryFilter">
-                            <option value="all">All Categories</option>
-                            <option value="Groceries">Groceries</option>
-                            <option value="Food">Food</option>
-                            <option value="Home Care">Home Care</option>
-                            <option value="Personal Care">Personal Care</option>
-                            <option value="Beverages">Beverages</option>
-                            <option value="Dairy">Dairy</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Stock Status</label>
-                        <select class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            id="mobileStockFilter">
-                            <option value="all">All Stock</option>
-                            <option value="instock">In Stock</option>
-                            <option value="low">Low Stock</option>
-                            <option value="out">Out of Stock</option>
+                            id="mobileStatusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
                 </div>
@@ -674,124 +654,90 @@ $pageConfig = [
         <!-- Mobile Table Container -->
         <div class="mobile-table-wrapper">
             <div class="mobile-table-scroll-hint">← Scroll →</div>
-            <div id="mobileProductsTable"></div>
+            <div id="ordersTable"></div>
         </div>
 
         <!-- Mobile Loading State -->
         <div id="mobileLoadingState" class="flex items-center justify-center py-8">
             <div class="text-center">
                 <div class="loading-spinner mb-3"></div>
-                <p class="text-sm text-slate-500">Loading products...</p>
+                <p class="text-sm text-slate-500">Loading orders...</p>
             </div>
         </div>
     </main>
 </div>
 
 <!-- Mobile Floating Action Button -->
-<button onclick="showMobileActions()" class="mobile-fab">
+<button onclick="window.location.href='{{ route('salesperson.orders.create') }}'" class="mobile-fab">
     <iconify-icon icon="lucide:plus"></iconify-icon>
 </button>
 
 <!-- Desktop Add Button -->
-<a href="{{ route('admin.products.create') }}" class="add-btn no-underline">
+<button onclick="window.location.href='{{ route('salesperson.orders.create') }}'" class="add-btn no-underline">
     <iconify-icon icon="lucide:plus"></iconify-icon>
-</a>
+</button>
 @endsection
 
 @section('scripts')
+<!-- Include Tabulator CSS & JS -->
+<link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css" rel="stylesheet">
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+
 <script>
-    let productsTable;
-    let allProducts = [];
-    let selectedProducts = [];
-
-    // Product images for demo
-    const productImages = [
-        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1606788075767-48f6c1c8d1e9?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1539136788836-5699e78bfc75?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=100&h=100&fit=crop',
-        'https://images.unsplash.com/photo-1556905200-279565513a2d?w=100&h=100&fit=crop'
-    ];
-
-    // Generate sample data for products
-    function generateProducts(count) {
-        const categories = ['Groceries', 'Food', 'Home Care', 'Personal Care', 'Beverages', 'Dairy'];
-        const units = ['kg', 'g', 'L', 'ml', 'piece', 'pack', 'dozen'];
-        const brands = ['Nestle', 'Unilever', 'ITC', 'HUL', 'Amul', 'Britannia', 'Patanjali', 'Dabur'];
-        
-        const products = [];
-        for (let i = 1; i <= count; i++) {
-            const category = categories[Math.floor(Math.random() * categories.length)];
-            const stock = Math.floor(Math.random() * 100);
-            let stockStatus = 'instock';
-            if (stock === 0) stockStatus = 'out';
-            else if (stock <= 10) stockStatus = 'low';
-            
-            const basePrice = Math.floor(Math.random() * 500) + 50;
-            const mrp = basePrice + Math.floor(Math.random() * 100);
-            const discount = Math.floor(Math.random() * 30);
-            const sellingPrice = mrp - (mrp * discount / 100);
-            
-            // Randomly assign image or placeholder
-            const hasImage = Math.random() > 0.3;
-            const imageIndex = Math.floor(Math.random() * productImages.length);
-            
-            products.push({
-                id: i,
-                sku: 'SKU' + String(10000 + i).substring(1),
-                name: `${brands[Math.floor(Math.random() * brands.length)]} ${category} Product ${i}`,
-                category: category,
-                brand: brands[Math.floor(Math.random() * brands.length)],
-                unit: units[Math.floor(Math.random() * units.length)],
-                packSize: `${Math.floor(Math.random() * 10) + 1}${units[Math.floor(Math.random() * units.length)]}`,
-                mrp: mrp,
-                price: Math.round(sellingPrice),
-                stock: stock,
-                stockStatus: stockStatus,
-                minStock: 10,
-                maxStock: 100,
-                lastUpdated: `2024-01-${String(Math.floor(Math.random() * 15) + 1).padStart(2, '0')}`,
-                status: stockStatus === 'out' ? 'Inactive' : 'Active',
-                image: hasImage ? productImages[imageIndex] : null,
-                description: `Premium quality ${category.toLowerCase()} product from ${brands[Math.floor(Math.random() * brands.length)]}.`
-            });
-        }
-        return products;
-    }
+    let ordersTable;
+    let allOrders = [];
+    let selectedOrders = [];
 
     document.addEventListener('DOMContentLoaded', function() {
-        loadProductsPage();
+        loadOrdersPage();
         setupMobileEventListeners();
     });
+
+    function loadOrdersPage() {
+        allOrders = @json($orders).map(order => {
+            return {
+                id: order.id,
+                shopName: order.shop ? order.shop.name : 'Unknown Shop',
+                salespersonName: order.salesperson ? order.salesperson.name : 'Unknown',
+                totalAmount: parseFloat(order.total_amount),
+                status: order.status,
+                createdAt: order.created_at,
+                dateDisplay: new Date(order.created_at).toLocaleDateString()
+            };
+        });
+        
+        initializeMobileTabulator();
+        updateMobileStats();
+        
+        document.getElementById('mobileLoadingState').style.display = 'none';
+    }
 
     function setupMobileEventListeners() {
         // Search input with debounce
         let searchTimer;
-        document.getElementById('mobileProductSearch').addEventListener('input', function(e) {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => {
-                if (productsTable) {
-                    productsTable.setFilter([
-                        [
-                            {field: "sku", type: "like", value: e.target.value},
-                            {field: "name", type: "like", value: e.target.value},
-                            {field: "category", type: "like", value: e.target.value},
-                            {field: "brand", type: "like", value: e.target.value}
-                        ]
-                    ]);
-                }
-            }, 300);
-        });
+        const searchInput = document.getElementById('mobileOrderSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    if (ordersTable) {
+                        ordersTable.setFilter([
+                            [
+                                {field: "id", type: "like", value: e.target.value},
+                                {field: "shopName", type: "like", value: e.target.value},
+                                {field: "status", type: "like", value: e.target.value}
+                            ]
+                        ]);
+                    }
+                }, 300);
+            });
+        }
 
         // Filter change listeners
-        document.getElementById('mobileCategoryFilter').addEventListener('change', applyMobileFilters);
-        document.getElementById('mobileStockFilter').addEventListener('change', applyMobileFilters);
+        const statusFilter = document.getElementById('mobileStatusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', applyMobileFilters);
+        }
 
         // Touch events for mobile scrolling
         const tableWrapper = document.querySelector('.mobile-table-wrapper');
@@ -812,24 +758,9 @@ $pageConfig = [
         }
     }
 
-    function loadProductsPage() {
-        // Generate sample products (500+ for testing)
-        allProducts = generateProducts(500);
-        
-        // Initialize Tabulator with mobile-first configuration
-        initializeMobileTabulator();
-        updateMobileStats();
-        
-        // Hide loading state after a short delay
-        setTimeout(() => {
-            document.getElementById('mobileLoadingState').style.display = 'none';
-        }, 500);
-    }
-
     function initializeMobileTabulator() {
-        const tableElement = document.getElementById('mobileProductsTable');
+        const tableElement = document.getElementById('ordersTable');
         
-        // Define mobile-optimized columns with image column
         const mobileColumns = [
             {
                 title: "",
@@ -838,190 +769,96 @@ $pageConfig = [
                 titleFormatter: "rowSelection",
                 hozAlign: "center",
                 headerHozAlign: "center",
-                width: 60,
+                width: 50,
                 resizable: false,
                 headerSort: false,
-                // frozen: true
             },
             {
-                title: "IMAGE",
-                field: "image",
-                width: 70,
-                hozAlign: "center",
-                headerHozAlign: "center",
+                title: "ID",
+                field: "id",
+                width: 80,
+                sorter: "number",
                 resizable: false,
-                // frozen: true,
                 formatter: function(cell) {
-                    const imageUrl = cell.getValue();
-                    const row = cell.getRow().getData();
-                    const initials = row.name.substring(0, 2).toUpperCase();
-                    
-                    if (imageUrl) {
-                        return `<div class="product-image-cell">
-                            <img src="${imageUrl}" alt="${row.name}" class="product-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"product-image-placeholder\"></div>`;
-                    } else {
-                        return `<div class="product-image-cell">
-                            <div class="product-image-placeholder">${initials}</div>
-                        </div>`;
-                    }
-                },
-                cellClick: function(e, cell) {
-                    // Open view mode when clicking on image
-                    const rowData = cell.getRow().getData();
-                    viewProduct(rowData.id);
+                    return `<div class="font-semibold text-indigo-600 text-xs">#${cell.getValue()}</div>`;
                 }
             },
             {
-                title: "SKU",
-                field: "sku",
-                width: 100,
-                headerFilter: "input",
-                sorter: "string",
-                resizable: false,
-                formatter: function(cell) {
-                    return `<div class="font-semibold text-indigo-600 text-xs">${cell.getValue()}</div>`;
-                }
-            },
-            {
-                title: "PRODUCT",
-                field: "name",
+                title: "SHOP",
+                field: "shopName",
                 width: 180,
                 sorter: "string",
                 resizable: false,
                 formatter: function(cell) {
                     const row = cell.getRow().getData();
                     return `<div class="text-xs">
-                        <div class="font-medium truncate">${row.name}</div>
-                        <div class="text-slate-500 text-2xs">${row.brand}</div>
+                        <div class="font-medium truncate">${row.shopName}</div>
+                        <div class="text-slate-500 text-2xs">${row.salespersonName}</div>
                     </div>`;
                 }
             },
             {
-                title: "CATEGORY",
-                field: "category",
-                width: 120,
-                sorter: "string",
-                resizable: false,
-                formatter: function(cell) {
-                    return `<span class="category-badge">${cell.getValue()}</span>`;
-                }
-            },
-            {
-                title: "PACK",
-                field: "packSize",
-                width: 80,
-                sorter: "string",
-                resizable: false,
-                formatter: function(cell) {
-                    return `<div class="text-xs font-medium">${cell.getValue()}</div>`;
-                }
-            },
-            {
-                title: "MRP",
-                field: "mrp",
-                width: 80,
+                title: "AMOUNT",
+                field: "totalAmount",
+                width: 100,
                 sorter: "number",
                 resizable: false,
                 formatter: function(cell) {
-                    return `<div class="text-xs text-slate-500 line-through">₹${cell.getValue()}</div>`;
-                }
-            },
-            {
-                title: "PRICE",
-                field: "price",
-                width: 80,
-                sorter: "number",
-                resizable: false,
-                formatter: function(cell) {
-                    const row = cell.getRow().getData();
-                    const discount = Math.round(((row.mrp - row.price) / row.mrp) * 100);
-                    return `<div class="text-xs">
-                        <div class="font-semibold text-emerald-600">₹${cell.getValue()}</div>
-                        ${discount > 0 ? `<div class="text-rose-600 text-2xs">${discount}% off</div>` : ''}
-                    </div>`;
-                }
-            },
-            {
-                title: "STOCK",
-                field: "stock",
-                width: 80,
-                sorter: "number",
-                resizable: false,
-                formatter: function(cell) {
-                    const row = cell.getRow().getData();
-                    const stockConfig = {
-                        instock: { class: 'stock-instock', dot: 'stock-dot-instock', text: 'In Stock' },
-                        low: { class: 'stock-low', dot: 'stock-dot-low', text: 'Low Stock' },
-                        out: { class: 'stock-out', dot: 'stock-dot-out', text: 'Out of Stock' }
-                    };
-                    
-                    const config = stockConfig[row.stockStatus] || stockConfig.instock;
-                    return `<div class="text-xs">
-                        <div class="flex items-center gap-1">
-                            <span class="stock-dot ${config.dot}"></span>
-                            <span class="font-medium">${cell.getValue()}</span>
-                        </div>
-                        <div class="text-slate-500 text-2xs">${config.text}</div>
-                    </div>`;
+                    return `<div class="text-xs font-semibold text-emerald-600">₹${cell.getValue().toLocaleString()}</div>`;
                 }
             },
             {
                 title: "STATUS",
                 field: "status",
-                width: 90,
+                width: 120,
                 sorter: "string",
                 resizable: false,
                 formatter: function(cell) {
                     const status = cell.getValue();
-                    const isActive = status === 'Active';
-                    const icon = isActive ? 'check-circle' : 'x-circle';
-                    const color = isActive ? 'stock-instock' : 'stock-out';
-                    return `<span class="status-badge ${color}">
+                    let colorClass = 'bg-slate-100 text-slate-600 border-slate-200';
+                    let icon = 'clock';
+                    
+                    if(status === 'confirmed') { colorClass = 'bg-blue-50 text-blue-600 border-blue-200'; icon = 'check-circle'; }
+                    if(status === 'processing') { colorClass = 'bg-purple-50 text-purple-600 border-purple-200'; icon = 'refresh-cw'; }
+                    if(status === 'shipped') { colorClass = 'bg-amber-50 text-amber-600 border-amber-200'; icon = 'truck'; }
+                    if(status === 'delivered') { colorClass = 'bg-emerald-50 text-emerald-600 border-emerald-200'; icon = 'check-square'; }
+                    if(status === 'cancelled') { colorClass = 'bg-rose-50 text-rose-600 border-rose-200'; icon = 'x-circle'; }
+                    
+                    return `<span class="status-badge ${colorClass}">
                         <iconify-icon icon="lucide:${icon}" width="10"></iconify-icon>
-                        ${status}
+                        ${status.toUpperCase()}
                     </span>`;
                 }
             },
             {
-                title: "UPDATED",
-                field: "lastUpdated",
-                width: 90,
+                title: "DATE",
+                field: "dateDisplay",
+                width: 100,
                 sorter: "date",
                 resizable: false,
                 formatter: function(cell) {
-                    const date = new Date(cell.getValue());
-                    return `<div class="text-xs">
-                        <div>${date.getDate()}/${date.getMonth() + 1}</div>
-                    </div>`;
+                    return `<div class="text-xs text-slate-500">${cell.getValue()}</div>`;
                 }
             },
             {
                 title: "ACTIONS",
-                field: "actions",
                 width: 100,
                 hozAlign: "center",
                 headerSort: false,
                 resizable: false,
-                // frozen: true,
                 formatter: function(cell) {
-                    const row = cell.getRow().getData();
-                    return `<div class="flex gap-1">
-                        <button onclick="viewProduct(${row.id})" class="mobile-action-btn" title="View">
-                            <iconify-icon icon="lucide:eye" width="12"></iconify-icon>
-                            View
-                        </button>
-                        <button onclick="editProduct(${row.id})" class="mobile-action-btn" title="Edit">
-                            <iconify-icon icon="lucide:edit" width="12"></iconify-icon>
-                            Edit
-                        </button>
-                    </div>`;
+                    const id = cell.getData().id;
+                    const url = `{{ url('admin/orders') }}/${id}`;
+                    return `<a href="${url}" class="mobile-action-btn">
+                        <iconify-icon icon="lucide:eye" width="12"></iconify-icon>
+                        View
+                    </a>`;
                 }
             }
         ];
 
-        // Create Tabulator instance with mobile-first configuration
-        productsTable = new Tabulator(tableElement, {
-            data: allProducts,
+        ordersTable = new Tabulator(tableElement, {
+            data: allOrders,
             layout: "fitDataStretch",
             responsiveLayout: false,
             pagination: "local",
@@ -1035,32 +872,28 @@ $pageConfig = [
             height: "500px",
             columns: mobileColumns,
             rowSelectionChanged: function(data, rows) {
-                selectedProducts = data.map(row => row.id);
+                selectedOrders = data.map(row => row.id);
                 const bulkActions = document.getElementById('mobileBulkActions');
                 const selectedCount = document.getElementById('mobileSelectedCount');
                 
-                if (selectedProducts.length > 0) {
+                if (selectedOrders.length > 0) {
                     bulkActions.classList.add('show');
-                    selectedCount.textContent = `${selectedProducts.length} selected`;
+                    selectedCount.textContent = `${selectedOrders.length} selected`;
                 } else {
                     bulkActions.classList.remove('show');
                 }
             },
             rowClick: function(e, row) {
-                // Prevent row click when clicking on buttons or image
                 if (!e.target.closest('.mobile-action-btn') && 
-                    !e.target.closest('.tabulator-row-selection-checkbox') &&
-                    !e.target.closest('.product-image-cell')) {
-                    viewProduct(row.getData().id);
+                    !e.target.closest('.tabulator-row-selection-checkbox')) {
+                    window.location.href = `{{ url('admin/orders') }}/${row.getData().id}`;
                 }
             },
             renderStarted: function() {
-                // Show loading indicator
-                document.getElementById('mobileLoadingState').style.display = 'flex';
+                if(document.getElementById('mobileLoadingState')) document.getElementById('mobileLoadingState').style.display = 'flex';
             },
             renderComplete: function() {
-                // Hide loading indicator
-                document.getElementById('mobileLoadingState').style.display = 'none';
+                if(document.getElementById('mobileLoadingState')) document.getElementById('mobileLoadingState').style.display = 'none';
                 updateMobileStats();
             }
         });
@@ -1081,276 +914,101 @@ $pageConfig = [
     }
 
     function updateMobileStats() {
-        const totalProducts = allProducts.length;
-        const inStockProducts = allProducts.filter(p => p.stockStatus === 'instock').length;
-        const lowStockProducts = allProducts.filter(p => p.stockStatus === 'low').length;
-        const outOfStockProducts = allProducts.filter(p => p.stockStatus === 'out').length;
+        const total = allOrders.length;
+        const pending = allOrders.filter(o => o.status === 'pending').length;
+        const delivered = allOrders.filter(o => o.status === 'delivered').length;
+        const cancelled = allOrders.filter(o => o.status === 'cancelled').length;
 
-        // Update mobile stats
-        document.getElementById('mobileTotalProducts').textContent = totalProducts.toLocaleString();
-        document.getElementById('mobileInStock').textContent = inStockProducts.toLocaleString();
-        document.getElementById('mobileLowStock').textContent = lowStockProducts.toLocaleString();
-        document.getElementById('mobileOutOfStock').textContent = outOfStockProducts.toLocaleString();
+        if(document.getElementById('mobileTotalOrders')) document.getElementById('mobileTotalOrders').textContent = total.toLocaleString();
+        if(document.getElementById('mobilePendingOrders')) document.getElementById('mobilePendingOrders').textContent = pending.toLocaleString();
+        if(document.getElementById('mobileDeliveredOrders')) document.getElementById('mobileDeliveredOrders').textContent = delivered.toLocaleString();
+        if(document.getElementById('mobileCancelledOrders')) document.getElementById('mobileCancelledOrders').textContent = cancelled.toLocaleString();
     }
 
     function applyMobileFilters() {
-        const category = document.getElementById('mobileCategoryFilter').value;
-        const stock = document.getElementById('mobileStockFilter').value;
+        const status = document.getElementById('mobileStatusFilter').value;
         
-        let filters = [];
-        
-        if (category !== 'all') {
-            filters.push({field: "category", type: "=", value: category});
-        }
-        
-        if (stock !== 'all') {
-            filters.push({field: "stockStatus", type: "=", value: stock});
-        }
-        
-        if (filters.length > 0) {
-            productsTable.setFilter(filters);
+        if (status !== 'all') {
+            ordersTable.setFilter('status', '=', status);
         } else {
-            productsTable.clearFilter();
+            ordersTable.clearFilter();
         }
         
-        // Hide filter section after applying
         document.getElementById('mobileFilterSection').style.display = 'none';
     }
 
     function clearMobileFilters() {
-        document.getElementById('mobileProductSearch').value = '';
-        document.getElementById('mobileCategoryFilter').value = 'all';
-        document.getElementById('mobileStockFilter').value = 'all';
+        const searchInput = document.getElementById('mobileOrderSearch');
+        const statusFilter = document.getElementById('mobileStatusFilter');
         
-        productsTable.clearFilter();
-        productsTable.clearHeaderFilter();
+        if (searchInput) searchInput.value = '';
+        if (statusFilter) statusFilter.value = 'all';
+        
+        if (ordersTable) {
+            ordersTable.clearFilter();
+            ordersTable.clearHeaderFilter();
+        }
         document.getElementById('mobileFilterSection').style.display = 'none';
     }
 
     function toggleFilters() {
         const filterSection = document.getElementById('mobileFilterSection');
-        filterSection.style.display = filterSection.style.display === 'none' ? 'block' : 'none';
+        if (filterSection) {
+            filterSection.style.display = filterSection.style.display === 'none' ? 'block' : 'none';
+        }
     }
 
-    function showAllProducts() {
+    function showAllOrders() {
         clearMobileFilters();
     }
 
-    function showInStock() {
-        document.getElementById('mobileStockFilter').value = 'instock';
+    function showPendingOrders() {
+        const statusFilter = document.getElementById('mobileStatusFilter');
+        if (statusFilter) statusFilter.value = 'pending';
         applyMobileFilters();
     }
 
-    function showLowStock() {
-        document.getElementById('mobileStockFilter').value = 'low';
+    function showDeliveredOrders() {
+        const statusFilter = document.getElementById('mobileStatusFilter');
+        if (statusFilter) statusFilter.value = 'delivered';
         applyMobileFilters();
     }
 
-    function bulkExportProducts() {
-        if (selectedProducts.length === 0) {
-            showMobileNotification('Please select products first', 'warning');
+    function exportOrders() {
+        ordersTable.download("csv", "orders.csv");
+        showMobileNotification('Export started', 'info');
+    }
+
+    function bulkExportOrders() {
+        if (selectedOrders.length === 0) {
+            showMobileNotification('Please select orders first', 'warning');
             return;
         }
         
-        // Filter selected products
-        const selectedData = allProducts.filter(product => selectedProducts.includes(product.id));
+        const selectedData = allOrders.filter(order => selectedOrders.includes(order.id));
         
-        // Create CSV content
-        let csvContent = "SKU,Product Name,Category,Brand,Unit,Pack Size,MRP,Price,Stock,Status,Last Updated\n";
-        selectedData.forEach(product => {
-            csvContent += `"${product.sku}","${product.name}","${product.category}","${product.brand}","${product.unit}","${product.packSize}",${product.mrp},${product.price},${product.stock},"${product.status}","${product.lastUpdated}"\n`;
+        let csvContent = "Order ID,Shop Name,Salesperson,Amount,Status,Date\n";
+        selectedData.forEach(order => {
+            csvContent += `"#${order.id}","${order.shopName}","${order.salespersonName}",${order.totalAmount},"${order.status}","${order.dateDisplay}"\n`;
         });
         
-        // Download CSV
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `products_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `orders_selected_${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
         
-        showMobileNotification(`${selectedProducts.length} product(s) exported`, 'success');
-    }
-
-    function bulkUpdateStock() {
-        if (selectedProducts.length === 0) {
-            showMobileNotification('Please select products first', 'warning');
-            return;
-        }
-        
-        // Show stock update dialog
-        const actionSheet = document.createElement('div');
-        actionSheet.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center';
-        actionSheet.innerHTML = `
-            <div class="bg-white w-full max-w-md rounded-t-2xl p-4 animate-slide-up">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-slate-900">Update Stock</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="p-2">
-                        <iconify-icon icon="lucide:x" width="20"></iconify-icon>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">New Stock Quantity</label>
-                        <input type="number" id="newStockQuantity" 
-                            class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Enter stock quantity" min="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Action</label>
-                        <select id="stockAction" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="set">Set to this quantity</option>
-                            <option value="add">Add to existing stock</option>
-                            <option value="subtract">Subtract from existing stock</option>
-                        </select>
-                    </div>
-                    <button onclick="applyBulkStockUpdate()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700">
-                        Update ${selectedProducts.length} Product(s)
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(actionSheet);
-        
-        // Close on background tap
-        actionSheet.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.remove();
-            }
-        });
-    }
-
-    function applyBulkStockUpdate() {
-        const quantity = parseInt(document.getElementById('newStockQuantity').value);
-        const action = document.getElementById('stockAction').value;
-        
-        if (isNaN(quantity) || quantity < 0) {
-            showMobileNotification('Please enter a valid quantity', 'error');
-            return;
-        }
-        
-        // Update products
-        allProducts.forEach(product => {
-            if (selectedProducts.includes(product.id)) {
-                let newStock = product.stock;
-                
-                switch(action) {
-                    case 'set':
-                        newStock = quantity;
-                        break;
-                    case 'add':
-                        newStock = product.stock + quantity;
-                        break;
-                    case 'subtract':
-                        newStock = Math.max(0, product.stock - quantity);
-                        break;
-                }
-                
-                product.stock = newStock;
-                
-                // Update stock status
-                if (newStock === 0) product.stockStatus = 'out';
-                else if (newStock <= 10) product.stockStatus = 'low';
-                else product.stockStatus = 'instock';
-                
-                product.status = product.stockStatus === 'out' ? 'Inactive' : 'Active';
-                product.lastUpdated = new Date().toISOString().split('T')[0];
-            }
-        });
-        
-        // Refresh table
-        productsTable.replaceData(allProducts);
-        updateMobileStats();
-        clearSelection();
-        
-        // Close dialog
-        document.querySelector('.fixed').remove();
-        showMobileNotification(`Stock updated for ${selectedProducts.length} product(s)`, 'success');
-    }
-
-    function bulkDeleteProducts() {
-        if (selectedProducts.length === 0) {
-            showMobileNotification('Please select products first', 'warning');
-            return;
-        }
-        
-        if (confirm(`Are you sure you want to delete ${selectedProducts.length} product(s)?`)) {
-            // Remove products
-            allProducts = allProducts.filter(product => !selectedProducts.includes(product.id));
-            
-            // Refresh table
-            productsTable.replaceData(allProducts);
-            updateMobileStats();
-            clearSelection();
-            showMobileNotification(`${selectedProducts.length} product(s) deleted`, 'success');
-        }
+        showMobileNotification(`${selectedOrders.length} order(s) exported`, 'success');
     }
 
     function clearSelection() {
-        productsTable.deselectRow();
-        selectedProducts = [];
+        ordersTable.deselectRow();
+        selectedOrders = [];
         document.getElementById('mobileBulkActions').classList.remove('show');
-    }
-function viewProduct(productId) {
-
-    window.location.href = `/admin/products/${productId}`;
-}
-
-
-    function editProduct(productId) {
-        window.location.href = "{{ route('admin.products.edit', ':id') }}".replace(':id', productId);
-    }
-
-    function exportToExcel() {
-        productsTable.download("csv", "products.csv");
-        showMobileNotification('Export started', 'info');
-    }
-
-    function showMobileActions() {
-        // Create action sheet
-        const actionSheet = document.createElement('div');
-        actionSheet.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center';
-        actionSheet.innerHTML = `
-            <div class="bg-white w-full max-w-md rounded-t-2xl p-4 animate-slide-up">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-slate-900">Quick Actions</h3>
-                    <button onclick="this.closest('.fixed').remove()" class="p-2">
-                        <iconify-icon icon="lucide:x" width="20"></iconify-icon>
-                    </button>
-                </div>
-                <div class="space-y-2">
-                    <a href="{{ route('admin.products.create') }}" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3 no-underline text-slate-900">
-                        <iconify-icon icon="lucide:plus-circle" class="text-indigo-600" width="20"></iconify-icon>
-                        <span>Add New Product</span>
-                    </a>
-                    <button onclick="exportToExcel()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3">
-                        <iconify-icon icon="lucide:download" class="text-emerald-600" width="20"></iconify-icon>
-                        <span>Export Products</span>
-                    </button>
-                    <button onclick="toggleFilters()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3">
-                        <iconify-icon icon="lucide:filter" class="text-amber-600" width="20"></iconify-icon>
-                        <span>Filter Products</span>
-                    </button>
-                    <button onclick="showLowStock()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3">
-                        <iconify-icon icon="lucide:alert-circle" class="text-orange-600" width="20"></iconify-icon>
-                        <span>View Low Stock</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(actionSheet);
-        
-        // Close on background tap
-        actionSheet.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.remove();
-            }
-        });
     }
 
     function showMobileNotification(message, type) {

@@ -1,4 +1,4 @@
-{{-- resources/views/admin/reports/index.blade.php --}}
+
 
 @php
 $pageConfig = [
@@ -19,8 +19,8 @@ $pageConfig = [
             <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
                 <div class="flex flex-col lg:flex-row gap-4 w-full lg:w-auto">
                     <div class="flex flex-col lg:flex-row gap-3 w-full">
-                        <input type="date" class="date-input w-full lg:w-40" id="startDate" value="2024-01-01">
-                        <input type="date" class="date-input w-full lg:w-40" id="endDate" value="2024-01-31">
+                        <input type="date" class="date-input w-full lg:w-40" id="startDate" value="{{ $dateFrom }}">
+                        <input type="date" class="date-input w-full lg:w-40" id="endDate" value="{{ $dateTo }}">
                     </div>
                     <button class="btn-primary px-6" onclick="loadReports()">
                         Apply Range
@@ -60,8 +60,8 @@ $pageConfig = [
                         class="text-xs font-medium text-slate-300 bg-white/10 px-2 py-1 rounded border border-white/20"
                         id="selectedPeriod">This Month</span>
                 </div>
-                <p class="text-sm text-slate-300 font-medium">Total Revenue</p>
-                <h3 class="text-3xl font-semibold tracking-tight mt-1 text-white" id="totalRevenue">₹1,25,430</h3>
+                <p class="text-sm text-slate-300 font-medium">Total Revenue (Selected Period)</p>
+                <h3 class="text-3xl font-semibold tracking-tight mt-1 text-white" id="totalRevenue">₹{{ number_format($periodRevenue) }}</h3>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-xs px-2 py-1 rounded-full trend-up inline-flex items-center">
                         <iconify-icon icon="lucide:trending-up" width="12" class="mr-1"></iconify-icon>
@@ -80,7 +80,7 @@ $pageConfig = [
                 <div class="mb-3">
                     <iconify-icon icon="lucide:shopping-bag" width="20" class="text-indigo-600"></iconify-icon>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="totalOrders">342</p>
+                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="totalOrders">{{ $totalOrders }}</p>
                 <p class="text-xs text-slate-500 font-medium mt-1">Total Orders</p>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-xs px-2 py-1 rounded-full trend-up inline-flex items-center">
@@ -96,7 +96,7 @@ $pageConfig = [
                 <div class="mb-3">
                     <iconify-icon icon="lucide:credit-card" width="20" class="text-emerald-600"></iconify-icon>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="avgOrderValue">₹3,667</p>
+                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="avgOrderValue">₹{{ number_format($avgOrderValue) }}</p>
                 <p class="text-xs text-slate-500 font-medium mt-1">Avg. Order Value</p>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-xs px-2 py-1 rounded-full trend-up inline-flex items-center">
@@ -112,8 +112,8 @@ $pageConfig = [
                 <div class="mb-3">
                     <iconify-icon icon="lucide:users" width="20" class="text-amber-600"></iconify-icon>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="newCustomers">28</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">New Customers</p>
+                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="newCustomers">{{ $newShopsCount }}</p>
+                <p class="text-xs text-slate-500 font-medium mt-1">New Shops</p>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="text-xs px-2 py-1 rounded-full trend-down inline-flex items-center">
                         <iconify-icon icon="lucide:trending-down" width="10" class="mr-1"></iconify-icon>
@@ -456,29 +456,10 @@ $pageConfig = [
 @section('scripts')
 <script>
     // Sample data for reports
-    const topSalespersonsData = [
-        { name: 'Rajesh Kumar', orders: 45, revenue: 125430, target: 120000 },
-        { name: 'Suresh Patel', orders: 38, revenue: 108920, target: 110000 },
-        { name: 'Vikram Singh', orders: 32, revenue: 95670, target: 100000 },
-        { name: 'Amit Sharma', orders: 28, revenue: 78450, target: 90000 },
-        { name: 'Ravi Verma', orders: 25, revenue: 69800, target: 80000 }
-    ];
-
-    const topShopsData = [
-        { name: 'Mohan Kirana Store', orders: 45, revenue: 125430, area: 'Gandhi Nagar' },
-        { name: 'Gupta General Store', orders: 32, revenue: 108920, area: 'Gandhi Nagar' },
-        { name: 'Bansal Provision', orders: 28, revenue: 95670, area: 'Shahdara' },
-        { name: 'Sharma Super Mart', orders: 25, revenue: 78450, area: 'Preet Vihar' },
-        { name: 'Verma Departmental Store', orders: 19, revenue: 69800, area: 'Laxmi Nagar' }
-    ];
-
-    const topProductsData = [
-        { name: 'Aashirvaad Atta', sales: 120, revenue: 50400 },
-        { name: 'Fortune Sunflower Oil', sales: 95, revenue: 19950 },
-        { name: 'Maggi Noodles', sales: 85, revenue: 5950 },
-        { name: 'Colgate Toothpaste', sales: 78, revenue: 6630 },
-        { name: 'Parle-G Biscuits', sales: 72, revenue: 3600 }
-    ];
+    // Real data for reports
+    const topSalespersonsData = @json($topSalespersonsData);
+    const topShopsData = @json($topShopsData);
+    const topProductsData = @json($topProductsData);
 
     function loadReportsPage() {
         // Animate cards
@@ -571,12 +552,7 @@ $pageConfig = [
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
 
-        // In real app, this would fetch data from API
-        console.log(`Loading reports for ${startDate} to ${endDate}`);
-
-        // Simulate data update with slight variations
-        updateSummaryCards();
-        loadTopLists();
+        window.location.href = `{{ route('admin.reports.index') }}?date_from=${startDate}&date_to=${endDate}`;
     }
 
     function updateSummaryCards() {

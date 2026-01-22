@@ -2,6 +2,14 @@
 
 @section('title', 'Order Consolidation')
 
+@php
+$pageConfig = [
+    'showBottomNav' => true,
+    'showBack' => true,
+    'backUrl' => route('admin.dashboard'),
+];
+@endphp
+
 @section('styles')
 <style>
     * {
@@ -1102,107 +1110,11 @@
 @section('scripts')
 <script>
     // Extended sample data with more realistic information
-    const consolidationData = {
-        products: [
-            {
-                id: 1,
-                name: "Premium Quality Chikki with Dry Fruits and Honey - Family Pack",
-                category: "Food",
-                unit: "500g Box",
-                price: 350,
-                sku: "CHIKKI-P500",
-                description: "Traditional Indian sweet snack made with jaggery, peanuts, and assorted dry fruits",
-                brand: "Homemade Delights",
-                currentOrders: [
-                    { salesperson: "Rajesh Kumar", shop: "Mohan Kirana Store & Provision", quantity: 3, orderDate: "2024-01-15", deliveryDate: "2024-01-16", orderId: "ORD-2024-00123" },
-                    { salesperson: "Suresh Patel", shop: "Bansal Provision & Supermarket", quantity: 2, orderDate: "2024-01-15", deliveryDate: "2024-01-16", orderId: "ORD-2024-00124" },
-                    { salesperson: "Vikram Singh", shop: "Verma Departmental Store - Main Branch", quantity: 1, orderDate: "2024-01-14", deliveryDate: "2024-01-16", orderId: "ORD-2024-00110" }
-                ]
-            },
-            {
-                id: 2,
-                name: "Aashirvaad Select Whole Wheat Atta - Premium Quality",
-                category: "Groceries",
-                unit: "5 kg Pack",
-                price: 420,
-                sku: "AASH-A5KG",
-                description: "Premium whole wheat flour with high fiber content",
-                brand: "ITC Aashirvaad",
-                currentOrders: [
-                    { salesperson: "Rajesh Kumar", shop: "Mohan Kirana Store & Provision", quantity: 2, orderDate: "2024-01-15", deliveryDate: "2024-01-16", orderId: "ORD-2024-00123" },
-                    { salesperson: "Rajesh Kumar", shop: "Gupta General Store - City Center Branch", quantity: 1, orderDate: "2024-01-15", deliveryDate: "2024-01-17", orderId: "ORD-2024-00125" },
-                    { salesperson: "Suresh Patel", shop: "City Grocery & Supermarket Ltd.", quantity: 3, orderDate: "2024-01-14", deliveryDate: "2024-01-16", orderId: "ORD-2024-00109" }
-                ]
-            },
-            // ... More products (you can add more as needed)
-        ]
-    };
 
-    // Generate more dummy data for demonstration
-    function generateDummyData(count = 100) {
-        const data = [...consolidationData.products];
-        const categories = ["Groceries", "Food", "Personal Care", "Beverages", "Home Care", "Dairy"];
-        const brands = ["Nestle", "Hindustan Unilever", "P&G", "Dabur", "Patanjali", "Britannia", "Amul", "Parle"];
-        const units = ["kg", "liters", "pieces", "packs", "boxes", "bottles"];
-        const salespersons = ["Rajesh Kumar", "Suresh Patel", "Vikram Singh", "Anjali Sharma", "Mohammed Ali"];
-
-        for (let i = 4; i <= count; i++) {
-            const category = categories[Math.floor(Math.random() * categories.length)];
-            const brand = brands[Math.floor(Math.random() * brands.length)];
-
-            data.push({
-                id: i,
-                name: `${brand} ${generateProductName(category)} - ${["Premium", "Select", "Gold", "Deluxe"][Math.floor(Math.random() * 4)]} Quality`,
-                category: category,
-                unit: `${Math.floor(Math.random() * 10) + 1} ${units[Math.floor(Math.random() * units.length)]}`,
-                price: Math.floor(Math.random() * 500) + 50,
-                sku: `SKU-${String(i).padStart(6, '0')}`,
-                description: `High quality ${category.toLowerCase()} product from ${brand}`,
-                brand: brand,
-                currentOrders: generateOrders(Math.floor(Math.random() * 5) + 1, salespersons)
-            });
-        }
-
-        return data;
-    }
-
-    function generateProductName(category) {
-        const names = {
-            "Groceries": ["Whole Wheat Atta", "Basmati Rice", "Refined Oil", "Sugar", "Salt", "Pulses"],
-            "Food": ["Biscuits", "Noodles", "Chocolates", "Snacks", "Ready-to-eat", "Spices"],
-            "Personal Care": ["Toothpaste", "Shampoo", "Soap", "Face Wash", "Deodorant"],
-            "Beverages": ["Tea", "Coffee", "Juice", "Soft Drink", "Energy Drink"],
-            "Home Care": ["Detergent", "Floor Cleaner", "Dish Wash", "Toilet Cleaner"],
-            "Dairy": ["Milk", "Curd", "Cheese", "Butter", "Paneer"]
-        };
-
-        return names[category][Math.floor(Math.random() * names[category].length)];
-    }
-
-    function generateOrders(count, salespersons) {
-        const orders = [];
-        const shops = ["Super Mart", "Department Store", "Kirana Store", "Supermarket", "General Store", "Provision Store"];
-
-        for (let i = 0; i < count; i++) {
-            const salesperson = salespersons[Math.floor(Math.random() * salespersons.length)];
-            const shopName = `${["Mohan", "Gupta", "Sharma", "Patel", "Singh", "Kumar"][Math.floor(Math.random() * 6)]} ${shops[Math.floor(Math.random() * shops.length)]}`;
-
-            orders.push({
-                salesperson: salesperson,
-                shop: shopName,
-                quantity: Math.floor(Math.random() * 10) + 1,
-                orderDate: "2024-01-" + (Math.floor(Math.random() * 15) + 1).toString().padStart(2, '0'),
-                deliveryDate: "2024-01-" + (Math.floor(Math.random() * 5) + 16).toString().padStart(2, '0'),
-                orderId: `ORD-2024-${String(Math.floor(Math.random() * 1000)).padStart(5, '0')}`
-            });
-        }
-
-        return orders;
-    }
 
     // Application State
     const state = {
-        allProducts: generateDummyData(100),
+        allProducts: @json($products),
         filteredProducts: [],
         currentTab: 'summary',
         currentPage: 1,

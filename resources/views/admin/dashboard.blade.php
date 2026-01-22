@@ -249,35 +249,73 @@ $pageConfig = [
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="grid grid-cols-3 gap-3">
-            <!-- <button onclick="window.location.href='{{ route('admin.areas.index') }}'"
-                    class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                    <iconify-icon icon="lucide:map-pin" width="20"
-                        class="text-slate-400 group-hover:text-indigo-600 transition-colors mb-1"></iconify-icon>
-                    Areas
-                </button> -->
+        <!-- Redesigned Quick Actions -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-slate-900">Quick Actions</h3>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Consolidation -->
+                <button onclick="window.location.href='{{ route('admin.orders.consolidation') }}'"
+                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all duration-300 overflow-hidden text-left">
+                    <div class="mb-4 p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                        <iconify-icon icon="lucide:layers" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Consolidation</span>
+                        <span class="block text-[10px] text-slate-500 font-medium">Aggregate order items</span>
+                    </div>
+                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <iconify-icon icon="lucide:layers" width="64"></iconify-icon>
+                    </div>
+                </button>
 
-            <button onclick="window.location.href='{{ route('admin.orders.consolidation') }}'"
-                class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                <iconify-icon icon="lucide:layers" width="20"
-                    class="text-slate-400 group-hover:text-indigo-600 transition-colors mb-1"></iconify-icon>
-                Consolidation
-            </button>
+                <!-- Offers -->
+                <button onclick="window.location.href='{{ route('admin.offers.index') }}'"
+                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-100 transition-all duration-300 overflow-hidden text-left">
+                    <div class="mb-4 p-3 bg-rose-50 rounded-xl text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors duration-300">
+                        <iconify-icon icon="lucide:tag" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Offers</span>
+                        <span class="block text-[10px] text-slate-500 font-medium">Manage promotions</span>
+                    </div>
+                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <iconify-icon icon="lucide:tag" width="64"></iconify-icon>
+                    </div>
+                </button>
 
-            <button onclick="window.location.href='{{ route('admin.offers.index') }}'"
-                class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                <iconify-icon icon="lucide:tag" width="20"
-                    class="text-slate-400 group-hover:text-indigo-600 transition-colors mb-1"></iconify-icon>
-                Offers
-            </button>
-            <button onclick="window.location.href='{{ route('admin.reports.index') }}'"
-                class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                <iconify-icon icon="lucide:bar-chart" width="20"
-                    class="text-slate-400 group-hover:text-indigo-600 transition-colors mb-1"></iconify-icon>
-                Reports
-            </button>
-        </div>
+                <!-- Reports -->
+                <button onclick="window.location.href='{{ route('admin.reports.index') }}'"
+                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-100 transition-all duration-300 overflow-hidden text-left">
+                    <div class="mb-4 p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                        <iconify-icon icon="lucide:bar-chart-3" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Reports</span>
+                        <span class="block text-[10px] text-slate-500 font-medium">View sales analytics</span>
+                    </div>
+                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <iconify-icon icon="lucide:bar-chart-3" width="64"></iconify-icon>
+                    </div>
+                </button>
+
+                <!-- Settings -->
+                <button onclick="window.location.href='{{ route('admin.settings.index') }}'"
+                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-100 transition-all duration-300 overflow-hidden text-left">
+                    <div class="mb-4 p-3 bg-amber-50 rounded-xl text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                        <iconify-icon icon="lucide:settings" width="24"></iconify-icon>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Settings</span>
+                        <span class="block text-[10px] text-slate-500 font-medium">System configuration</span>
+                    </div>
+                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <iconify-icon icon="lucide:settings" width="64"></iconify-icon>
+                    </div>
+                </button>
+            </div>
+        </section>
 
         <!-- Recent Activity -->
         <section>
@@ -307,44 +345,16 @@ $pageConfig = [
 @section('scripts')
 <script>
     // Dummy data for admin (if not in dummy-data.js)
+    // Dynamic data from Controller
     const adminData = {
         adminStats: {
-            monthlyRevenue: 185000,
-            totalShops: 47,
-            pendingOrders: 8,
-            activeSalespersons: 12,
-            todayRevenue: 7500
+            monthlyRevenue: {{ $data['monthlyRevenue'] }},
+            totalShops: {{ $data['totalShops'] }},
+            pendingOrders: {{ $data['pendingOrders'] }},
+            activeSalespersons: {{ $data['activeSalespersons'] }},
+            todayRevenue: {{ $data['todayRevenue'] }}
         },
-        recentActivities: [
-            { 
-                type: 'order', 
-                title: 'New Order Received', 
-                description: 'Mohan Kirana Store placed order #ORD00127', 
-                time: '10 minutes ago', 
-                icon: 'shopping-bag' 
-            },
-            { 
-                type: 'shop', 
-                title: 'New Shop Registered', 
-                description: 'Sunil Mart joined with referral code', 
-                time: '2 hours ago', 
-                icon: 'store' 
-            },
-            { 
-                type: 'user', 
-                title: 'New Salesperson Added', 
-                description: 'Rajesh Kumar joined the team', 
-                time: '1 day ago', 
-                icon: 'user-plus' 
-            },
-            { 
-                type: 'offer', 
-                title: 'New Offer Created', 
-                description: '20% discount on all beverages', 
-                time: '2 days ago', 
-                icon: 'tag' 
-            }
-        ]
+        recentActivities: @json($data['recentActivities'])
     };
 
     // Function to get icon based on activity type

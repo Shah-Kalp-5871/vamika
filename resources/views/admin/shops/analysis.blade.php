@@ -5,6 +5,7 @@
 @php
 $pageConfig = [
     'showBottomNav' => true,
+
 ];
 @endphp
 
@@ -319,168 +320,15 @@ $pageConfig = [
 @endsection
 
 @section('content')
-@php
-    // Get parameters from request
-    $shop_id = request()->get('shop_id') ?? 0;
-    $filter_type = request()->get('filter_type') ?? 'monthly';
-    $start_date = request()->get('start_date') ?? date('Y-m-01');
-    $end_date = request()->get('end_date') ?? date('Y-m-t');
-
-    // Dummy shop data
-    $shop_data = [
-        'shop_id' => $shop_id,
-        'shop_name' => "SuperMart Electronics",
-        'area' => "Downtown Business District",
-        'salesperson' => "John Doe",
-        'status' => "active",
-        'contact_person' => "Rajesh Sharma",
-        'phone' => "+91 98765 43210",
-        'email' => "shop@supermart.com",
-        'address' => "123 Main Street, Business District",
-        'registration_date' => "2023-01-15"
-    ];
-
-    // Helper functions
-    function generateDummyData($filter_type) {
-        $data = [];
-        
-        if ($filter_type === 'yearly') {
-            // Yearly data - last 5 years
-            $years = ['2020', '2021', '2022', '2023', '2024'];
-            foreach ($years as $year) {
-                $orders = rand(400, 700);
-                $revenue = rand(5000000, 10000000);
-                $growth = rand(-15, 30);
-                $data[] = [
-                    'period' => $year,
-                    'orders' => $orders,
-                    'revenue' => $revenue,
-                    'growth' => ($growth >= 0 ? '+' : '') . $growth . '%'
-                ];
-            }
-        } elseif ($filter_type === 'custom') {
-            // Custom date range - generate monthly data for range
-            $months = 6; // Default 6 months for custom
-            for ($i = 0; $i < $months; $i++) {
-                $monthName = date('M', strtotime("-$i months"));
-                $orders = rand(30, 60);
-                $revenue = rand(400000, 900000);
-                $growth = rand(-10, 25);
-                $data[] = [
-                    'period' => $monthName,
-                    'orders' => $orders,
-                    'revenue' => $revenue,
-                    'growth' => ($growth >= 0 ? '+' : '') . $growth . '%'
-                ];
-            }
-            $data = array_reverse($data);
-        } else {
-            // Monthly data - last 12 months
-            $monthly_trends = [];
-            for ($i = 11; $i >= 0; $i--) {
-                $monthName = date('M', strtotime("-$i months"));
-                $orders = rand(20, 60);
-                $revenue = rand(300000, 900000);
-                $growth = rand(-10, 25);
-                $monthly_trends[] = [
-                    'period' => $monthName,
-                    'orders' => $orders,
-                    'revenue' => $revenue,
-                    'growth' => ($growth >= 0 ? '+' : '') . $growth . '%'
-                ];
-            }
-            $data = $monthly_trends;
-        }
-        
-        return $data;
-    }
-
-    function generatePerformanceStats($filter_type) {
-        $baseOrders = $filter_type === 'yearly' ? 6000 : ($filter_type === 'custom' ? 180 : 156);
-        $baseRevenue = $filter_type === 'yearly' ? 85000000 : ($filter_type === 'custom' ? 2700000 : 2845000);
-        
-        return [
-            'total_orders' => $baseOrders + rand(-50, 50),
-            'total_revenue' => $baseRevenue + rand(-100000, 100000),
-            'avg_order_value' => 18237 + rand(-500, 500),
-            'total_products' => 42,
-            'order_frequency' => $filter_type === 'yearly' ? 500 : ($filter_type === 'custom' ? 30 : 13),
-            'customer_rating' => 4.5
-        ];
-    }
-
-    function generateTopProducts() {
-        $products = [
-            ['name' => 'Wireless Headphones', 'orders' => 45, 'revenue' => 675000, 'growth' => '+12%'],
-            ['name' => 'Smartphone Case', 'orders' => 38, 'revenue' => 114000, 'growth' => '+8%'],
-            ['name' => 'USB-C Cable', 'orders' => 32, 'revenue' => 96000, 'growth' => '+15%'],
-            ['name' => 'Power Bank 10000mAh', 'orders' => 28, 'revenue' => 196000, 'growth' => '+5%'],
-            ['name' => 'Bluetooth Speaker', 'orders' => 25, 'revenue' => 375000, 'growth' => '+22%']
-        ];
-        
-        // Add some randomness
-        foreach ($products as &$product) {
-            $product['orders'] += rand(-5, 5);
-            $product['revenue'] += rand(-10000, 10000);
-        }
-        
-        // Sort by orders
-        usort($products, function($a, $b) {
-            return $b['orders'] - $a['orders'];
-        });
-        
-        return $products;
-    }
-
-    function generateRecentOrders() {
-        $statuses = ['delivered', 'processing', 'pending', 'cancelled'];
-        $orders = [];
-        
-        for ($i = 0; $i < 5; $i++) {
-            $daysAgo = rand(0, 30);
-            $date = date('Y-m-d', strtotime("-$daysAgo days"));
-            $orders[] = [
-                'id' => 'ORD-' . (1000 + rand(1, 999)),
-                'date' => $date,
-                'amount' => rand(15000, 60000),
-                'status' => $statuses[rand(0, 1)] // Mostly delivered or processing
-            ];
-        }
-        
-        // Sort by date descending
-        usort($orders, function($a, $b) {
-            return strtotime($b['date']) - strtotime($a['date']);
-        });
-        
-        return $orders;
-    }
-
-    // Generate data based on current filter
-    $monthly_trends = generateDummyData($filter_type);
-    $performance_stats = generatePerformanceStats($filter_type);
-    $top_products = generateTopProducts();
-    $recent_orders = generateRecentOrders();
-
-    // Calculate growth percentage for current period
-    $current_period = $monthly_trends[count($monthly_trends) - 1] ?? ['orders' => 50, 'revenue' => 900000];
-    $prev_period = $monthly_trends[count($monthly_trends) - 2] ?? ['orders' => 48, 'revenue' => 865000];
-
-    $order_growth = $prev_period['orders'] > 0 ? 
-        (($current_period['orders'] - $prev_period['orders']) / $prev_period['orders']) * 100 : 0;
-
-    $revenue_growth = $prev_period['revenue'] > 0 ? 
-        (($current_period['revenue'] - $prev_period['revenue']) / $prev_period['revenue']) * 100 : 0;
-@endphp
-
 <div class="main-content">
     <main class="p-6 space-y-6">
         <!-- Shop Header with Export Options -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 animate-fade-in-up">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">{{ $shop_data['shop_name'] }}</h1>
+                <h1 class="text-2xl font-bold text-slate-900">{{ $shop->name ?? 'Shop Analysis' }}</h1>
                 <div class="flex items-center gap-3 mt-2">
-                    <span class="text-sm text-slate-600">Shop ID: {{ $shop_data['shop_id'] }}</span>
-                    <span class="text-sm text-slate-600">Area: {{ $shop_data['area'] }}</span>
+                    <span class="text-sm text-slate-600">Shop ID: {{ $shop->id ?? 'N/A' }}</span>
+                    <span class="text-sm text-slate-600">Area: {{ $shop->area->name ?? 'N/A' }}</span>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -489,20 +337,7 @@ $pageConfig = [
                         <iconify-icon icon="lucide:download" width="16"></iconify-icon>
                         Export Report
                     </button>
-                    <div id="exportMenu" class="export-menu">
-                        <div class="export-option" onclick="exportReport('pdf')">
-                            <iconify-icon icon="lucide:file-text" width="16" class="text-red-500"></iconify-icon>
-                            Download as PDF
-                        </div>
-                        <div class="export-option" onclick="exportReport('word')">
-                            <iconify-icon icon="lucide:file-text" width="16" class="text-blue-500"></iconify-icon>
-                            Download as Word
-                        </div>
-                        <div class="export-option" onclick="exportReport('excel')">
-                            <iconify-icon icon="lucide:file-spreadsheet" width="16" class="text-green-500"></iconify-icon>
-                            Download as Excel
-                        </div>
-                    </div>
+                    <!-- ... export menu ... -->
                 </div>
                 <button onclick="window.print()" class="btn btn-secondary">
                     <iconify-icon icon="lucide:printer" width="16"></iconify-icon>
@@ -511,36 +346,7 @@ $pageConfig = [
             </div>
         </div>
 
-        <!-- Date Filter Controls -->
-        <div class="bg-white rounded-xl border border-slate-200 p-4 animate-fade-in-up">
-            <div class="flex flex-col lg:flex-row lg:items-center gap-4">
-                <div class="flex-1">
-                    <div class="text-sm font-medium text-slate-700 mb-2">Report Period</div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <select id="filterType" class="filter-select">
-                            <option value="monthly" {{ $filter_type === 'monthly' ? 'selected' : '' }}>Monthly Report</option>
-                            <option value="yearly" {{ $filter_type === 'yearly' ? 'selected' : '' }}>Yearly Report</option>
-                            <option value="custom" {{ $filter_type === 'custom' ? 'selected' : '' }}>Date Wise</option>
-                        </select>
-                        
-                        <div id="dateRangeInputs" class="flex-1 flex gap-3 {{ $filter_type === 'custom' ? '' : 'hidden' }}">
-                            <div class="flex-1">
-                                <label class="block text-xs text-slate-500 mb-1">From Date</label>
-                                <input type="date" id="startDate" class="date-input w-full" value="{{ $start_date }}">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-xs text-slate-500 mb-1">To Date</label>
-                                <input type="date" id="endDate" class="date-input w-full" value="{{ $end_date }}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-primary mt-4 lg:mt-0" onclick="applyFilters()">
-                    <iconify-icon icon="lucide:filter" width="16"></iconify-icon>
-                    Apply Filters
-                </button>
-            </div>
-        </div>
+        <!-- Date Filter Controls ... -->
 
         <!-- Performance Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -549,20 +355,9 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-slate-600">Total Orders</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($performance_stats['total_orders']) }}</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['total_orders'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
-                            @if($order_growth >= 0)
-                            <span class="trend-up">
-                                <iconify-icon icon="lucide:trending-up" width="16"></iconify-icon>
-                                {{ number_format(abs($order_growth), 1) }}%
-                            </span>
-                            @else
-                            <span class="trend-down">
-                                <iconify-icon icon="lucide:trending-down" width="16"></iconify-icon>
-                                {{ number_format(abs($order_growth), 1) }}%
-                            </span>
-                            @endif
-                            <span class="text-sm text-slate-500 ml-2">vs last period</span>
+                            <span class="text-sm text-slate-500">Order history in period</span>
                         </div>
                     </div>
                     <div class="p-3 bg-blue-50 rounded-full border border-blue-100">
@@ -576,20 +371,9 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-slate-600">Total Revenue</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($performance_stats['total_revenue']) }}</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($stats['total_revenue'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
-                            @if($revenue_growth >= 0)
-                            <span class="trend-up">
-                                <iconify-icon icon="lucide:trending-up" width="16"></iconify-icon>
-                                {{ number_format(abs($revenue_growth), 1) }}%
-                            </span>
-                            @else
-                            <span class="trend-down">
-                                <iconify-icon icon="lucide:trending-down" width="16"></iconify-icon>
-                                {{ number_format(abs($revenue_growth), 1) }}%
-                            </span>
-                            @endif
-                            <span class="text-sm text-slate-500 ml-2">vs last period</span>
+                            <span class="text-sm text-slate-500">Total sales in period</span>
                         </div>
                     </div>
                     <div class="p-3 bg-emerald-50 rounded-full border border-emerald-100">
@@ -603,7 +387,7 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-slate-600">Average Order Value</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($performance_stats['avg_order_value']) }}</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($stats['avg_order_value'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
                             <span class="text-sm text-slate-500">Per order average</span>
                         </div>
@@ -644,13 +428,13 @@ $pageConfig = [
                             </tr>
                         </thead>
                         <tbody id="trendTableBody">
-                            @foreach(array_slice($monthly_trends, -6) as $trend)
+                            @foreach($trends as $trend)
                             <tr>
                                 <td class="font-medium">{{ $trend['period'] }}</td>
                                 <td>{{ $trend['orders'] }}</td>
                                 <td class="font-semibold">₹{{ number_format($trend['revenue']) }}</td>
                                 <td>
-                                    <span class="{{ strpos($trend['growth'], '+') !== false ? 'trend-up' : 'trend-down' }}">
+                                    <span class="text-slate-500">
                                         {{ $trend['growth'] }}
                                     </span>
                                 </td>
@@ -670,16 +454,9 @@ $pageConfig = [
                             <h3 class="text-lg font-semibold text-slate-900">Top Performing Products</h3>
                             <p class="text-sm text-slate-500">Best selling items this period</p>
                         </div>
-                        <button class="btn btn-secondary text-sm" onclick="refreshTopProducts()">
-                            <iconify-icon icon="lucide:refresh-cw" width="14"></iconify-icon>
-                            Refresh
-                        </button>
                     </div>
                     <div class="space-y-4" id="topProductsList">
                         @foreach($top_products as $index => $product)
-                        @php
-                            $percentage = ($product['orders'] / $top_products[0]['orders']) * 100;
-                        @endphp
                         <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-semibold text-slate-700">
@@ -692,11 +469,6 @@ $pageConfig = [
                             </div>
                             <div class="text-right">
                                 <p class="font-semibold text-slate-900">₹{{ number_format($product['revenue']) }}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-xs {{ strpos($product['growth'], '+') !== false ? 'text-emerald-600' : 'text-red-600' }}">
-                                        {{ $product['growth'] }}
-                                    </span>
-                                </div>
                             </div>
                         </div>
                         @endforeach
@@ -710,25 +482,18 @@ $pageConfig = [
                             <h3 class="text-lg font-semibold text-slate-900">Recent Orders</h3>
                             <p class="text-sm text-slate-500">Latest transactions</p>
                         </div>
-                        <button class="btn btn-secondary text-sm" onclick="refreshRecentOrders()">
-                            <iconify-icon icon="lucide:refresh-cw" width="14"></iconify-icon>
-                            Refresh
-                        </button>
                     </div>
                     <div class="space-y-3" id="recentOrdersList">
                         @foreach($recent_orders as $order)
                         <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors">
                             <div>
-                                <p class="font-medium text-slate-900">{{ $order['id'] }}</p>
-                                <p class="text-sm text-slate-500 mt-0.5">{{ date('d M Y', strtotime($order['date'])) }}</p>
+                                <p class="font-medium text-slate-900">ORD-{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</p>
+                                <p class="text-sm text-slate-500 mt-0.5">{{ $order->created_at->format('d M Y') }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="font-semibold text-slate-900">₹{{ number_format($order['amount']) }}</p>
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                    {{ $order['status'] === 'delivered' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 
-                                           ($order['status'] === 'processing' ? 'bg-amber-50 text-amber-700 border border-amber-100' : 
-                                           'bg-blue-50 text-blue-700 border border-blue-100') }}">
-                                    {{ ucfirst($order['status']) }}
+                                <p class="font-semibold text-slate-900">₹{{ number_format($order->total_amount) }}</p>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                    {{ ucfirst($order->status) }}
                                 </span>
                             </div>
                         </div>
@@ -745,44 +510,44 @@ $pageConfig = [
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:user" width="16" class="text-slate-400"></iconify-icon>
-                        <span class="text-sm text-slate-600">Contact Person:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ $shop_data['contact_person'] }}</span>
+                        <span class="text-sm text-slate-600">Owner Name:</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->user->name ?? 'N/A' }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:phone" width="16" class="text-slate-400"></iconify-icon>
                         <span class="text-sm text-slate-600">Phone:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ $shop_data['phone'] }}</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->phone ?? 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:mail" width="16" class="text-slate-400"></iconify-icon>
                         <span class="text-sm text-slate-600">Email:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ $shop_data['email'] }}</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->user->email ?? 'N/A' }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:map-pin" width="16" class="text-slate-400"></iconify-icon>
                         <span class="text-sm text-slate-600">Area:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ $shop_data['area'] }}</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->area->name ?? 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:calendar" width="16" class="text-slate-400"></iconify-icon>
                         <span class="text-sm text-slate-600">Registered:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ date('d M Y', strtotime($shop_data['registration_date'])) }}</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->created_at->format('d M Y') }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <iconify-icon icon="lucide:user-check" width="16" class="text-slate-400"></iconify-icon>
-                        <span class="text-sm text-slate-600">Salesperson:</span>
-                        <span class="text-sm font-medium text-slate-900">{{ $shop_data['salesperson'] }}</span>
+                        <span class="text-sm text-slate-600">Assigned Salesperson:</span>
+                        <span class="text-sm font-medium text-slate-900">{{ $shop->salesperson->name ?? 'Not Assigned' }}</span>
                     </div>
                 </div>
             </div>
             <div class="mt-6 pt-6 border-t border-slate-100">
                 <p class="text-sm text-slate-600">
                     <iconify-icon icon="lucide:map-pin" width="14" class="mr-2 text-slate-400"></iconify-icon>
-                    {{ $shop_data['address'] }}
+                    {{ $shop->address ?? 'No address provided' }}
                 </p>
             </div>
         </div>
@@ -840,7 +605,7 @@ $pageConfig = [
 
     function initializeChart() {
         const ctx = document.getElementById('trendsChart').getContext('2d');
-        const data = @json($monthly_trends);
+        const data = @json($trends ?? []);
         
         const labels = data.map(item => item.period);
         const ordersData = data.map(item => item.orders);
@@ -937,13 +702,13 @@ $pageConfig = [
 
     function applyFilters() {
         const filterType = document.getElementById('filterType').value;
-        let url = `{{ route('admin.shops.analysis') }}?shop_id={{ $shop_id }}&filter_type=${filterType}`;
+        let url = `{{ route('admin.shops.analysis') }}?shop_id={{ $shop->id ?? '' }}&filter_type=${filterType}`;
         
         if (filterType === 'custom') {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             if (startDate && endDate) {
-                url += `&start_date=${startDate}&end_date=${endDate}`;
+                url += `&date_from=${startDate}&date_to=${endDate}`;
             }
         }
         
@@ -990,8 +755,8 @@ $pageConfig = [
     }
 
     function exportReport(format) {
-        const shopName = "{{ addslashes($shop_data['shop_name']) }}";
-        const period = "{{ $filter_type === 'monthly' ? date('F Y') : ($filter_type === 'yearly' ? date('Y') : date('d M Y', strtotime($start_date)) . ' to ' . date('d M Y', strtotime($end_date))) }}";
+        const shopName = "{{ addslashes($shop->name ?? 'Shop') }}";
+        const period = "{{ $dateFrom ?? '' }} to {{ $dateTo ?? '' }}";
         
         let message = '';
         
@@ -1030,23 +795,23 @@ $pageConfig = [
         doc.text('Shop Analysis Report', 20, 20);
         
         doc.setFontSize(12);
-        doc.text(`Shop: {{ $shop_data['shop_name'] }}`, 20, 35);
-        doc.text(`Period: {{ $filter_type === 'monthly' ? date('F Y') : ($filter_type === 'yearly' ? date('Y') : date('d M Y', strtotime($start_date)) . ' to ' . date('d M Y', strtotime($end_date))) }}`, 20, 45);
+        doc.text(`Shop: {{ $shop->name ?? 'N/A' }}`, 20, 35);
+        doc.text(`Period: {{ $dateFrom ?? '' }} to {{ $dateTo ?? '' }}`, 20, 45);
         
         // Add table with performance stats
         doc.autoTable({
             startY: 55,
             head: [['Metric', 'Value']],
             body: [
-                ['Total Orders', '{{ number_format($performance_stats['total_orders']) }}'],
-                ['Total Revenue', '₹{{ number_format($performance_stats['total_revenue']) }}'],
-                ['Avg Order Value', '₹{{ number_format($performance_stats['avg_order_value']) }}'],
-                ['Customer Rating', '{{ $performance_stats['customer_rating'] }}/5']
+                ['Total Orders', '{{ number_format($stats['total_orders'] ?? 0) }}'],
+                ['Total Revenue', '₹{{ number_format($stats['total_revenue'] ?? 0) }}'],
+                ['Avg Order Value', '₹{{ number_format($stats['avg_order_value'] ?? 0) }}'],
+                ['Assigned Area', '{{ $shop->area->name ?? 'N/A' }}']
             ]
         });
         
         // Save the PDF
-        doc.save('Shop_Report_{{ $shop_data['shop_id'] }}_{{ date('Ymd') }}.pdf');
+        doc.save('Shop_Report_{{ $shop->id ?? '0' }}_{{ date('Ymd') }}.pdf');
         
         setTimeout(() => {
             showToast({
@@ -1064,22 +829,22 @@ SHOP ANALYSIS REPORT
 
 Shop Information:
 -----------------
-Shop Name: {{ $shop_data['shop_name'] }}
-Shop ID: {{ $shop_data['shop_id'] }}
-Contact Person: {{ $shop_data['contact_person'] }}
-Phone: {{ $shop_data['phone'] }}
-Email: {{ $shop_data['email'] }}
-Address: {{ $shop_data['address'] }}
-Registration Date: {{ date('d M Y', strtotime($shop_data['registration_date'])) }}
+Shop Name: {{ $shop->name ?? 'N/A' }}
+Shop ID: {{ $shop->id ?? 'N/A' }}
+Contact Person: {{ $shop->user->name ?? 'N/A' }}
+Phone: {{ $shop->phone ?? 'N/A' }}
+Email: {{ $shop->user->email ?? 'N/A' }}
+Address: {{ $shop->address ?? 'N/A' }}
+Registration Date: {{ $shop->created_at ? $shop->created_at->format('d M Y') : 'N/A' }}
 
 Performance Summary:
 -------------------
-Period: {{ $filter_type === 'monthly' ? date('F Y') : ($filter_type === 'yearly' ? date('Y') : date('d M Y', strtotime($start_date)) . ' to ' . date('d M Y', strtotime($end_date))) }}
-Total Orders: {{ number_format($performance_stats['total_orders']) }}
-Total Revenue: ₹{{ number_format($performance_stats['total_revenue']) }}
-Average Order Value: ₹{{ number_format($performance_stats['avg_order_value']) }}
-Order Frequency: {{ $performance_stats['order_frequency'] }} per month
-Customer Rating: {{ $performance_stats['customer_rating'] }}/5
+Period: {{ $dateFrom ?? '' }} to {{ $dateTo ?? '' }}
+Total Orders: {{ number_format($stats['total_orders'] ?? 0) }}
+Total Revenue: ₹{{ number_format($stats['total_revenue'] ?? 0) }}
+Average Order Value: ₹{{ number_format($stats['avg_order_value'] ?? 0) }}
+Assigned Salesperson: {{ $shop->salesperson->name ?? 'Not Assigned' }}
+Area: {{ $shop->area->name ?? 'N/A' }}
 
 Top Products:
 ------------
@@ -1095,7 +860,7 @@ Report Generated: {{ date('d M Y H:i:s') }}
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'Shop_Report_{{ $shop_data['shop_id'] }}_{{ date('Ymd') }}.doc';
+        a.download = 'Shop_Report_{{ $shop->id ?? '0' }}_{{ date('Ymd') }}.doc';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1112,15 +877,15 @@ Report Generated: {{ date('d M Y H:i:s') }}
     function generateExcelReport() {
         // Create CSV content
         const csvContent = `
-Shop Analysis Report - {{ $shop_data['shop_name'] }}
+Shop Analysis Report - {{ $shop->name ?? 'Shop' }}
 Generated: {{ date('d M Y H:i:s') }}
 
 Performance Metrics,Value
-Total Orders,{{ $performance_stats['total_orders'] }}
-Total Revenue,{{ $performance_stats['total_revenue'] }}
-Average Order Value,{{ $performance_stats['avg_order_value'] }}
-Order Frequency,{{ $performance_stats['order_frequency'] }}
-Customer Rating,{{ $performance_stats['customer_rating'] }}
+Total Orders,{{ $stats['total_orders'] ?? 0 }}
+Total Revenue,{{ $stats['total_revenue'] ?? 0 }}
+Average Order Value,{{ $stats['avg_order_value'] ?? 0 }}
+Area,{{ $shop->area->name ?? 'N/A' }}
+Salesperson,{{ $shop->salesperson->name ?? 'Not Assigned' }}
 
 Top Products,Orders,Revenue,Growth
 @foreach($top_products as $product)
@@ -1128,10 +893,9 @@ Top Products,Orders,Revenue,Growth
 
 @endforeach
 
-Period,Orders,Revenue,Growth
-@foreach(array_slice($monthly_trends, -6) as $trend)
-{{ $trend['period'] }},{{ $trend['orders'] }},{{ $trend['revenue'] }},{{ $trend['growth'] }}
-
+Period,Orders,Revenue
+@foreach(array_slice($trends ?? [], -6) as $trend)
+{{ $trend['period'] }},{{ $trend['orders'] }},{{ $trend['revenue'] }}
 @endforeach
         `;
         
@@ -1139,7 +903,7 @@ Period,Orders,Revenue,Growth
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'Shop_Report_{{ $shop_data['shop_id'] }}_{{ date('Ymd') }}.csv';
+        a.download = 'Shop_Report_{{ $shop->id ?? '0' }}_{{ date('Ymd') }}.csv';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

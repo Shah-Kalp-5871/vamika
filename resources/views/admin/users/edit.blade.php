@@ -332,6 +332,35 @@ $pageConfig = [
         align-items: center;
         gap: 0.5rem;
     }
+    /* Password Toggle Styles */
+    .password-wrapper {
+        position: relative;
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #94A3B8;
+        cursor: pointer;
+        padding: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        z-index: 10;
+    }
+    
+    .password-toggle:hover {
+        color: #6366F1;
+    }
+
+    .form-input.pr-10 {
+        padding-right: 2.5rem;
+    }
 </style>
 
 <div class="main-content">
@@ -346,7 +375,7 @@ $pageConfig = [
         </div>
         <span class="user-badge" id="userTypeBadge">
             <iconify-icon icon="lucide:store" width="12" class="mr-1"></iconify-icon>
-            {{ $user->type === 'shop-owner' ? 'Shop Owner' : 'Salesperson' }}
+            {{ $user->role === 'shop-owner' ? 'Shop Owner' : 'Salesperson' }}
         </span>
     </div>
 
@@ -357,7 +386,7 @@ $pageConfig = [
             <form id="editUserForm" method="POST" action="{{ url('/admin/users/' . ($user->id ?? '')) }}">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="user_type" value="{{ $user->type ?? 'shop-owner' }}">
+                <input type="hidden" name="user_type" value="{{ $user->role === 'shop-owner' ? 'shop-owner' : 'salesperson' }}">
                 
                 <div class="form-grid">
                     <div class="form-group">
@@ -390,11 +419,11 @@ $pageConfig = [
                         @enderror
                     </div>
 
-                    @if(($user->type ?? 'shop-owner') === 'shop-owner')
+                    @if($user->role === 'shop-owner')
                         <div class="form-group">
                             <label class="form-label">Shop Name <span class="form-required">*</span></label>
                             <input type="text" class="form-input" name="shop_name" 
-                                   value="{{ old('shop_name', $user->shop_name ?? '') }}" 
+                                   value="{{ old('shop_name', $user->shop ? $user->shop->name : '') }}" 
                                    placeholder="Enter shop name" required>
                             @error('shop_name')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -414,25 +443,25 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area" required>
+                        <select class="form-input" name="area_id" required>
                             <option value="">Select area</option>
-                            <option value="Gandhi Nagar" {{ (old('area', $user->area ?? '') == 'Gandhi Nagar') ? 'selected' : '' }}>Gandhi Nagar</option>
-                            <option value="Laxmi Nagar" {{ (old('area', $user->area ?? '') == 'Laxmi Nagar') ? 'selected' : '' }}>Laxmi Nagar</option>
-                            <option value="Preet Vihar" {{ (old('area', $user->area ?? '') == 'Preet Vihar') ? 'selected' : '' }}>Preet Vihar</option>
-                            <option value="Shahdara" {{ (old('area', $user->area ?? '') == 'Shahdara') ? 'selected' : '' }}>Shahdara</option>
-                            <option value="Mayur Vihar" {{ (old('area', $user->area ?? '') == 'Mayur Vihar') ? 'selected' : '' }}>Mayur Vihar</option>
-                            <option value="Karol Bagh" {{ (old('area', $user->area ?? '') == 'Karol Bagh') ? 'selected' : '' }}>Karol Bagh</option>
+                            @foreach($areas as $area)
+                                <option value="{{ $area->id }}" 
+                                    {{ (old('area_id', $user->area_id) == $area->id) ? 'selected' : '' }}>
+                                    {{ $area->name }}
+                                </option>
+                            @endforeach
                         </select>
-                        @error('area')
+                        @error('area_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Address</label>
+                        <label class="form-label">Address @if($user->role === 'shop-owner')<span class="form-required">*</span>@endif</label>
                         <input type="text" class="form-input" name="address" 
-                               value="{{ old('address', $user->address ?? '') }}" 
-                               placeholder="Enter address">
+                               value="{{ old('address', $user->shop ? $user->shop->address : '') }}" 
+                               placeholder="Enter address" @if($user->role === 'shop-owner') required @endif>
                         @error('address')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -467,8 +496,13 @@ $pageConfig = [
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">New Password</label>
-                            <input type="password" class="form-input" name="password" 
-                                   placeholder="Enter new password">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input pr-10" name="password" 
+                                       placeholder="Enter new password">
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                                </button>
+                            </div>
                             @error('password')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
@@ -476,8 +510,13 @@ $pageConfig = [
 
                         <div class="form-group">
                             <label class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-input" name="password_confirmation" 
-                                   placeholder="Confirm new password">
+                            <div class="password-wrapper">
+                                <input type="password" class="form-input pr-10" name="password_confirmation" 
+                                       placeholder="Confirm new password">
+                                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                    <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -504,6 +543,21 @@ $pageConfig = [
 
 @section('scripts')
 <script>
+    let selectedUserType = '';
+
+    function togglePassword(button) {
+        const input = button.parentElement.querySelector('input');
+        const icon = button.querySelector('iconify-icon');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.setAttribute('icon', 'lucide:eye-off');
+        } else {
+            input.type = 'password';
+            icon.setAttribute('icon', 'lucide:eye');
+        }
+    }
+
     // Status toggle label update
     document.querySelector('input[name="status"]').addEventListener('change', function() {
         document.getElementById('statusLabel').textContent = this.checked ? 'Active' : 'Inactive';
@@ -549,7 +603,7 @@ $pageConfig = [
 
     // Update avatar color based on user type
     document.addEventListener('DOMContentLoaded', function() {
-        const userType = "{{ $user->type ?? 'shop-owner' }}";
+        const userType = "{{ $user->role }}";
         const avatar = document.getElementById('userAvatar');
         const badge = document.getElementById('userTypeBadge');
         

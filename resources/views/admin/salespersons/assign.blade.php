@@ -1,20 +1,8 @@
 @extends('layouts.admin')
 
-@section('content')
-@php
-$areaId = request()->area_id ?? 1;
-$removeId = request()->remove_id ?? null;
+@section('title', 'Assign Area & Shop - Admin')
 
-$pageConfig = [
-    'title' => 'Assign Salesperson',
-    'subtitle' => 'Manage salespersons for area',
-    'showBack' => true,
-    'backUrl' => route('admin.areas.index'),
-    'role' => 'Admin',
-    'showBottomNav' => true
-];
-@endphp
-
+@section('styles')
 <style>
     * {
         margin: 0;
@@ -63,176 +51,505 @@ $pageConfig = [
         }
     }
 
-    /* Back button */
-    .back-btn {
+    /* Custom animations */
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.5s ease forwards;
+    }
+
+    /* Badge styles */
+    .badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        color: #64748B;
-        text-decoration: none;
-        border-radius: 0.5rem;
-        transition: all 0.2s ease;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
     }
 
-    .back-btn:hover {
-        background: #F8FAFC;
-        color: #475569;
-    }
-
-    /* Salesperson avatar */
-    .salesperson-avatar {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
+    .badge-sales {
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
         color: white;
-        font-size: 1rem;
     }
 
-    /* Form styles */
-    .form-group {
+    /* Card styles */
+    .info-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
         margin-bottom: 1.5rem;
     }
 
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
+    /* Area card */
+    .area-card {
+        border: 2px solid #E2E8F0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .form-select {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid #D1D5DB;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        background-color: white;
-        transition: all 0.2s ease;
+    .area-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
     }
 
-    .form-select:focus {
-        outline: none;
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    .area-card.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
     }
 
+    /* Shop card */
+    .shop-card {
+        border: 2px solid #E2E8F0;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .shop-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .shop-card.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    }
+
+    /* Button styles */
     .btn-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 0.75rem 2rem;
-        border: none;
-        border-radius: 0.5rem;
         font-weight: 500;
-        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
         transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
     }
 
     .btn-secondary {
         background: white;
         color: #374151;
-        padding: 0.75rem 2rem;
-        border: 1px solid #D1D5DB;
-        border-radius: 0.5rem;
         font-weight: 500;
-        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
         transition: all 0.3s ease;
+        border: 1px solid #E5E7EB;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
     }
 
     .btn-secondary:hover {
+        border-color: #D1D5DB;
         background: #F9FAFB;
     }
 
-    /* Salesperson card */
-    .salesperson-card {
+    /* Progress steps */
+    .progress-steps {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1rem;
-        border: 1px solid #E5E7EB;
-        border-radius: 0.5rem;
-        background: white;
-        transition: all 0.2s ease;
+        margin: 2rem 0;
+        position: relative;
     }
 
-    .salesperson-card:hover {
-        border-color: #6366F1;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #E2E8F0;
+        z-index: 1;
     }
 
-    /* Loading spinner */
-    .loading-spinner {
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #6366F1;
+    .step {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-number {
+        width: 2rem;
+        height: 2rem;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
+        background: white;
+        border: 2px solid #E2E8F0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #94A3B8;
+        margin-bottom: 0.5rem;
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .step.active .step-number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+    }
+
+    .step.completed .step-number {
+        background: #10B981;
+        border-color: #10B981;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+        color: #94A3B8;
+        font-weight: 500;
+    }
+
+    .step.active .step-label {
+        color: #667eea;
+    }
+
+    .step.completed .step-label {
+        color: #10B981;
+    }
+
+    /* Stats badges */
+    .stats-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #64748B;
+    }
+
+    .stats-badge .count {
+        font-weight: 600;
+        color: #334155;
+    }
+
+    /* Toast notification */
+    .toast {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 </style>
+@endsection
 
+@section('content')
 <div class="main-content">
-    <main class="p-6 space-y-8">
-        <!-- Area Info -->
-        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+    <!-- Header -->
+    <header class="sticky top-0 z-20 bg-white border-b border-slate-100">
+        <div class="px-6 py-4 flex items-center justify-between">
+            <!-- Left: Back + Logo + Context -->
             <div class="flex items-center gap-3">
-                <iconify-icon icon="lucide:map-pin" width="20" class="text-indigo-600"></iconify-icon>
-                <div>
-                    <h3 class="font-medium text-slate-900" id="areaNameDisplay"></h3>
-                    <div class="flex items-center gap-4 text-sm text-slate-500 mt-1">
-                        <span class="flex items-center gap-1">
-                            <iconify-icon icon="lucide:hash" width="14"></iconify-icon>
-                            <span id="areaPincodeDisplay"></span>
-                        </span>
-                        <span class="flex items-center gap-1">
-                            <iconify-icon icon="lucide:store" width="14"></iconify-icon>
-                            <span id="areaShopsDisplay"></span> shops
-                        </span>
-                    </div>
+                <!-- Logo -->
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Vamika Enterprise"
+                    class="h-8 w-8 object-contain rounded-md border border-slate-200">
+
+                <!-- Title -->
+                <div class="leading-tight">
+                    <h1 class="text-lg font-semibold text-slate-900 tracking-tight">Assign Area & Shop</h1>
+                    <p class="text-sm text-slate-500 truncate" id="salespersonName">
+                        @if(request()->has('user_id'))
+                            Loading...
+                        @else
+                            Select Salesperson First
+                        @endif
+                    </p>
                 </div>
+            </div>
+
+            <!-- Admin Badge -->
+            <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-100">
+                Admin Panel
+            </span>
+        </div>
+    </header>
+
+    <main class="p-6 space-y-6">
+        <!-- Salesperson Info Card -->
+        <div class="info-card animate-slide-up">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <iconify-icon icon="lucide:user-tie" width="24" class="text-white"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-lg" id="salespersonNameInfo">Salesperson Name</h3>
+                    <p class="text-white/80 text-sm mt-1" id="salespersonContact">Loading contact info...</p>
+                </div>
+                <span class="badge badge-sales">
+                    <iconify-icon icon="lucide:user-tie" width="12" class="mr-1"></iconify-icon>
+                    Salesperson
+                </span>
             </div>
         </div>
 
-        <!-- Add New Salesperson -->
-        <div class="form-group">
-            <label class="form-label">Assign New Salesperson</label>
-            <div class="flex gap-2">
-                <select id="salespersonSelect" class="form-select flex-1">
-                    <option value="">Select a salesperson...</option>
-                    <!-- Options will be populated by JavaScript -->
-                </select>
-                <button onclick="assignSalesperson()" class="btn-primary">
-                    Assign
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <span class="step-label">Select Area</span>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <span class="step-label">Select Shop</span>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <span class="step-label">Confirm</span>
+            </div>
+        </div>
+
+        <!-- Currently Assigned -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 animate-slide-up" style="display: none;"
+            id="currentAssignment">
+            <div class="flex items-start gap-3">
+                <iconify-icon icon="lucide:info" width="20" class="text-amber-600 mt-0.5"></iconify-icon>
+                <div class="flex-1">
+                    <h4 class="font-medium text-amber-900">Currently Assigned</h4>
+                    <p class="text-sm text-amber-800 mt-1" id="currentAssignmentText"></p>
+                </div>
+                <button class="text-amber-600 hover:text-amber-800" onclick="removeAssignment()">
+                    <iconify-icon icon="lucide:x" width="16"></iconify-icon>
                 </button>
             </div>
         </div>
 
-        <!-- Assigned Salespersons -->
-        <div>
-            <h3 class="text-sm font-semibold text-slate-900 mb-4">Currently Assigned Salespersons</h3>
-            <div id="assignedList" class="space-y-3">
-                <!-- Salespersons will be loaded here -->
-                <div class="text-center py-8">
-                    <div class="loading-spinner"></div>
-                    <p class="text-sm text-slate-400 mt-2">Loading assignments...</p>
+        <!-- Step 1: Select Area -->
+        <div id="step1Content" class="animate-slide-up">
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Select Delivery Area</h3>
+                <p class="text-slate-500 text-sm">Choose the area where this salesperson will operate</p>
+            </div>
+
+            <!-- Search Areas -->
+            <div class="relative mb-6">
+                <iconify-icon icon="lucide:search" width="16"
+                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
+                <input type="text"
+                    class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    id="areaSearch" placeholder="Search areas...">
+            </div>
+
+            <!-- Areas Grid -->
+            <div class="space-y-3 mb-8" id="areasList">
+                <!-- Areas will be loaded here -->
+                <div class="text-center py-8 text-slate-500">
+                    <div class="loading-spinner inline-block w-8 h-8 border-2 border-slate-200 border-t-slate-600 rounded-full animate-spin mb-4"></div>
+                    <p class="font-medium">Loading areas...</p>
                 </div>
+            </div>
+
+            <!-- Next Button -->
+            <button class="btn-primary" onclick="goToStep2()" id="nextToStep2Btn" disabled>
+                <iconify-icon icon="lucide:arrow-right" width="16"></iconify-icon>
+                Next: Select Shop
+            </button>
+        </div>
+
+        <!-- Step 2: Select Shop (Hidden Initially) -->
+        <div id="step2Content" class="animate-slide-up" style="display: none;">
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Select Shop in <span id="selectedAreaName"
+                        class="text-indigo-600">Area Name</span></h3>
+                <p class="text-slate-500 text-sm">Choose a shop to assign to this salesperson</p>
+            </div>
+
+            <!-- Search Shops -->
+            <div class="relative mb-6">
+                <iconify-icon icon="lucide:search" width="16"
+                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
+                <input type="text"
+                    class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    id="shopSearch" placeholder="Search shops by name or owner...">
+            </div>
+
+            <!-- Shops Grid -->
+            <div class="space-y-3 mb-8" id="shopsList">
+                <!-- Shops will be loaded here -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex gap-3">
+                <button class="btn-secondary" onclick="goBackToStep1()">
+                    <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+                    Back to Areas
+                </button>
+                <button class="btn-primary" onclick="goToStep3()" id="nextToStep3Btn" disabled>
+                    <iconify-icon icon="lucide:arrow-right" width="16"></iconify-icon>
+                    Next: Confirm
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Confirmation (Hidden Initially) -->
+        <div id="step3Content" class="animate-slide-up" style="display: none;">
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Confirm Assignment</h3>
+                <p class="text-slate-500 text-sm">Review and confirm the assignment details</p>
+            </div>
+
+            <!-- Assignment Summary -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <iconify-icon icon="lucide:user-tie" width="24" class="text-indigo-600"></iconify-icon>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-900" id="confirmSalespersonName"></h4>
+                                <p class="text-sm text-slate-500" id="confirmSalespersonContact"></p>
+                            </div>
+                        </div>
+                        <span class="badge badge-sales">Salesperson</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white p-4 rounded-lg border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <iconify-icon icon="lucide:map-pin" width="16"
+                                        class="text-emerald-600"></iconify-icon>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500">Assigned Area</p>
+                                    <p class="font-semibold text-slate-900" id="confirmAreaName"></p>
+                                    <p class="text-xs text-slate-400 mt-1" id="confirmAreaStats"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-lg border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <iconify-icon icon="lucide:store" width="16"
+                                        class="text-blue-600"></iconify-icon>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500">Assigned Shop</p>
+                                    <p class="font-semibold text-slate-900" id="confirmShopName"></p>
+                                    <p class="text-xs text-slate-400 mt-1" id="confirmShopOwner"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                <iconify-icon icon="lucide:calendar" width="16"
+                                    class="text-amber-600"></iconify-icon>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500">Assignment Date</p>
+                                <p class="font-semibold text-slate-900" id="assignmentDate"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                <iconify-icon icon="lucide:package" width="16"
+                                    class="text-purple-600"></iconify-icon>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-500">Access Permissions</p>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                                        <iconify-icon icon="lucide:shopping-cart" width="10"
+                                            class="mr-1"></iconify-icon>
+                                        Take Orders
+                                    </span>
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                        <iconify-icon icon="lucide:clipboard-list" width="10"
+                                            class="mr-1"></iconify-icon>
+                                        View Products
+                                    </span>
+                                    <span
+                                        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
+                                        <iconify-icon icon="lucide:file-text" width="10"
+                                            class="mr-1"></iconify-icon>
+                                        Generate Invoices
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Actions -->
+            <div class="flex gap-3">
+                <button class="btn-secondary" onclick="goBackToStep2()">
+                    <iconify-icon icon="lucide:arrow-left" width="16"></iconify-icon>
+                    Back to Shops
+                </button>
+                <button class="btn-primary" onclick="saveAssignment()">
+                    <iconify-icon icon="lucide:save" width="16"></iconify-icon>
+                    Save Assignment
+                </button>
             </div>
         </div>
     </main>
@@ -241,181 +558,179 @@ $pageConfig = [
 
 @section('scripts')
 <script>
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const areaId = parseInt(urlParams.get('area_id')) || parseInt("{{ $areaId }}");
-    const removeId = urlParams.get('remove_id') || "{{ $removeId }}";
+    const userId = '{{ $salesperson->id }}';
+    const userName = '{{ $salesperson->name }}';
 
-    // Sample data
-    const salespersons = [
-        { id: 1, name: 'Rajesh Kumar', employeeId: 'EMP001', phone: '9876543210' },
-        { id: 2, name: 'Suresh Patel', employeeId: 'EMP002', phone: '9876543211' },
-        { id: 3, name: 'Vikram Singh', employeeId: 'EMP003', phone: '9876543212' },
-        { id: 4, name: 'Amit Sharma', employeeId: 'EMP004', phone: '9876543213' },
-        { id: 5, name: 'Neha Verma', employeeId: 'EMP005', phone: '9876543214' }
-    ];
+    // State
+    let selectedArea = null;
+    let selectedShops = [];
+    let currentStep = 1;
 
-    // Sample area data
-    const areasData = [
-        { id: 1, name: 'Gandhi Nagar', pincode: '110031', shops: 15 },
-        { id: 2, name: 'Laxmi Nagar', pincode: '110092', shops: 12 },
-        { id: 3, name: 'Preet Vihar', pincode: '110092', shops: 18 },
-        { id: 4, name: 'Shahdara', pincode: '110032', shops: 22 },
-        { id: 5, name: 'Mayur Vihar', pincode: '110091', shops: 10 },
-        { id: 6, name: 'Karol Bagh', pincode: '110005', shops: 25 }
-    ];
-
-    let area = null;
-    let assignedSalespersons = [];
-
-    // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function () {
-        if (areaId) {
-            loadAreaData(areaId);
-            loadAssignments();
-            populateSalespersonSelect();
-            
-            // Handle remove parameter on page load
-            if (removeId) {
-                setTimeout(() => {
-                    // Remove the remove_id parameter from URL without reloading
-                    const url = new URL(window.location);
-                    url.searchParams.delete('remove_id');
-                    window.history.replaceState({}, '', url);
-                }, 100);
-            }
-        }
+        // Load areas from PHP
+        const areaData = [
+            @foreach($areas as $area)
+            { id: {{ $area->id }}, name: '{{ $area->name }}', shops: {{ $area->shops_count ?? 0 }} },
+            @endforeach
+        ];
+
+        loadAreas(areaData);
+        setupAreaSearch();
     });
 
-    function loadAreaData(id) {
-        // Find area data
-        area = areasData.find(a => a.id === id);
+    function loadAreas(data) {
+        const areasList = document.getElementById('areasList');
+        areasList.innerHTML = '';
 
-        if (area) {
-            document.getElementById('areaNameDisplay').textContent = area.name;
-            document.getElementById('areaPincodeDisplay').textContent = area.pincode;
-            document.getElementById('areaShopsDisplay').textContent = area.shops;
-        }
-    }
-
-    function loadAssignments() {
-        // In real app, fetch assignments from API
-        // For now, simulate random assignments
-        assignedSalespersons = [];
-
-        // Assign 0-2 random salespersons
-        const numAssignments = Math.min(Math.floor(Math.random() * 3), salespersons.length);
-        for (let i = 0; i < numAssignments; i++) {
-            const spIndex = (areaId + i) % salespersons.length;
-            if (!assignedSalespersons.some(sp => sp.id === salespersons[spIndex].id)) {
-                assignedSalespersons.push({ ...salespersons[spIndex] });
-            }
-        }
-
-        // If remove_id parameter exists, remove that salesperson
-        if (removeId) {
-            const removeIdInt = parseInt(removeId);
-            const removeIndex = assignedSalespersons.findIndex(sp => sp.id === removeIdInt);
-            if (removeIndex !== -1) {
-                assignedSalespersons.splice(removeIndex, 1);
-                showToast({
-                    text: 'Salesperson removed from area',
-                    type: 'success'
-                });
-            }
-        }
-
-        renderAssignedList();
-    }
-
-    function renderAssignedList() {
-        const assignedList = document.getElementById('assignedList');
-
-        if (assignedSalespersons.length === 0) {
-            assignedList.innerHTML = `
-                <div class="text-center py-8">
-                    <iconify-icon icon="lucide:users" width="48" class="text-slate-300 mb-3"></iconify-icon>
-                    <p class="text-slate-400">No salespersons assigned to this area</p>
-                </div>
-            `;
-            return;
-        }
-
-        assignedList.innerHTML = assignedSalespersons.map(sp => `
-            <div class="salesperson-card">
-                <div class="flex items-center gap-3">
-                    <div class="salesperson-avatar">${sp.name.charAt(0)}</div>
-                    <div>
-                        <h4 class="font-medium text-slate-900">${sp.name}</h4>
-                        <div class="flex items-center gap-3 text-sm text-slate-500 mt-1">
-                            <span>${sp.employeeId}</span>
-                            <span>${sp.phone}</span>
-                        </div>
+        data.forEach(area => {
+            const areaCard = document.createElement('div');
+            areaCard.className = 'area-card';
+            areaCard.id = `area-card-${area.id}`;
+            areaCard.innerHTML = `
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-semibold text-slate-900">${area.name}</h4>
+                        <button class="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg font-medium text-sm hover:bg-indigo-100 transition-colors"
+                                onclick="event.stopPropagation(); selectArea(${area.id}, '${area.name}')">
+                            Select
+                        </button>
                     </div>
                 </div>
-                <a href="{{ route('admin.salespersons.assign.form') }}?area_id=${areaId}&remove_id=${sp.id}"
-                   class="text-rose-500 hover:text-rose-700 text-sm"
-                   onclick="return confirm('Remove ${sp.name} from this area?')">
-                    Remove
-                </a>
-            </div>
-        `).join('');
-    }
-
-    function populateSalespersonSelect() {
-        const select = document.getElementById('salespersonSelect');
-
-        // Get salespersons not already assigned
-        const availableSalespersons = salespersons.filter(sp =>
-            !assignedSalespersons.some(assigned => assigned.id === sp.id)
-        );
-
-        if (availableSalespersons.length === 0) {
-            select.innerHTML = '<option value="" disabled>All salespersons are already assigned</option>';
-            return;
-        }
-
-        availableSalespersons.forEach(sp => {
-            const option = document.createElement('option');
-            option.value = sp.id;
-            option.textContent = `${sp.name} (${sp.employeeId})`;
-            select.appendChild(option);
+            `;
+            areaCard.onclick = () => selectArea(area.id, area.name);
+            areasList.appendChild(areaCard);
         });
     }
 
-    function assignSalesperson() {
-        const select = document.getElementById('salespersonSelect');
-        const salespersonId = parseInt(select.value);
-
-        if (!salespersonId) {
-            showToast({
-                text: 'Please select a salesperson',
-                type: 'error'
-            });
-            return;
-        }
-
-        const salesperson = salespersons.find(sp => sp.id === salespersonId);
-
-        if (salesperson && !assignedSalespersons.some(sp => sp.id === salespersonId)) {
-            assignedSalespersons.push({ ...salesperson });
-            renderAssignedList();
-            populateSalespersonSelect();
-            select.value = '';
-
-            // Show success message
-            showToast({
-                text: `${salesperson.name} assigned to ${area.name}`,
-                type: 'success'
-            });
-        }
+    function selectArea(areaId, areaName) {
+        selectedArea = { id: areaId, name: areaName };
+        document.querySelectorAll('.area-card').forEach(c => c.classList.remove('selected'));
+        const card = document.getElementById(`area-card-${areaId}`);
+        if (card) card.classList.add('selected');
+        document.getElementById('nextToStep2Btn').disabled = false;
     }
 
-    // Function to show toast messages (compatible with existing toast system)
-    function showToast({text, type = 'info'}) {
-        // This function should use the existing toast system from footer
-        // For now, we'll use a simple alert
-        alert(text);
+    function goToStep2() {
+        currentStep = 2;
+        document.getElementById('step1').classList.replace('active', 'completed');
+        document.getElementById('step2').classList.add('active');
+        document.getElementById('step1Content').style.display = 'none';
+        document.getElementById('step2Content').style.display = 'block';
+        document.getElementById('selectedAreaName').textContent = selectedArea.name;
+        
+        fetch(`/admin/salespersons/shops-by-area/${selectedArea.id}`)
+            .then(res => res.json())
+            .then(data => loadShops(data));
+    }
+
+    function loadShops(data) {
+        const shopsList = document.getElementById('shopsList');
+        shopsList.innerHTML = '';
+        data.forEach(shop => {
+            const shopCard = document.createElement('div');
+            shopCard.className = 'shop-card';
+            shopCard.id = `shop-card-${shop.id}`;
+            shopCard.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <h4 class="font-semibold text-slate-900">${shop.name}</h4>
+                    <button class="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg font-medium text-sm" 
+                            onclick="event.stopPropagation(); toggleShop(${shop.id}, '${shop.name}')">
+                        Select
+                    </button>
+                </div>
+            `;
+            shopCard.onclick = () => toggleShop(shop.id, shop.name);
+            shopsList.appendChild(shopCard);
+        });
+    }
+
+    function toggleShop(id, name) {
+        const index = selectedShops.findIndex(s => s.id === id);
+        if (index === -1) {
+            selectedShops.push({ id, name });
+            document.getElementById(`shop-card-${id}`).classList.add('selected');
+        } else {
+            selectedShops.splice(index, 1);
+            document.getElementById(`shop-card-${id}`).classList.remove('selected');
+        }
+        document.getElementById('nextToStep3Btn').disabled = selectedShops.length === 0;
+    }
+
+    function goToStep3() {
+        currentStep = 3;
+        document.getElementById('step2').classList.replace('active', 'completed');
+        document.getElementById('step3').classList.add('active');
+        document.getElementById('step2Content').style.display = 'none';
+        document.getElementById('step3Content').style.display = 'block';
+
+        document.getElementById('confirmSalespersonName').textContent = userName;
+        document.getElementById('confirmAreaName').textContent = selectedArea.name;
+        document.getElementById('confirmShopName').textContent = selectedShops.map(s => s.name).join(', ');
+        document.getElementById('assignmentDate').textContent = new Date().toLocaleDateString();
+    }
+
+    function saveAssignment() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("admin.salespersons.assign.store") }}';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+
+        const userIdInput = document.createElement('input');
+        userIdInput.type = 'hidden';
+        userIdInput.name = 'user_id';
+        userIdInput.value = userId;
+        form.appendChild(userIdInput);
+
+        const areaIdInput = document.createElement('input');
+        areaIdInput.type = 'hidden';
+        areaIdInput.name = 'area_id';
+        areaIdInput.value = selectedArea.id;
+        form.appendChild(areaIdInput);
+
+        selectedShops.forEach(shop => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'shop_ids[]';
+            input.value = shop.id;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function goBackToStep1() {
+        currentStep = 1;
+        document.getElementById('step1Content').style.display = 'block';
+        document.getElementById('step2Content').style.display = 'none';
+        document.getElementById('step1').classList.replace('completed', 'active');
+        document.getElementById('step2').classList.remove('active');
+    }
+
+    function goBackToStep2() {
+        currentStep = 2;
+        document.getElementById('step2Content').style.display = 'block';
+        document.getElementById('step3Content').style.display = 'none';
+        document.getElementById('step2').classList.replace('completed', 'active');
+        document.getElementById('step3').classList.remove('active');
+    }
+
+    function setupAreaSearch() {
+        const searchInput = document.getElementById('areaSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.area-card').forEach(card => {
+                    const name = card.querySelector('h4').textContent.toLowerCase();
+                    card.style.display = name.includes(term) ? 'flex' : 'none';
+                });
+            });
+        }
     }
 </script>
 @endsection

@@ -51,5 +51,24 @@ $pageConfig['role'] = $pageConfig['role'] ?? 'Admin';
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     @yield('scripts')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                showToast({
+                    text: "{{ session('success') }}",
+                    type: 'success'
+                });
+            @endif
+
+            @if(session('error'))
+                showToast({
+                    text: "{{ session('error') }}",
+                    type: 'error',
+                    duration: 5000
+                });
+            @endif
+        });
+    </script>
 </body>
 </html>

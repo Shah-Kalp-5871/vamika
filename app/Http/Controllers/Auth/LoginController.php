@@ -62,7 +62,7 @@ class LoginController extends Controller
                     return redirect()->route('admin.dashboard');
                 case 'salesperson':
                     return redirect()->route('salesperson.dashboard');
-                case 'shop_owner':
+                case 'shop-owner':
                     return redirect()->route('shop-owner.dashboard');
                 default:
                     return redirect('/');

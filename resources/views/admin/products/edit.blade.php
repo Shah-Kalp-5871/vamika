@@ -435,23 +435,9 @@
                     <h2 class="text-xl font-bold text-slate-900">Edit Product: {{ $product->name }}</h2>
                     <p class="text-slate-500 text-sm">SKU: {{ $product->sku }}</p>
                 </div>
-                <div class="mt-2 sm:mt-0">
-                    @if($product->stock_status === 'instock')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                            <iconify-icon icon="lucide:check-circle" width="12" class="mr-1"></iconify-icon>
-                            In Stock
-                        </span>
-                    @elseif($product->stock_status === 'low')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                            <iconify-icon icon="lucide:alert-circle" width="12" class="mr-1"></iconify-icon>
-                            Low Stock
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
-                            <iconify-icon icon="lucide:x-circle" width="12" class="mr-1"></iconify-icon>
-                            Out of Stock
-                        </span>
-                    @endif
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Edit Product: {{ $product->name }}</h2>
+                    <p class="text-slate-500 text-sm">SKU: {{ $product->sku }}</p>
                 </div>
             </div>
 
@@ -602,39 +588,6 @@
                 </div>
             </div>
 
-            <div class="details-section">
-                <h3 class="details-section-title">Stock Information</h3>
-                <div class="grid-3">
-                    <div class="form-group">
-                        <label class="form-label" for="stock">Current Stock *</label>
-                        <input type="number" id="stock" name="stock" class="form-input" required min="0"
-                            placeholder="0"
-                            value="{{ old('stock', $product->stock) }}">
-                        <div class="helper-text">Available quantity</div>
-                        @error('stock')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="min_stock">Minimum Stock</label>
-                        <input type="number" id="min_stock" name="min_stock" class="form-input" min="0"
-                            placeholder="0" value="{{ old('min_stock', $product->min_stock ?? 10) }}">
-                        <div class="helper-text">Low stock threshold</div>
-                        @error('min_stock')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="max_stock">Maximum Stock</label>
-                        <input type="number" id="max_stock" name="max_stock" class="form-input" min="0"
-                            placeholder="0" value="{{ old('max_stock', $product->max_stock ?? 100) }}">
-                        <div class="helper-text">Stock capacity</div>
-                        @error('max_stock')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-            </div>
 
             <div class="form-group">
                 <label class="form-label" for="description">Product Description</label>
@@ -689,7 +642,6 @@
             <ul class="list-disc list-inside space-y-1 text-slate-500">
                 <li>Product information</li>
                 <li>Pricing history</li>
-                <li>Stock records</li>
                 <li>Sales data</li>
             </ul>
         </div>

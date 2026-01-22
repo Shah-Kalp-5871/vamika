@@ -10,7 +10,7 @@ class ShopOwnerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check() || Auth::user()->role !== 'shop_owner') {
+        if (!Auth::check() || Auth::user()->role !== 'shop-owner') {
             return redirect('/login')->with('error', 'Unauthorized access.');
         }
 

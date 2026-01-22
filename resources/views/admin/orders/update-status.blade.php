@@ -203,44 +203,53 @@
             <div class="order-info-card">
                 <div class="info-row">
                     <span class="info-label">Order Number:</span>
-                    <span class="info-value" id="currentOrderNumber">Loading...</span>
+                    <span class="info-value">Order #{{ $order->id }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Shop Name:</span>
-                    <span class="info-value" id="currentShopName">Loading...</span>
+                    <span class="info-value">{{ $order->shop->name ?? 'N/A' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Current Status:</span>
-                    <span class="info-value" id="currentStatus">Loading...</span>
+                    <span class="info-value uppercase font-bold">{{ $order->status }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Total Amount:</span>
-                    <span class="info-value" id="currentAmount">Loading...</span>
+                    <span class="info-value">₹{{ number_format($order->total_amount, 2) }}</span>
                 </div>
             </div>
 
             <!-- Status Update Form -->
-            <form id="statusForm" class="space-y-6" onsubmit="handleSubmit(event)">
+            <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST" class="space-y-6">
                 @csrf
-                <input type="hidden" id="orderId" value="{{ request()->id ?? '' }}">
+                @method('PUT')
 
                 <div class="form-group">
-                    <label class="form-label" for="statusSelect">New Status *</label>
-                    <select id="statusSelect" class="form-select" required>
-                        <option value="">Select new status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="processing">Processing</option>
-                        <option value="dispatched">Dispatched</option>
-                        <option value="delivered">Delivered</option>
-                        <option value="cancelled">Cancelled</option>
+                    <label class="form-label" for="statusSelect">Order Status *</label>
+                    <select id="statusSelect" name="status" class="form-select" required>
+                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="dispatched" {{ $order->status == 'dispatched' ? 'selected' : '' }}>Dispatched</option>
+                        <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="paymentStatusSelect">Payment Status *</label>
+                    <select id="paymentStatusSelect" name="payment_status" class="form-select" required>
+                        <option value="pending" {{ $order->payment_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="paid" {{ $order->payment_status == 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="failed" {{ $order->payment_status == 'failed' ? 'selected' : '' }}>Failed</option>
+                        <option value="cancelled" {{ $order->payment_status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="statusNotes">Update Notes (Optional)</label>
-                    <textarea id="statusNotes" class="form-input" rows="4"
-                        placeholder="Add any notes about this status update (e.g., reason for change, delivery instructions, etc.)"></textarea>
+                    <textarea id="statusNotes" name="notes" class="form-input" rows="4"
+                        placeholder="Add any notes about this status update (e.g., reason for change, delivery instructions, etc.)">{{ $order->notes }}</textarea>
                 </div>
 
                 <!-- Status Descriptions -->
@@ -255,7 +264,7 @@
                             <iconify-icon icon="lucide:check" width="14" class="text-blue-500 mt-0.5"></iconify-icon>
                             <span><strong>Confirmed:</strong> Order verified and confirmed</span>
                         </div>
-                        <div class="flex items-start gap-2">
+                         <div class="flex items-start gap-2">
                             <iconify-icon icon="lucide:settings" width="14"
                                 class="text-purple-500 mt-0.5"></iconify-icon>
                             <span><strong>Processing:</strong> Order is being prepared for dispatch</span>
@@ -277,7 +286,7 @@
                 </div>
 
                 <div class="flex justify-end gap-4 pt-6 border-t border-slate-200">
-                    <a href="{{ route('admin.orders.index') }}" class="btn-secondary no-underline">
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn-secondary no-underline">
                         Cancel
                     </a>
                     <button type="submit" class="btn-primary">
@@ -288,235 +297,6 @@
         </main>
 
     </div>
-
-    <script>
-        // Get order ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = parseInt(urlParams.get('id')) || parseInt(document.getElementById('orderId').value);
-
-        // Sample orders data
-        const sampleOrders = [
-            {
-                id: 1,
-                orderNumber: 'ORD00123',
-                date: '2024-01-15',
-                time: '10:30 AM',
-                shop: 'Mohan Kirana Store',
-                shopOwner: 'Mohan Singh',
-                area: 'Gandhi Nagar',
-                salesperson: 'Rajesh Kumar',
-                type: 'physical',
-                status: 'delivered',
-                paymentMethod: 'cash',
-                paymentStatus: 'paid',
-                items: [
-                    { name: 'Aashirvaad Atta', unit: '5 kg', quantity: 2, price: 420, total: 840 },
-                    { name: 'Fortune Oil', unit: '1 liter', quantity: 3, price: 210, total: 630 },
-                    { name: 'Maggi Noodles', unit: 'Pack of 4', quantity: 5, price: 70, total: 350 }
-                ],
-                subtotal: 1820,
-                delivery: 50,
-                discount: 150,
-                total: 1720,
-                notes: 'Delivery before 12 PM'
-            },
-            {
-                id: 2,
-                orderNumber: 'ORD00124',
-                date: '2024-01-14',
-                time: '02:15 PM',
-                shop: 'Gupta General Store',
-                shopOwner: 'Ramesh Gupta',
-                area: 'Gandhi Nagar',
-                salesperson: 'Rajesh Kumar',
-                type: 'physical',
-                status: 'processing',
-                paymentMethod: 'cash',
-                paymentStatus: 'pending',
-                items: [
-                    { name: 'Tata Salt', unit: '1 kg', quantity: 10, price: 28, total: 280 },
-                    { name: 'Parle-G Biscuits', unit: '300 gm', quantity: 8, price: 50, total: 400 },
-                    { name: 'Surf Excel', unit: '1 kg', quantity: 2, price: 180, total: 360 }
-                ],
-                subtotal: 1040,
-                delivery: 50,
-                discount: 0,
-                total: 1090,
-                notes: ''
-            },
-            {
-                id: 3,
-                orderNumber: 'ORD00125',
-                date: '2024-01-12',
-                time: '11:45 AM',
-                shop: 'Bansal Provision',
-                shopOwner: 'Sunil Bansal',
-                area: 'Shahdara',
-                salesperson: 'Suresh Patel',
-                type: 'online',
-                status: 'confirmed',
-                paymentMethod: 'cash',
-                paymentStatus: 'pending',
-                items: [
-                    { name: 'Colgate Toothpaste', unit: '200 gm', quantity: 6, price: 85, total: 510 },
-                    { name: 'Dairy Milk Chocolate', unit: '150 gm', quantity: 12, price: 100, total: 1200 },
-                    { name: 'Red Label Tea', unit: '500 gm', quantity: 4, price: 300, total: 1200 },
-                    { name: 'Pepsi', unit: '2.25 liter', quantity: 6, price: 90, total: 540 }
-                ],
-                subtotal: 3450,
-                delivery: 40,
-                discount: 200,
-                total: 3290,
-                notes: 'Need receipt with GST'
-            },
-            {
-                id: 4,
-                orderNumber: 'ORD00126',
-                date: '2024-01-10',
-                time: '03:30 PM',
-                shop: 'Sharma Super Mart',
-                shopOwner: 'Rajesh Sharma',
-                area: 'Preet Vihar',
-                salesperson: 'Vikram Singh',
-                type: 'physical',
-                status: 'pending',
-                paymentMethod: 'cash',
-                paymentStatus: 'pending',
-                items: [
-                    { name: 'Amul Butter', unit: '100 gm', quantity: 8, price: 60, total: 480 },
-                    { name: 'Nescafe Coffee', unit: '100 gm', quantity: 3, price: 220, total: 660 },
-                    { name: 'Lays Chips', unit: '50 gm', quantity: 20, price: 20, total: 400 }
-                ],
-                subtotal: 1540,
-                delivery: 30,
-                discount: 0,
-                total: 1570,
-                notes: ''
-            },
-            {
-                id: 5,
-                orderNumber: 'ORD00127',
-                date: '2024-01-09',
-                time: '09:15 AM',
-                shop: 'Verma Departmental Store',
-                shopOwner: 'Anil Verma',
-                area: 'Laxmi Nagar',
-                salesperson: 'Rajesh Kumar',
-                type: 'online',
-                status: 'dispatched',
-                paymentMethod: 'cash',
-                paymentStatus: 'pending',
-                items: [
-                    { name: 'Dettol Soap', unit: '125 gm', quantity: 15, price: 45, total: 675 },
-                    { name: 'Harpic Toilet Cleaner', unit: '500 ml', quantity: 5, price: 120, total: 600 },
-                    { name: 'Kellogg\'s Cornflakes', unit: '500 gm', quantity: 2, price: 180, total: 360 }
-                ],
-                subtotal: 1635,
-                delivery: 35,
-                discount: 100,
-                total: 1570,
-                notes: 'Deliver to back entrance'
-            },
-            {
-                id: 6,
-                orderNumber: 'ORD00128',
-                date: '2024-01-08',
-                time: '04:45 PM',
-                shop: 'City Grocery',
-                shopOwner: 'Vijay Mehta',
-                area: 'Shahdara',
-                salesperson: 'Suresh Patel',
-                type: 'physical',
-                status: 'cancelled',
-                paymentMethod: 'cash',
-                paymentStatus: 'cancelled',
-                items: [
-                    { name: 'Basmati Rice', unit: '5 kg', quantity: 3, price: 500, total: 1500 },
-                    { name: 'Sugar', unit: '5 kg', quantity: 2, price: 250, total: 500 }
-                ],
-                subtotal: 2000,
-                delivery: 40,
-                discount: 0,
-                total: 2040,
-                notes: 'Customer requested cancellation'
-            }
-        ];
-
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function () {
-            if (orderId) {
-                loadOrderInfo(orderId);
-            } else {
-                document.getElementById('currentOrderNumber').textContent = 'Order Not Found';
-            }
-        });
-
-        function loadOrderInfo(id) {
-            const order = sampleOrders.find(o => o.id === id);
-
-            if (!order) {
-                document.getElementById('currentOrderNumber').textContent = 'Order Not Found';
-                return;
-            }
-
-            // Update order info
-            document.getElementById('currentOrderNumber').textContent = order.orderNumber;
-            document.getElementById('currentShopName').textContent = order.shop;
-            document.getElementById('currentAmount').textContent = `₹${order.total}`;
-
-            // Set current status with proper formatting
-            const statusMap = {
-                pending: { text: 'Pending', icon: 'clock', color: 'text-amber-600' },
-                confirmed: { text: 'Confirmed', icon: 'check', color: 'text-blue-600' },
-                processing: { text: 'Processing', icon: 'settings', color: 'text-purple-600' },
-                dispatched: { text: 'Dispatched', icon: 'truck', color: 'text-indigo-600' },
-                delivered: { text: 'Delivered', icon: 'check-circle', color: 'text-emerald-600' },
-                cancelled: { text: 'Cancelled', icon: 'x-circle', color: 'text-rose-600' }
-            };
-
-            const status = statusMap[order.status] || statusMap.pending;
-            const statusElement = document.getElementById('currentStatus');
-            statusElement.innerHTML = `
-                <span class="${status.color} inline-flex items-center gap-1">
-                    <iconify-icon icon="lucide:${status.icon}" width="14"></iconify-icon>
-                    ${status.text}
-                </span>
-            `;
-
-            // Set current status in dropdown
-            document.getElementById('statusSelect').value = order.status;
-        }
-
-        function handleSubmit(event) {
-            event.preventDefault();
-
-            const orderId = document.getElementById('orderId').value;
-            const newStatus = document.getElementById('statusSelect').value;
-            const notes = document.getElementById('statusNotes').value;
-
-            if (!newStatus) {
-                alert('Please select a new status');
-                return;
-            }
-
-            // In real app, you would send this data to your backend
-            const updateData = {
-                orderId,
-                newStatus,
-                notes,
-                updatedAt: new Date().toISOString(),
-                updatedBy: 'Admin' // In real app, get from session
-            };
-
-            console.log('Updating order status:', updateData);
-
-            // Show success message
-            alert(`Order status updated to ${newStatus}`);
-
-            // Redirect back to order details page
-            window.location.href = `{{ route('admin.orders.show', '') }}/${orderId}`;
-        }
-    </script>
 
     @include('layouts.partials.admin.footer')
 </body>

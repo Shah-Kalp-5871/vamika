@@ -196,7 +196,6 @@
                 category: "staples",
                 unit: "5kg",
                 price: 250,
-                stock: 45,
                 mrp: 275,
                 image: "aata.jpg"
             },
@@ -409,9 +408,6 @@
                                 <h4 class="text-sm font-semibold text-slate-900 truncate">${product.name}</h4>
                                 <p class="text-xs text-slate-500">${product.brand} • ${product.unit}</p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                ${product.stock} in stock
-                            </span>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-sm font-semibold text-slate-900">₹${product.price}</span>
@@ -441,9 +437,6 @@
                                 <h4 class="text-sm font-semibold text-slate-900 truncate">${product.name}</h4>
                                 <p class="text-xs text-slate-500">${product.brand} • ${product.unit}</p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                ${product.stock} in stock
-                            </span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-lg font-semibold text-slate-900">₹${product.price}</span>

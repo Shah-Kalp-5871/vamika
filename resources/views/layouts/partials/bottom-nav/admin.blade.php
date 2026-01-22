@@ -1,10 +1,10 @@
 <div class="bottom-nav shopkeeper-nav">
-    <!--<a href="{{ route('admin.dashboard') }}" class="nav-item">-->
-    <!--    <span class="nav-icon">-->
-    <!--        <iconify-icon icon="mdi:view-dashboard-outline"></iconify-icon>-->
-    <!--    </span>-->
-    <!--    <span>Dashboard</span>-->
-    <!--</a>-->
+    <a href="{{ route('admin.dashboard') }}" class="nav-item">
+        <span class="nav-icon">
+            <iconify-icon icon="mdi:view-dashboard-outline"></iconify-icon>
+        </span>
+        <span>Dashboard</span>
+    </a>
 
     <a href="{{ route('admin.users.index') }}" class="nav-item">
         <span class="nav-icon">
@@ -35,10 +35,4 @@
         <span>Orders</span>
     </a>
    
-    <a href="{{ route('admin.settings.index') }}" class="nav-item">
-        <span class="nav-icon">
-            <iconify-icon icon="mdi:cog-outline"></iconify-icon>
-        </span>
-        <span>Settings</span>
-    </a>
 </div>

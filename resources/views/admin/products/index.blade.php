@@ -543,31 +543,22 @@ $pageConfig = [
                 <p class="text-xl font-bold text-slate-900" id="mobileTotalProducts">0</p>
             </div>
 
-            <!-- In Stock -->
+            <!-- Active Products -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
                     <iconify-icon icon="lucide:check-circle" width="18" class="text-emerald-600"></iconify-icon>
-                    <span class="text-xs text-slate-500">In Stock</span>
+                    <span class="text-xs text-slate-500">Active</span>
                 </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileInStock">0</p>
+                <p class="text-xl font-bold text-slate-900" id="mobileActive">0</p>
             </div>
 
-            <!-- Low Stock -->
+            <!-- Inactive Products -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:alert-circle" width="18" class="text-amber-500"></iconify-icon>
-                    <span class="text-xs text-slate-500">Low Stock</span>
+                    <iconify-icon icon="lucide:dash-circle" width="18" class="text-slate-400"></iconify-icon>
+                    <span class="text-xs text-slate-500">Inactive</span>
                 </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileLowStock">0</p>
-            </div>
-
-            <!-- Out of Stock -->
-            <div class="mobile-stat-card">
-                <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:x-circle" width="18" class="text-rose-600"></iconify-icon>
-                    <span class="text-xs text-slate-500">Out of Stock</span>
-                </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileOutOfStock">0</p>
+                <p class="text-xl font-bold text-slate-900" id="mobileInactive">0</p>
             </div>
         </div>
 
@@ -579,9 +570,9 @@ $pageConfig = [
                     <iconify-icon icon="lucide:download" width="12"></iconify-icon>
                     Export
                 </button>
-                <button onclick="bulkUpdateStock()" class="mobile-quick-action-btn">
-                    <iconify-icon icon="lucide:edit" width="12"></iconify-icon>
-                    Update Stock
+                <button onclick="bulkToggleStatus()" class="mobile-quick-action-btn">
+                    <iconify-icon icon="lucide:toggle-left" width="12"></iconify-icon>
+                    Toggle Status
                 </button>
                 <button onclick="bulkDeleteProducts()" class="mobile-quick-action-btn">
                     <iconify-icon icon="lucide:trash-2" width="12"></iconify-icon>
@@ -600,13 +591,13 @@ $pageConfig = [
                 <iconify-icon icon="lucide:grid" width="12"></iconify-icon>
                 All
             </button>
-            <button onclick="showInStock()" class="mobile-quick-action-btn">
-                <iconify-icon icon="lucide:check" width="12"></iconify-icon>
-                In Stock
+            <button onclick="showActiveOnly()" class="mobile-quick-action-btn">
+                <iconify-icon icon="lucide:eye" width="12"></iconify-icon>
+                Active
             </button>
-            <button onclick="showLowStock()" class="mobile-quick-action-btn">
-                <iconify-icon icon="lucide:alert-circle" width="12"></iconify-icon>
-                Low Stock
+            <button onclick="showInactiveOnly()" class="mobile-quick-action-btn">
+                <iconify-icon icon="lucide:eye-off" width="12"></iconify-icon>
+                Inactive
             </button>
             <button onclick="exportToExcel()" class="mobile-quick-action-btn">
                 <iconify-icon icon="lucide:download" width="12"></iconify-icon>
@@ -648,13 +639,12 @@ $pageConfig = [
                     </div>
                     
                     <div>
-                        <label class="block text-xs font-medium text-slate-700 mb-1">Stock Status</label>
+                        <label class="block text-xs font-medium text-slate-700 mb-1">Status</label>
                         <select class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            id="mobileStockFilter">
-                            <option value="all">All Stock</option>
-                            <option value="instock">In Stock</option>
-                            <option value="low">Low Stock</option>
-                            <option value="out">Out of Stock</option>
+                            id="mobileStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                         </select>
                     </div>
                 </div>
@@ -721,51 +711,32 @@ $pageConfig = [
         'https://images.unsplash.com/photo-1556905200-279565513a2d?w=100&h=100&fit=crop'
     ];
 
-    // Generate sample data for products
-    function generateProducts(count) {
-        const categories = ['Groceries', 'Food', 'Home Care', 'Personal Care', 'Beverages', 'Dairy'];
-        const units = ['kg', 'g', 'L', 'ml', 'piece', 'pack', 'dozen'];
-        const brands = ['Nestle', 'Unilever', 'ITC', 'HUL', 'Amul', 'Britannia', 'Patanjali', 'Dabur'];
+    // Load data from server
+    function loadProductsPage() {
+        allProducts = @json($products).map(product => {
+            return {
+                id: product.id,
+                sku: product.sku,
+                name: product.name,
+                category: product.category,
+                brand: '-', 
+                packSize: '-',
+                mrp: parseFloat(product.price),
+                price: parseFloat(product.price),
+                status: product.status === 'active' ? 'Active' : 'Inactive',
+                image: product.images && product.images.length > 0 ? '/storage/' + product.images[0].image_path : null,
+                lastUpdated: product.updated_at
+            };
+        });
         
-        const products = [];
-        for (let i = 1; i <= count; i++) {
-            const category = categories[Math.floor(Math.random() * categories.length)];
-            const stock = Math.floor(Math.random() * 100);
-            let stockStatus = 'instock';
-            if (stock === 0) stockStatus = 'out';
-            else if (stock <= 10) stockStatus = 'low';
-            
-            const basePrice = Math.floor(Math.random() * 500) + 50;
-            const mrp = basePrice + Math.floor(Math.random() * 100);
-            const discount = Math.floor(Math.random() * 30);
-            const sellingPrice = mrp - (mrp * discount / 100);
-            
-            // Randomly assign image or placeholder
-            const hasImage = Math.random() > 0.3;
-            const imageIndex = Math.floor(Math.random() * productImages.length);
-            
-            products.push({
-                id: i,
-                sku: 'SKU' + String(10000 + i).substring(1),
-                name: `${brands[Math.floor(Math.random() * brands.length)]} ${category} Product ${i}`,
-                category: category,
-                brand: brands[Math.floor(Math.random() * brands.length)],
-                unit: units[Math.floor(Math.random() * units.length)],
-                packSize: `${Math.floor(Math.random() * 10) + 1}${units[Math.floor(Math.random() * units.length)]}`,
-                mrp: mrp,
-                price: Math.round(sellingPrice),
-                stock: stock,
-                stockStatus: stockStatus,
-                minStock: 10,
-                maxStock: 100,
-                lastUpdated: `2024-01-${String(Math.floor(Math.random() * 15) + 1).padStart(2, '0')}`,
-                status: stockStatus === 'out' ? 'Inactive' : 'Active',
-                image: hasImage ? productImages[imageIndex] : null,
-                description: `Premium quality ${category.toLowerCase()} product from ${brands[Math.floor(Math.random() * brands.length)]}.`
-            });
-        }
-        return products;
+        initializeMobileTabulator();
+        updateMobileStats();
+        
+        document.getElementById('mobileLoadingState').style.display = 'none';
+        
+        // Initial render for mobile table if not using tabulator (though we are)
     }
+
 
     document.addEventListener('DOMContentLoaded', function() {
         loadProductsPage();
@@ -814,19 +785,7 @@ $pageConfig = [
         }
     }
 
-    function loadProductsPage() {
-        // Generate sample products (500+ for testing)
-        allProducts = generateProducts(500);
-        
-        // Initialize Tabulator with mobile-first configuration
-        initializeMobileTabulator();
-        updateMobileStats();
-        
-        // Hide loading state after a short delay
-        setTimeout(() => {
-            document.getElementById('mobileLoadingState').style.display = 'none';
-        }, 500);
-    }
+
 
     function initializeMobileTabulator() {
         const tableElement = document.getElementById('mobileProductsTable');
@@ -942,30 +901,6 @@ $pageConfig = [
                 }
             },
             {
-                title: "STOCK",
-                field: "stock",
-                width: 80,
-                sorter: "number",
-                resizable: false,
-                formatter: function(cell) {
-                    const row = cell.getRow().getData();
-                    const stockConfig = {
-                        instock: { class: 'stock-instock', dot: 'stock-dot-instock', text: 'In Stock' },
-                        low: { class: 'stock-low', dot: 'stock-dot-low', text: 'Low Stock' },
-                        out: { class: 'stock-out', dot: 'stock-dot-out', text: 'Out of Stock' }
-                    };
-                    
-                    const config = stockConfig[row.stockStatus] || stockConfig.instock;
-                    return `<div class="text-xs">
-                        <div class="flex items-center gap-1">
-                            <span class="stock-dot ${config.dot}"></span>
-                            <span class="font-medium">${cell.getValue()}</span>
-                        </div>
-                        <div class="text-slate-500 text-2xs">${config.text}</div>
-                    </div>`;
-                }
-            },
-            {
                 title: "STATUS",
                 field: "status",
                 width: 90,
@@ -1005,13 +940,13 @@ $pageConfig = [
                 formatter: function(cell) {
                     const row = cell.getRow().getData();
                     return `<div class="flex gap-1">
-                        <button onclick="viewProduct(${row.id})" class="mobile-action-btn" title="View">
-                            <iconify-icon icon="lucide:eye" width="12"></iconify-icon>
-                            View
-                        </button>
-                        <button onclick="editProduct(${row.id})" class="mobile-action-btn" title="Edit">
+                        <a href="${'{{ route('admin.products.edit', ':id') }}'.replace(':id', row.id)}" class="mobile-action-btn" title="Edit">
                             <iconify-icon icon="lucide:edit" width="12"></iconify-icon>
                             Edit
+                        </a>
+                        <button onclick="deleteProduct(${row.id})" class="mobile-action-btn text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200" title="Delete">
+                            <iconify-icon icon="lucide:trash-2" width="12"></iconify-icon>
+                            Delete
                         </button>
                     </div>`;
                 }
@@ -1081,20 +1016,18 @@ $pageConfig = [
 
     function updateMobileStats() {
         const totalProducts = allProducts.length;
-        const inStockProducts = allProducts.filter(p => p.stockStatus === 'instock').length;
-        const lowStockProducts = allProducts.filter(p => p.stockStatus === 'low').length;
-        const outOfStockProducts = allProducts.filter(p => p.stockStatus === 'out').length;
+        const activeProducts = allProducts.filter(p => p.status === 'Active').length;
+        const inactiveProducts = allProducts.filter(p => p.status === 'Inactive').length;
 
         // Update mobile stats
         document.getElementById('mobileTotalProducts').textContent = totalProducts.toLocaleString();
-        document.getElementById('mobileInStock').textContent = inStockProducts.toLocaleString();
-        document.getElementById('mobileLowStock').textContent = lowStockProducts.toLocaleString();
-        document.getElementById('mobileOutOfStock').textContent = outOfStockProducts.toLocaleString();
+        document.getElementById('mobileActive').textContent = activeProducts.toLocaleString();
+        document.getElementById('mobileInactive').textContent = inactiveProducts.toLocaleString();
     }
 
     function applyMobileFilters() {
         const category = document.getElementById('mobileCategoryFilter').value;
-        const stock = document.getElementById('mobileStockFilter').value;
+        const status = document.getElementById('mobileStatusFilter').value;
         
         let filters = [];
         
@@ -1102,8 +1035,9 @@ $pageConfig = [
             filters.push({field: "category", type: "=", value: category});
         }
         
-        if (stock !== 'all') {
-            filters.push({field: "stockStatus", type: "=", value: stock});
+        if (status !== 'all') {
+            const statusValue = status === 'active' ? 'Active' : 'Inactive';
+            filters.push({field: "status", type: "=", value: statusValue});
         }
         
         if (filters.length > 0) {
@@ -1119,7 +1053,7 @@ $pageConfig = [
     function clearMobileFilters() {
         document.getElementById('mobileProductSearch').value = '';
         document.getElementById('mobileCategoryFilter').value = 'all';
-        document.getElementById('mobileStockFilter').value = 'all';
+        document.getElementById('mobileStatusFilter').value = 'all';
         
         productsTable.clearFilter();
         productsTable.clearHeaderFilter();
@@ -1131,17 +1065,13 @@ $pageConfig = [
         filterSection.style.display = filterSection.style.display === 'none' ? 'block' : 'none';
     }
 
-    function showAllProducts() {
-        clearMobileFilters();
-    }
-
-    function showInStock() {
-        document.getElementById('mobileStockFilter').value = 'instock';
+    function showActiveOnly() {
+        document.getElementById('mobileStatusFilter').value = 'active';
         applyMobileFilters();
     }
 
-    function showLowStock() {
-        document.getElementById('mobileStockFilter').value = 'low';
+    function showInactiveOnly() {
+        document.getElementById('mobileStatusFilter').value = 'inactive';
         applyMobileFilters();
     }
 
@@ -1271,6 +1201,20 @@ $pageConfig = [
         showMobileNotification(`Stock updated for ${selectedProducts.length} product(s)`, 'success');
     }
 
+    function deleteProduct(productId) {
+        if (confirm('Are you sure you want to delete this product?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("admin.products.destroy", ":id") }}'.replace(':id', productId);
+            form.innerHTML = `
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
     function bulkDeleteProducts() {
         if (selectedProducts.length === 0) {
             showMobileNotification('Please select products first', 'warning');
@@ -1278,14 +1222,33 @@ $pageConfig = [
         }
         
         if (confirm(`Are you sure you want to delete ${selectedProducts.length} product(s)?`)) {
-            // Remove products
-            allProducts = allProducts.filter(product => !selectedProducts.includes(product.id));
-            
-            // Refresh table
-            productsTable.replaceData(allProducts);
-            updateMobileStats();
-            clearSelection();
-            showMobileNotification(`${selectedProducts.length} product(s) deleted`, 'success');
+            fetch('{{ route("admin.products.bulk-destroy") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ ids: selectedProducts })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove products from local state
+                    allProducts = allProducts.filter(product => !selectedProducts.includes(product.id));
+                    
+                    // Refresh table
+                    productsTable.replaceData(allProducts);
+                    updateMobileStats();
+                    clearSelection();
+                    showMobileNotification(data.message, 'success');
+                } else {
+                    showMobileNotification(data.message || 'Failed to delete products', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMobileNotification('An error occurred during bulk deletion', 'error');
+            });
         }
     }
 
@@ -1332,10 +1295,6 @@ $pageConfig = [
                     <button onclick="toggleFilters()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3">
                         <iconify-icon icon="lucide:filter" class="text-amber-600" width="20"></iconify-icon>
                         <span>Filter Products</span>
-                    </button>
-                    <button onclick="showLowStock()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center gap-3">
-                        <iconify-icon icon="lucide:alert-circle" class="text-orange-600" width="20"></iconify-icon>
-                        <span>View Low Stock</span>
                     </button>
                 </div>
             </div>

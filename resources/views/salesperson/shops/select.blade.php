@@ -429,43 +429,10 @@
 
 @section('scripts')
 <script>
-    // Generate larger dummy data
-    const generateDummyData = () => {
-        const areas = [];
-        const shops = [];
-
-        // Generate 100 areas
-        for (let i = 1; i <= 100; i++) {
-            areas.push({
-                id: i,
-                name: `Area ${i}`,
-                shops: Math.floor(Math.random() * 50) + 1,
-                pincode: `400${i.toString().padStart(3, '0')}`
-            });
-        }
-
-        // Generate 1000 shops
-        for (let i = 1; i <= 1000; i++) {
-            const areaId = Math.floor(Math.random() * 100) + 1;
-            const area = areas.find(a => a.id === areaId);
-
-            shops.push({
-                id: i,
-                name: `Shop ${i}`,
-                owner: `Owner ${i}`,
-                phone: `98765${i.toString().padStart(5, '0')}`,
-                area: area.name,
-                areaId: area.id,
-                address: `Address ${i}, ${area.name}`,
-                totalOrders: Math.floor(Math.random() * 100) + 1,
-                status: i % 10 === 0 ? 'inactive' : 'active'
-            });
-        }
-
-        return { areas, shops };
+    const dummyData = {
+        areas: @json($areas),
+        shops: @json($shops)
     };
-
-    const dummyData = generateDummyData();
 
     // State management
     let selectedArea = null;
@@ -530,8 +497,9 @@
 
         if (searchQuery) {
             filteredAreas = dummyData.areas.filter(area =>
-                area.name.toLowerCase().includes(searchQuery) ||
-                area.pincode.includes(searchQuery)
+                (area.name || '').toLowerCase().includes(searchQuery) ||
+                (area.pincode || '').toLowerCase().includes(searchQuery) ||
+                (area.code || '').toLowerCase().includes(searchQuery)
             );
         }
 
@@ -586,10 +554,10 @@
                         <div class="flex items-center gap-3 mt-1.5 sm:mt-2">
                             <span class="text-xs sm:text-sm text-slate-500 flex items-center gap-1.5">
                                 <iconify-icon icon="lucide:store" width="${version === 'Mobile' ? '12' : '14'}"></iconify-icon>
-                                ${area.shops} shops
+                                ${area.shops_count || 0} shops
                             </span>
                             <span class="text-xs sm:text-sm text-slate-400">•</span>
-                            <span class="text-xs sm:text-sm text-slate-500">${area.pincode}</span>
+                            <span class="text-xs sm:text-sm text-slate-500">${area.code || ''}</span>
                         </div>
                         ${version === 'Desktop' ? `<p class="text-xs lg:text-sm text-indigo-600 mt-2 lg:mt-3 font-medium">Click to view shops</p>` : ''}
                     </div>
@@ -707,16 +675,17 @@
         if (!shopList) return;
 
         // Filter shops by area
-        const areaName = dummyData.areas.find(a => a.id === areaId).name;
-        let filteredShops = dummyData.shops.filter(shop => shop.areaId === areaId);
+        const area = dummyData.areas.find(a => a.id === areaId);
+        const areaName = area ? area.name : '';
+        let filteredShops = dummyData.shops.filter(shop => shop.area_id === areaId);
 
         // Apply search filter
         const searchQuery = state[version].shops.searchQuery.toLowerCase();
         if (searchQuery) {
             filteredShops = filteredShops.filter(shop =>
-                shop.name.toLowerCase().includes(searchQuery) ||
-                shop.owner.toLowerCase().includes(searchQuery) ||
-                shop.phone.includes(searchQuery)
+                (shop.name || '').toLowerCase().includes(searchQuery) ||
+                (shop.owner || '').toLowerCase().includes(searchQuery) ||
+                (shop.phone || '').includes(searchQuery)
             );
         }
 
@@ -784,8 +753,7 @@
                                 <span class="truncate">${shop.phone}</span>
                             </div>
                             <div class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-slate-600">
-                                <iconify-icon icon="lucide:package" width="${version === 'Mobile' ? '12' : '14'}" class="text-slate-400 flex-shrink-0"></iconify-icon>
-                                ${shop.totalOrders} orders
+                                ${shop.orders_count || 0} orders
                             </div>
                         </div>
                     </div>
@@ -900,16 +868,8 @@
 
     function proceedToProducts() {
         if (selectedArea && selectedShop) {
-            // Save selection to localStorage or backend
-            const selection = {
-                area: selectedArea,
-                shop: selectedShop,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('orderSelection', JSON.stringify(selection));
-
-            // Navigate to create order page
-            window.location.href = "{{ route('salesperson.orders.create') }}";
+            // Navigate to create order page with shop_id
+            window.location.href = `{{ route('salesperson.orders.create') }}?shop_id=${selectedShop.id}`;
         }
     }
 

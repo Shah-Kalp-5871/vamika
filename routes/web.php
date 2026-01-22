@@ -89,18 +89,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Users
     Route::get('/users', [AdminUser::class, 'index'])->name('users.index');
     Route::get('/users/create', [AdminUser::class, 'create'])->name('users.create');
+    Route::post('/users', [AdminUser::class, 'store'])->name('users.store');
     Route::get('/users/{id}/edit', [AdminUser::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [AdminUser::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [AdminUser::class, 'destroy'])->name('users.destroy');
     
     // Salespersons
     Route::get('/salespersons', [AdminUser::class, 'salespersons'])->name('salespersons.index');
     Route::get('/salespersons/{id}/details', [AdminUser::class, 'salespersonDetails'])->name('salespersons.details');
     Route::get('/salespersons/assign', [AdminUser::class, 'assignSalespersonForm'])->name('salespersons.assign.form');
+    Route::post('/salespersons/assign', [AdminUser::class, 'storeAssignment'])->name('salespersons.assign.store');
+    Route::get('/salespersons/shops-by-area/{area_id}', [AdminUser::class, 'getShopsByArea'])->name('salespersons.shops-by-area');
     Route::get('/salespersons/top', [AdminUser::class, 'topSalespersons'])->name('salespersons.top');
     
     // Areas
     Route::get('/areas', [AdminArea::class, 'index'])->name('areas.index');
     Route::get('/areas/create', [AdminArea::class, 'create'])->name('areas.create');
+    Route::post('/areas', [AdminArea::class, 'store'])->name('areas.store');
     Route::get('/areas/{id}/edit', [AdminArea::class, 'edit'])->name('areas.edit');
+    Route::put('/areas/{id}', [AdminArea::class, 'update'])->name('areas.update');
+    Route::delete('/areas/{id}', [AdminArea::class, 'destroy'])->name('areas.destroy');
     Route::get('/areas/{id}/performance', [AdminArea::class, 'performance'])->name('areas.performance');
     Route::get('/areas/assign', [AdminArea::class, 'assignForm'])->name('areas.assign.form');
     Route::get('/assignments', [AdminArea::class, 'viewAssignments'])->name('assignments.view');
@@ -108,20 +116,27 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Products
     Route::get('/products', [AdminProduct::class, 'index'])->name('products.index');
     Route::get('/products/create', [AdminProduct::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminProduct::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [AdminProduct::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [AdminProduct::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [AdminProduct::class, 'destroy'])->name('products.destroy');
     Route::get('/products/stock', [AdminProduct::class, 'stock'])->name('products.stock');
+    Route::post('/products/bulk-destroy', [AdminProduct::class, 'bulkDestroy'])->name('products.bulk-destroy');
     Route::get('/products/top', [AdminProduct::class, 'top'])->name('products.top');
-    
     // Orders
+    Route::get('/orders/consolidation', [AdminOrder::class, 'consolidation'])->name('orders.consolidation');
     Route::get('/orders', [AdminOrder::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [AdminOrder::class, 'show'])->name('orders.show');
     Route::get('/orders/{id}/details', [AdminOrder::class, 'details'])->name('orders.details');
-    Route::get('/orders/consolidation', [AdminOrder::class, 'consolidation'])->name('orders.consolidation');
     Route::get('/orders/{id}/update-status', [AdminOrder::class, 'updateStatusForm'])->name('orders.update-status.form');
     
     // Offers
     Route::get('/offers', [AdminOffer::class, 'index'])->name('offers.index');
     Route::get('/offers/create', [AdminOffer::class, 'create'])->name('offers.create');
+    Route::post('/offers', [AdminOffer::class, 'store'])->name('offers.store');
+    Route::get('/offers/{id}/edit', [AdminOffer::class, 'edit'])->name('offers.edit');
+    Route::put('/offers/{id}', [AdminOffer::class, 'update'])->name('offers.update');
+    Route::delete('/offers/{id}', [AdminOffer::class, 'destroy'])->name('offers.destroy');
     Route::get('/offers/{id}', [AdminOffer::class, 'show'])->name('offers.show');
     
     // Shops
@@ -156,11 +171,14 @@ Route::prefix('salesperson')->name('salesperson.')->middleware(['auth', 'salespe
     
     // Orders
     Route::get('/orders/create', [SalespersonOrder::class, 'create'])->name('orders.create');
+    Route::post('/orders', [SalespersonOrder::class, 'store'])->name('orders.store');
     Route::get('/orders/{id}/review', [SalespersonOrder::class, 'review'])->name('orders.review');
     Route::get('/orders/{id}/invoice', [SalespersonOrder::class, 'invoice'])->name('orders.invoice');
     
     // Visits
     Route::get('/visits', [SalespersonVisit::class, 'index'])->name('visits.index');
+    Route::get('/visits/create', [SalespersonVisit::class, 'create'])->name('visits.create');
+    Route::post('/visits', [SalespersonVisit::class, 'store'])->name('visits.store');
     
     // Sales
     Route::get('/sales', [SalespersonDashboard::class, 'sales'])->name('sales.index');
@@ -192,6 +210,7 @@ Route::prefix('shop-owner')->name('shop-owner.')->middleware(['auth', 'shop-owne
     
     // Checkout
     Route::get('/checkout', [ShopOwnerCheckout::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [ShopOwnerCheckout::class, 'store'])->name('checkout.store');
     
     // Invoice
     Route::get('/invoices', [ShopOwnerOrder::class, 'invoices'])->name('invoices.index');
@@ -200,6 +219,7 @@ Route::prefix('shop-owner')->name('shop-owner.')->middleware(['auth', 'shop-owne
     // Profile
     Route::get('/profile', [ShopOwnerProfile::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ShopOwnerProfile::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ShopOwnerProfile::class, 'update'])->name('profile.update');
     
     // Wallet
     Route::get('/wallet', [ShopOwnerWallet::class, 'index'])->name('wallet.index');

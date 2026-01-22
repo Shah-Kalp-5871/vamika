@@ -216,10 +216,10 @@
             <!-- Title + Subtitle -->
             <div class="flex-1 min-w-0">
                 <h1 class="text-lg font-semibold text-slate-900 tracking-tight">
-                    Add New Area
+                    {{ isset($area) ? 'Edit Area' : 'Add New Area' }}
                 </h1>
                 <p class="text-sm text-slate-500">
-                    Configure delivery area details
+                    {{ isset($area) ? 'Update delivery area details' : 'Configure delivery area details' }}
                 </p>
             </div>
 
@@ -232,39 +232,61 @@
 
     <main class="p-6">
         <div class="form-container">
-            <form id="areaForm" class="space-y-6" onsubmit="handleSubmit(event)">
+            <form action="{{ isset($area) ? route('admin.areas.update', $area->id) : route('admin.areas.store') }}" method="POST" class="space-y-6">
+                @csrf
+                @if(isset($area))
+                    @method('PUT')
+                @endif
+                
+                @if ($errors->any())
+                    <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 
                 <div class="form-group">
                     <label class="form-label" for="areaName">Area Name *</label>
-                    <input type="text" id="areaName" class="form-input" required 
+                    <input type="text" name="name" id="areaName" class="form-input" required 
+                           value="{{ old('name', $area->name ?? '') }}"
                            placeholder="Enter area name (e.g., Downtown District)">
+                    @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="form-group">
-                        <label class="form-label" for="areaPincode">Pincode *</label>
-                        <input type="text" id="areaPincode" class="form-input" required 
-                               placeholder="Enter pincode (e.g., 400001)">
+                        <label class="form-label" for="areaCode">Area Code *</label>
+                        <input type="text" name="code" id="areaCode" class="form-input" required 
+                               value="{{ old('code', $area->code ?? '') }}"
+                               placeholder="Enter unique code (e.g., AREA-001)">
+                         @error('code') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="areaDeliveryCharge">Delivery Charge (₹) *</label>
-                        <input type="number" id="areaDeliveryCharge" class="form-input" required 
-                               step="0.01" placeholder="0.00">
+                        <label class="form-label" for="areaStatus">Status *</label>
+                        <select name="status" id="areaStatus" class="form-input">
+                            <option value="active" {{ (old('status', $area->status ?? '') == 'active') ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ (old('status', $area->status ?? '') == 'inactive') ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                        @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 
+                 <!-- Pincodes (Handling Array as Comma Separated for Simplicity) -->
                 <div class="form-group">
-                    <label class="form-label" for="areaStatus">Status</label>
-                    <select id="areaStatus" class="form-input">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="areaDescription">Description (Optional)</label>
-                    <textarea id="areaDescription" class="form-input" rows="4" 
-                              placeholder="Enter area description (e.g., Covers major shopping malls and residential complexes)"></textarea>
+                    <label class="form-label" for="pincodes">Pincodes (Comma Separated) *</label>
+                     @php
+                        $pincodesString = '';
+                        if(isset($area) && is_array($area->pincodes)) {
+                             $pincodesString = implode(', ', $area->pincodes);
+                        }
+                     @endphp
+                    <input type="text" name="pincodes_string" id="pincodes" class="form-input" 
+                           value="{{ old('pincodes_string', $pincodesString) }}"
+                           placeholder="e.g., 400001, 400002, 400003">
+                    <p class="text-xs text-slate-500 mt-1">Enter valid 6-digit pincodes separated by commas.</p>
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4 mt-6">
@@ -272,7 +294,7 @@
                         Cancel
                     </button>
                     <button type="submit" class="btn-primary">
-                        Save Area
+                        {{ isset($area) ? 'Update Area' : 'Save Area' }}
                     </button>
                 </div>
             </form>

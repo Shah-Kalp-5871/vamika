@@ -20,16 +20,16 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 mb-1">Not Visited</p>
-                        <h3 class="stat-number text-gray-900">108</h3>
+                        <h3 class="stat-number text-gray-900">{{ $overallStats['notVisited'] }}</h3>
                         <div class="progress-bar mt-2">
-                            <div class="progress-fill bg-red-500" style="width: 69%"></div>
+                            <div class="progress-fill bg-red-500" style="width: {{ 100 - $overallStats['visitedPercent'] }}%"></div>
                         </div>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
                         <iconify-icon icon="ph:x-circle" width="20" class="text-red-600"></iconify-icon>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Out of 156 total Shops</p>
+                <p class="text-xs text-gray-500 mt-2">Out of {{ $overallStats['totalShops'] }} total Shops</p>
             </div>
 
             <!-- Visited -->
@@ -37,16 +37,16 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 mb-1">Visited</p>
-                        <h3 class="stat-number text-gray-900">48</h3>
+                        <h3 class="stat-number text-gray-900">{{ $overallStats['visitedToday'] }}</h3>
                         <div class="progress-bar mt-2">
-                            <div class="progress-fill bg-green-500" style="width: 31%"></div>
+                            <div class="progress-fill bg-green-500" style="width: {{ $overallStats['visitedPercent'] }}%"></div>
                         </div>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                         <iconify-icon icon="ph:check-circle" width="20" class="text-green-600"></iconify-icon>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">31% of all Shops</p>
+                <p class="text-xs text-gray-500 mt-2">{{ $overallStats['visitedPercent'] }}% of all Shops</p>
             </div>
 
             <!-- With Order -->
@@ -54,16 +54,16 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 mb-1">With Order</p>
-                        <h3 class="stat-number text-gray-900">32</h3>
+                        <h3 class="stat-number text-gray-900">{{ $overallStats['withOrder'] }}</h3>
                         <div class="progress-bar mt-2">
-                            <div class="progress-fill bg-blue-500" style="width: 67%"></div>
+                            <div class="progress-fill bg-blue-500" style="width: {{ $overallStats['withOrderPercent'] }}%"></div>
                         </div>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                         <iconify-icon icon="ph:shopping-cart" width="20" class="text-blue-600"></iconify-icon>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">67% of visited</p>
+                <p class="text-xs text-gray-500 mt-2">{{ $overallStats['withOrderPercent'] }}% of visited</p>
             </div>
 
             <!-- No Order -->
@@ -71,16 +71,16 @@ $pageConfig = [
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-500 mb-1">No Order</p>
-                        <h3 class="stat-number text-gray-900">16</h3>
+                        <h3 class="stat-number text-gray-900">{{ $overallStats['noOrder'] }}</h3>
                         <div class="progress-bar mt-2">
-                            <div class="progress-fill bg-yellow-500" style="width: 33%"></div>
+                            <div class="progress-fill bg-yellow-500" style="width: {{ $overallStats['noOrderPercent'] }}%"></div>
                         </div>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
                         <iconify-icon icon="ph:warning-circle" width="20" class="text-yellow-600"></iconify-icon>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">33% of visited</p>
+                <p class="text-xs text-gray-500 mt-2">{{ $overallStats['noOrderPercent'] }}% of visited</p>
             </div>
         </div>
     </div>
@@ -221,142 +221,11 @@ $pageConfig = [
     // Get the base URL from Laravel
     const salespersonDetailsUrl = '{{ route("admin.salespersons.details", ":id") }}';
 
-    // Enhanced Dummy Data
-    const dummyData = {
-        overallStats: {
-            totalShopss: 156,
-            visitedToday: 48,
-            notVisited: 108,
-            withOrder: 32,
-            noOrder: 16
-        },
-        salespersons: [
-            {
-                id: 1,
-                name: "Rajesh Kumar",
-                phone: "+91 98765 43210",
-                email: "rajesh@vamika.com",
-                area: "Gandhi Nagar",
-                status: "active",
-                assignedOutlets: 25,
-                stats: {
-                    visited: 8,
-                    notVisited: 17,
-                    withOrder: 6,
-                    noOrder: 2
-                },
-                totalOrders: 45,
-                lastVisit: "Today, 10:30 AM",
-                visitsToday: [
-                    { outlet: "SuperMart Central", time: "10:30 AM", orderAmount: 2450 },
-                    { outlet: "Fresh Grocers", time: "11:45 AM", orderAmount: 0 },
-                    { outlet: "Daily Needs", time: "12:30 PM", orderAmount: 1890 }
-                ]
-            },
-            {
-                id: 2,
-                name: "Priya Sharma",
-                phone: "+91 87654 32109",
-                email: "priya@vamika.com",
-                area: "Market Lane",
-                status: "active",
-                assignedOutlets: 20,
-                stats: {
-                    visited: 6,
-                    notVisited: 14,
-                    withOrder: 4,
-                    noOrder: 2
-                },
-                totalOrders: 38,
-                lastVisit: "Today, 11:15 AM",
-                visitsToday: [
-                    { outlet: "City Bazaar", time: "11:15 AM", orderAmount: 0 },
-                    { outlet: "Quick Mart", time: "01:00 PM", orderAmount: 1560 }
-                ]
-            },
-            {
-                id: 3,
-                name: "Amit Patel",
-                phone: "+91 76543 21098",
-                email: "amit@vamika.com",
-                area: "Residential Area",
-                status: "active",
-                assignedOutlets: 22,
-                stats: {
-                    visited: 7,
-                    notVisited: 15,
-                    withOrder: 5,
-                    noOrder: 2
-                },
-                totalOrders: 42,
-                lastVisit: "Today, 09:45 AM",
-                visitsToday: [
-                    { outlet: "Fresh Grocers", time: "09:45 AM", orderAmount: 1890 },
-                    { outlet: "SuperMart", time: "11:00 AM", orderAmount: 2340 }
-                ]
-            },
-            {
-                id: 4,
-                name: "Sneha Reddy",
-                phone: "+91 65432 10987",
-                email: "sneha@vamika.com",
-                area: "Highway Road",
-                status: "inactive",
-                assignedOutlets: 18,
-                stats: {
-                    visited: 0,
-                    notVisited: 18,
-                    withOrder: 0,
-                    noOrder: 0
-                },
-                totalOrders: 35,
-                lastVisit: "Yesterday, 03:45 PM",
-                visitsToday: []
-            },
-            {
-                id: 5,
-                name: "Vikram Singh",
-                phone: "+91 54321 09876",
-                email: "vikram@vamika.com",
-                area: "School Road",
-                status: "active",
-                assignedOutlets: 15,
-                stats: {
-                    visited: 5,
-                    notVisited: 10,
-                    withOrder: 3,
-                    noOrder: 2
-                },
-                totalOrders: 28,
-                lastVisit: "Today, 01:00 PM",
-                visitsToday: [
-                    { outlet: "Family Store", time: "01:00 PM", orderAmount: 0 },
-                    { outlet: "Kids Corner", time: "02:30 PM", orderAmount: 890 }
-                ]
-            },
-            {
-                id: 6,
-                name: "Anjali Mehta",
-                phone: "+91 43210 98765",
-                email: "anjali@vamika.com",
-                area: "Central Mall",
-                status: "active",
-                assignedOutlets: 30,
-                stats: {
-                    visited: 12,
-                    notVisited: 18,
-                    withOrder: 9,
-                    noOrder: 3
-                },
-                totalOrders: 52,
-                lastVisit: "Today, 02:45 PM",
-                visitsToday: [
-                    { outlet: "Mall Store", time: "09:30 AM", orderAmount: 3450 },
-                    { outlet: "Food Court", time: "11:00 AM", orderAmount: 1250 }
-                ]
-            }
-        ]
+    // Dynamic Data from Controller
+    const dynamicData = {
+        salespersons: @json($salespersonsData)
     };
+
 
     // State Management
     const state = {
@@ -379,7 +248,6 @@ $pageConfig = [
 
     function initializeApp() {
         renderSalespersons();
-        updateOverallStats();
     }
 
     function setupEventListeners() {
@@ -390,20 +258,9 @@ $pageConfig = [
         });
     }
 
-    function updateOverallStats() {
-        // Update the overall stats cards with live data
-        const overallStats = dummyData.overallStats;
-
-        // Calculate percentages for progress bars
-        const visitedPercent = (overallStats.visitedToday / overallStats.totalOutlets * 100).toFixed(1);
-        const withOrderPercent = (overallStats.withOrder / overallStats.visitedToday * 100).toFixed(1);
-        const noOrderPercent = (overallStats.noOrder / overallStats.visitedToday * 100).toFixed(1);
-
-        // In a real app, you would update the DOM elements here
-    }
 
     function renderSalespersons() {
-        let filteredSalespersons = dummyData.salespersons.filter(sp => {
+        let filteredSalespersons = dynamicData.salespersons.filter(sp => {
             if (state.searchQuery && !(
                 sp.name.toLowerCase().includes(state.searchQuery) ||
                 sp.area.toLowerCase().includes(state.searchQuery) ||
@@ -539,7 +396,7 @@ $pageConfig = [
 
     // Action Functions
     function callSalesperson(spId) {
-        const sp = dummyData.salespersons.find(s => s.id === spId);
+        const sp = dynamicData.salespersons.find(s => s.id === spId);
         if (!sp) return;
 
         // Remove spaces for tel:
@@ -548,7 +405,7 @@ $pageConfig = [
     }
 
     function messageSalesperson(spId) {
-        const sp = dummyData.salespersons.find(s => s.id === spId);
+        const sp = dynamicData.salespersons.find(s => s.id === spId);
         if (!sp) return;
 
         // WhatsApp requires country code without +
