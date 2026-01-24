@@ -43,52 +43,52 @@ class DatabaseSeeder extends Seeder
         // 2. Create Areas
         $areas = Area::factory()->count(5)->create();
 
-        // 3. Create Salespersons
-        $salespersons = User::factory()->salesperson()->count(5)->create();
+        // // 3. Create Salespersons
+        // $salespersons = User::factory()->salesperson()->count(5)->create();
 
-        // 4. Create Products with Images
-        $products = Product::factory()->count(50)->create()->each(function ($product) {
-            ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
-            // Set first one as primary
-            $product->images()->first()->update(['is_primary' => true]);
-        });
+        // // 4. Create Products with Images
+        // $products = Product::factory()->count(50)->create()->each(function ($product) {
+        //     ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
+        //     // Set first one as primary
+        //     $product->images()->first()->update(['is_primary' => true]);
+        // });
 
-        // 5. Create Offers
-        Offer::factory()->count(5)->create();
+        // // 5. Create Offers
+        // Offer::factory()->count(5)->create();
 
-        // 6. Create Shops, Wallets, and Orders
-        foreach ($areas as $area) {
-            // Create Shops for this area
-            $shops = Shop::factory()->count(4)->create([
-                'area_id' => $area->id,
-            ]);
+        // // 6. Create Shops, Wallets, and Orders
+        // foreach ($areas as $area) {
+        //     // Create Shops for this area
+        //     $shops = Shop::factory()->count(4)->create([
+        //         'area_id' => $area->id,
+        //     ]);
 
-            foreach ($shops as $shop) {
-                // Create Wallet for shop
-                Wallet::factory()->create(['shop_id' => $shop->id]);
+        //     foreach ($shops as $shop) {
+        //         // Create Wallet for shop
+        //         Wallet::factory()->create(['shop_id' => $shop->id]);
 
-                // Assign random visits by salespersons
-                Visit::factory()->count(3)->create([
-                    'shop_id' => $shop->id,
-                    'salesperson_id' => $salespersons->random()->id,
-                ]);
+        //         // Assign random visits by salespersons
+        //         Visit::factory()->count(3)->create([
+        //             'shop_id' => $shop->id,
+        //             'salesperson_id' => $salespersons->random()->id,
+        //         ]);
 
-                // Create Orders
-                Order::factory()->count(2)->create([
-                    'shop_id' => $shop->id,
-                    'salesperson_id' => $salespersons->random()->id,
-                ])->each(function ($order) use ($products) {
-                    // Create Order Items
-                    $orderItems = OrderItem::factory()->count(3)->create([
-                        'order_id' => $order->id,
-                        'product_id' => $products->random()->id,
-                    ]);
+        //         // Create Orders
+        //         Order::factory()->count(2)->create([
+        //             'shop_id' => $shop->id,
+        //             'salesperson_id' => $salespersons->random()->id,
+        //         ])->each(function ($order) use ($products) {
+        //             // Create Order Items
+        //             $orderItems = OrderItem::factory()->count(3)->create([
+        //                 'order_id' => $order->id,
+        //                 'product_id' => $products->random()->id,
+        //             ]);
                     
-                    // Update Order Total
-                    $order->update(['total_amount' => $orderItems->sum('subtotal')]);
-                });
-            }
-        }
+        //             // Update Order Total
+        //             $order->update(['total_amount' => $orderItems->sum('subtotal')]);
+        //         });
+        //     }
+        // }
 
         $this->command->info('Database seeded successfully!');
         $this->command->info('Admin: admin@vamika.com / demo123');
