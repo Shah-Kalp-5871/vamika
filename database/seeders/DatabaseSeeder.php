@@ -69,9 +69,10 @@ class DatabaseSeeder extends Seeder
             'sku' => 'MED001',
             'description' => 'Effective pain reliever and fever reducer.',
             'price' => 20.00,
-            'stock_quantity' => 100,
             'category' => 'Medicine',
             'status' => 'active',
+            'brand' => 'Glaxo',
+            'mrp' => 25.00,
         ]);
 
         $product2 = Product::create([
@@ -79,9 +80,10 @@ class DatabaseSeeder extends Seeder
             'sku' => 'SUP001',
             'description' => 'Immunity booster supplements.',
             'price' => 150.00,
-            'stock_quantity' => 50,
             'category' => 'Supplements',
             'status' => 'active',
+            'brand' => 'HealthKart',
+            'mrp' => 200.00,
         ]);
 
         // 3.1 Product Images
