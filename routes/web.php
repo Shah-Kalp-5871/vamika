@@ -56,7 +56,10 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 |--------------------------------------------------------------------------
 */
 // Show login form (GET)
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+// Homepage → redirect to login
+Route::get('/', function () {
+    return redirect()->route('login');
+})->name('home');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
 // Handle login submission (POST)
