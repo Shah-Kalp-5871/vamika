@@ -4,7 +4,6 @@
 @php
 $pageConfig = [
     'title' => 'Add New User',
-    'subtitle' => 'Create shop owner or salesperson',
     'showBack' => true,
     'backUrl' => route('admin.users.index'),
     'role' => 'Admin Access',
@@ -370,6 +369,7 @@ $pageConfig = [
                         @error('area_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
+                        <a href="{{ route('admin.areas.index') }}" class=" text-blue-500 hover:text-blue-600 padding-16px">Add New Area</a>
                     </div>
 
                     <div class="form-group">
@@ -463,20 +463,7 @@ $pageConfig = [
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Assigned Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area_id" required>
-                            <option value="">Select area</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
-                                    {{ $area->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('area_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
+
 
                     <div class="form-group">
                         <label class="form-label">Address</label>

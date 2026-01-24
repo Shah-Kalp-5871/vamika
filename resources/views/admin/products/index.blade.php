@@ -629,12 +629,9 @@ $pageConfig = [
                         <select class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             id="mobileCategoryFilter">
                             <option value="all">All Categories</option>
-                            <option value="Groceries">Groceries</option>
-                            <option value="Food">Food</option>
-                            <option value="Home Care">Home Care</option>
-                            <option value="Personal Care">Personal Care</option>
-                            <option value="Beverages">Beverages</option>
-                            <option value="Dairy">Dairy</option>
+                            @foreach($categories as $key => $label)
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endforeach
                         </select>
                     </div>
                     
@@ -719,9 +716,9 @@ $pageConfig = [
                 sku: product.sku,
                 name: product.name,
                 category: product.category,
-                brand: '-', 
-                packSize: '-',
-                mrp: parseFloat(product.price),
+                brand: product.brand || '-', 
+                packSize: product.unit || '-',
+                mrp: parseFloat(product.mrp || product.price),
                 price: parseFloat(product.price),
                 status: product.status === 'active' ? 'Active' : 'Inactive',
                 image: product.images && product.images.length > 0 ? '/storage/' + product.images[0].image_path : null,
@@ -817,18 +814,15 @@ $pageConfig = [
                     
                     if (imageUrl) {
                         return `<div class="product-image-cell">
-                            <img src="${imageUrl}" alt="${row.name}" class="product-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"product-image-placeholder\"></div>`;
+                            <img src="${imageUrl}" alt="${row.name}" class="product-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'product-image-placeholder\'>${initials}</div>'">
+                        </div>`;
                     } else {
                         return `<div class="product-image-cell">
                             <div class="product-image-placeholder">${initials}</div>
                         </div>`;
                     }
                 },
-                cellClick: function(e, cell) {
-                    // Open view mode when clicking on image
-                    const rowData = cell.getRow().getData();
-                    viewProduct(rowData.id);
-                }
+
             },
             {
                 title: "SKU",

@@ -129,6 +129,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/orders/{id}', [AdminOrder::class, 'show'])->name('orders.show');
     Route::get('/orders/{id}/details', [AdminOrder::class, 'details'])->name('orders.details');
     Route::get('/orders/{id}/update-status', [AdminOrder::class, 'updateStatusForm'])->name('orders.update-status.form');
+    Route::post('/orders/{id}/update-status', [AdminOrder::class, 'updateStatus'])->name('orders.update-status');
+    Route::delete('/orders/{id}', [AdminOrder::class, 'destroy'])->name('orders.destroy');
     
     // Offers
     Route::get('/offers', [AdminOffer::class, 'index'])->name('offers.index');
@@ -177,7 +179,7 @@ Route::prefix('salesperson')->name('salesperson.')->middleware(['auth', 'salespe
     
     // Visits
     Route::get('/visits', [SalespersonVisit::class, 'index'])->name('visits.index');
-    Route::get('/visits/create', [SalespersonVisit::class, 'create'])->name('visits.create');
+    Route::post('/visits/{id}/no-order', [SalespersonVisit::class, 'markAsNoOrder'])->name('visits.no-order');
     Route::post('/visits', [SalespersonVisit::class, 'store'])->name('visits.store');
     
     // Sales

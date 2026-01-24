@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Shop;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Visit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -53,7 +56,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'user_type' => 'required|in:shop-owner,salesperson',
-            'area_id' => 'required|exists:areas,id',
+            'area_id' => 'required_if:user_type,shop-owner|exists:areas,id',
         ]);
         
         if ($request->user_type === 'shop-owner') {
@@ -63,7 +66,9 @@ class UserController extends Controller
             ]);
         }
         
-        $area = Area::findOrFail($request->area_id);
+        
+        $area = $request->area_id ? Area::find($request->area_id) : null;
+
 
         try {
             DB::beginTransaction();
@@ -75,7 +80,8 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => $request->user_type === 'shop-owner' ? 'shop-owner' : 'salesperson',
                 'status' => 'active',
-                'area_id' => $request->user_type === 'salesperson' ? $area->id : null, // Salesperson directly linked
+                'area_id' => ($request->user_type === 'salesperson' && $area) ? $area->id : null, // Salesperson might not have area initially
+
                 'employee_id' => $request->user_type === 'salesperson' ? $request->employee_id : null,
             ]);
 
@@ -87,7 +93,8 @@ class UserController extends Controller
                 // Create Shop
                 Shop::create([
                     'user_id' => $user->id,
-                    'area_id' => $area->id,
+                    'area_id' => $area->id ?? null,
+
                     'name' => $request->shop_name,
                     'address' => $request->address,
                     'phone' => $request->phone,
@@ -220,20 +227,109 @@ class UserController extends Controller
     
     public function salespersonDetails($id)
     {
-        return view('admin.salespersons.details');
+        $salesperson = User::with(['area', 'managedShops', 'visits', 'salespersonOrders'])->findOrFail($id);
+        
+        $today = Carbon::today();
+        $tomorrow = Carbon::tomorrow();
+
+        // 1. MTD Data
+        $mtdOrders = Order::where('salesperson_id', $id)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->get();
+        
+        $mtdOrderCount = $mtdOrders->count();
+        $mtdRevenue = $mtdOrders->sum('total_amount');
+        $avgOrderValue = $mtdOrderCount > 0 ? $mtdRevenue / $mtdOrderCount : 0;
+
+        // 2. Today's Stats
+        $assignedShopsCount = $salesperson->managedShops->count();
+        
+        $visitsToday = Visit::with('shop')
+            ->where('salesperson_id', $id)
+            ->whereBetween('created_at', [$today, $tomorrow])
+            ->get();
+            
+        $visitedIds = $visitsToday->pluck('shop_id')->unique();
+        $visitedCount = $visitedIds->count();
+        $notVisitedCount = max(0, $assignedShopsCount - $visitedCount);
+
+        $ordersToday = Order::where('salesperson_id', $id)
+            ->whereBetween('created_at', [$today, $tomorrow])
+            ->get();
+            
+        $shopsWithOrderIds = $ordersToday->pluck('shop_id')->unique();
+        $visitedWithOrderCount = $visitedIds->intersect($shopsWithOrderIds)->count();
+        $noOrderCount = max(0, $visitedCount - $visitedWithOrderCount);
+
+        // 3. Performance Metrics
+        $visitRate = $assignedShopsCount > 0 ? ($visitedCount / $assignedShopsCount) * 100 : 0;
+        $conversionRate = $visitedCount > 0 ? ($visitedWithOrderCount / $visitedCount) * 100 : 0;
+
+        // 4. Visits List for Today
+        $visitsList = $visitsToday->map(function($visit) use ($id, $ordersToday) {
+            $order = $ordersToday->where('shop_id', $visit->shop_id)->first();
+            return [
+                'id' => $visit->id,
+                'outlet' => $visit->shop->name ?? 'Unknown',
+                'time' => $visit->created_at->format('h:i A'),
+                'orderAmount' => $order ? (float)$order->total_amount : 0,
+                'status' => $order ? 'with-order' : 'no-order',
+                'orderId' => $order ? $order->id : null,
+                'outletId' => $visit->shop_id
+            ];
+        });
+
+        // 5. Activity
+        $firstVisit = $visitsToday->sortBy('created_at')->first();
+        $lastVisit = $visitsToday->sortByDesc('created_at')->first();
+        $totalValueToday = $ordersToday->sum('total_amount');
+
+        $salespersonData = [
+            'name' => $salesperson->name,
+            'phone' => $salesperson->phone ?? 'N/A',
+            'email' => $salesperson->email,
+            'area' => $salesperson->area->name ?? 'Unassigned',
+            'status' => $salesperson->status ?? 'active',
+            'assignedOutlets' => $assignedShopsCount,
+            'stats' => [
+                'visited' => $visitedCount,
+                'notVisited' => $notVisitedCount,
+                'withOrder' => $visitedWithOrderCount,
+                'noOrder' => $noOrderCount
+            ],
+            'totalOrders' => $mtdOrderCount,
+            'performance' => [
+                'visitRate' => round($visitRate),
+                'conversionRate' => round($conversionRate),
+                'avgOrderValue' => round($avgOrderValue)
+            ],
+            'activity' => [
+                'startTime' => $firstVisit ? 'Today at ' . $firstVisit->created_at->format('h:i A') : 'Not started',
+                'lastUpdate' => $lastVisit ? 'Today at ' . $lastVisit->created_at->format('h:i A') : 'No updates',
+                'totalValue' => (float)$totalValueToday
+            ],
+            'visitsToday' => $visitsList
+        ];
+
+        return view('admin.salespersons.details', compact('salespersonData', 'id'));
     }
     
     public function assignSalespersonForm(Request $request)
     {
         $user_id = $request->get('user_id');
-        $salesperson = User::with(['area', 'managedShops'])->findOrFail($user_id);
+        $salesperson = $user_id ? User::with(['area', 'managedShops'])->find($user_id) : null;
+        
+        // Fetch all salespersons for the selection dropdown if needed
+        $salespersons = User::where('role', 'salesperson')->where('status', 'active')->get();
         $areas = Area::where('status', 'active')->get();
-        return view('admin.salespersons.assign', compact('salesperson', 'areas'));
+        
+        return view('admin.salespersons.assign', compact('salesperson', 'areas', 'salespersons'));
     }
 
     public function getShopsByArea($area_id)
     {
-        $shops = Shop::where('area_id', $area_id)->where('status', 'active')->get(['id', 'name']);
+        $shops = Shop::with('salesperson:id,name')->where('area_id', $area_id)->where('status', 'active')->get(['id', 'name', 'salesperson_id']);
         return response()->json($shops);
     }
 

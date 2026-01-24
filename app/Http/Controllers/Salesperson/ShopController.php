@@ -40,12 +40,37 @@ class ShopController extends Controller
     
     public function select()
     {
-        $areas = \App\Models\Area::where('status', 'active')->withCount('shops')->get()->map(function($area) {
-            $area->pincode = is_array($area->pincodes) ? implode(', ', $area->pincodes) : ($area->pincodes ?? '');
-            return $area;
-        });
+        $salespersonId = Auth::id();
+        
+        // Only areas where this salesperson has unvisited assigned shops for today
+        $areas = \App\Models\Area::where('status', 'active')
+            ->whereHas('shops', function($q) use ($salespersonId) {
+                $q->where('salesperson_id', $salespersonId)
+                  ->whereDoesntHave('visits', function($vq) use ($salespersonId) {
+                      $vq->where('salesperson_id', $salespersonId)
+                         ->whereDate('visit_date', now()->toDateString());
+                  });
+            })
+            ->withCount(['shops' => function($q) use ($salespersonId) {
+                $q->where('salesperson_id', $salespersonId)
+                  ->whereDoesntHave('visits', function($vq) use ($salespersonId) {
+                      $vq->where('salesperson_id', $salespersonId)
+                         ->whereDate('visit_date', now()->toDateString());
+                  });
+            }])
+            ->get()
+            ->map(function($area) {
+                $area->pincode = is_array($area->pincodes) ? implode(', ', $area->pincodes) : ($area->pincodes ?? '');
+                return $area;
+            });
 
+        // Only shops assigned to this salesperson that HAVEN'T been visited today
         $shops = Shop::where('status', 'active')
+            ->where('salesperson_id', $salespersonId)
+            ->whereDoesntHave('visits', function($q) use ($salespersonId) {
+                $q->where('salesperson_id', $salespersonId)
+                  ->whereDate('visit_date', now()->toDateString());
+            })
             ->with(['user', 'area'])
             ->withCount('orders')
             ->get()

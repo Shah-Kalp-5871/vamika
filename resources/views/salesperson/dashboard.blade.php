@@ -60,10 +60,10 @@
 
         <!-- Quick Actions -->
         <div class="grid grid-cols-2 gap-3">
-            <button onclick="window.location.href='{{ route('salesperson.visits.create') }}'"
+            <button onclick="window.location.href='{{ route('salesperson.visits.index') }}'"
                 class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
                 <iconify-icon icon="lucide:map-pin" width="16" class="text-slate-400 group-hover:text-indigo-600 transition-colors"></iconify-icon>
-                Log Visit
+                Daily Visits
             </button>
             <button onclick="window.location.href='{{ route('salesperson.shops.index') }}'"
                 class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">

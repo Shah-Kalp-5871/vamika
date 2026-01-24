@@ -413,6 +413,29 @@
     // Header updates
     document.getElementById('orderNumber').textContent = 'Order #{{ $order->id }}';
     
+    // Status and Payment badges
+    const status = '{{ $order->status }}';
+    const paymentStatus = '{{ $order->payment_status }}';
+    const statusBadge = document.getElementById('statusBadge');
+    const paymentBadge = document.getElementById('paymentBadge');
+
+    // Helper to format text
+    const formatText = (text) => text.charAt(0).toUpperCase() + text.slice(1);
+
+    // Update status badge
+    statusBadge.textContent = formatText(status);
+    if (status === 'pending') statusBadge.className = 'status-badge bg-amber-50 text-amber-600';
+    else if (status === 'confirmed') statusBadge.className = 'status-badge bg-blue-50 text-blue-600';
+    else if (status === 'delivered') statusBadge.className = 'status-badge bg-emerald-50 text-emerald-600';
+    else if (status === 'cancelled') statusBadge.className = 'status-badge bg-rose-50 text-rose-600';
+    else statusBadge.className = 'status-badge bg-slate-50 text-slate-600';
+
+    // Update payment badge
+    paymentBadge.textContent = formatText(paymentStatus);
+    if (paymentStatus === 'paid') paymentBadge.className = 'status-badge bg-emerald-50 text-emerald-600';
+    else if (paymentStatus === 'cancelled') paymentBadge.className = 'status-badge bg-rose-50 text-rose-600';
+    else paymentBadge.className = 'status-badge bg-amber-50 text-amber-600';
+    
     // Auto print
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('print') === '1') {

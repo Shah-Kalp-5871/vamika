@@ -481,7 +481,7 @@ $pageConfig = [
                         
                         <!-- Action buttons -->
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.areas.edit', ':id') }}".replace(':id', area.id)
+                            <a href="${'{{ route('admin.areas.edit', ':id') }}'.replace(':id', area.id)}"
                                class="px-3 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors flex items-center gap-2 no-underline">
                                 <iconify-icon icon="lucide:edit" width="14"></iconify-icon>
                                 Edit
@@ -553,7 +553,7 @@ $pageConfig = [
             // Create a form to submit DELETE request
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `{{ route('admin.areas.destroy', '') }}/${areaId}`;
+            form.action = "{{ route('admin.areas.destroy', ':id') }}".replace(':id', areaId);
             
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';

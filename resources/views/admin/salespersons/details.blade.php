@@ -338,383 +338,17 @@ $pageConfig = [
 
 @section('scripts')
 <script>
-    // Dummy Data for Salesperson Details with Order IDs
-    const salespersonData = {
-        1: {
-            name: "Rajesh Kumar",
-            phone: "+91 98765 43210",
-            email: "rajesh@vamika.com",
-            area: "Gandhi Nagar",
-            status: "active",
-            assignedOutlets: 25,
-            stats: {
-                visited: 8,
-                notVisited: 17,
-                withOrder: 6,
-                noOrder: 2
-            },
-            totalOrders: 45,
-            lastVisit: "Today, 10:30 AM",
-            visitsToday: [
-                {
-                    id: 101,
-                    outlet: "SuperMart Central",
-                    time: "10:30 AM",
-                    orderAmount: 2450,
-                    status: "with-order",
-                    orderId: "ORD-2024-001",
-                    outletId: 201,
-                    items: [
-                        { name: "Product A", quantity: 5, price: 300, total: 1500 },
-                        { name: "Product B", quantity: 2, price: 475, total: 950 }
-                    ]
-                },
-                {
-                    id: 102,
-                    outlet: "Fresh Grocers",
-                    time: "11:45 AM",
-                    orderAmount: 0,
-                    status: "no-order",
-                    orderId: null,
-                    outletId: 202,
-                    items: []
-                },
-                {
-                    id: 103,
-                    outlet: "Daily Needs",
-                    time: "12:30 PM",
-                    orderAmount: 1890,
-                    status: "with-order",
-                    orderId: "ORD-2024-003",
-                    outletId: 203,
-                    items: [
-                        { name: "Product C", quantity: 3, price: 630, total: 1890 }
-                    ]
-                },
-                {
-                    id: 104,
-                    outlet: "Quick Store",
-                    time: "1:15 PM",
-                    orderAmount: 890,
-                    status: "with-order",
-                    orderId: "ORD-2024-004",
-                    outletId: 204,
-                    items: [
-                        { name: "Product D", quantity: 1, price: 890, total: 890 }
-                    ]
-                }
-            ],
-            performance: {
-                visitRate: 32,
-                conversionRate: 75,
-                avgOrderValue: 1743
-            },
-            activity: {
-                startTime: "Today at 9:00 AM",
-                lastUpdate: "Today at 1:30 PM",
-                totalValue: 5230
-            }
-        },
-        2: {
-            name: "Priya Sharma",
-            phone: "+91 87654 32109",
-            email: "priya@vamika.com",
-            area: "Market Lane",
-            status: "active",
-            assignedOutlets: 20,
-            stats: {
-                visited: 6,
-                notVisited: 14,
-                withOrder: 4,
-                noOrder: 2
-            },
-            totalOrders: 38,
-            lastVisit: "Today, 11:15 AM",
-            visitsToday: [
-                {
-                    id: 201,
-                    outlet: "City Bazaar",
-                    time: "11:15 AM",
-                    orderAmount: 0,
-                    status: "no-order",
-                    orderId: null,
-                    outletId: 301,
-                    items: []
-                },
-                {
-                    id: 202,
-                    outlet: "Quick Mart",
-                    time: "01:00 PM",
-                    orderAmount: 1560,
-                    status: "with-order",
-                    orderId: "ORD-2024-005",
-                    outletId: 302,
-                    items: [
-                        { name: "Product E", quantity: 4, price: 390, total: 1560 }
-                    ]
-                },
-                {
-                    id: 203,
-                    outlet: "Local Store",
-                    time: "02:30 PM",
-                    orderAmount: 890,
-                    status: "with-order",
-                    orderId: "ORD-2024-006",
-                    outletId: 303,
-                    items: [
-                        { name: "Product F", quantity: 2, price: 445, total: 890 }
-                    ]
-                }
-            ],
-            performance: {
-                visitRate: 30,
-                conversionRate: 67,
-                avgOrderValue: 1225
-            },
-            activity: {
-                startTime: "Today at 9:30 AM",
-                lastUpdate: "Today at 2:30 PM",
-                totalValue: 2450
-            }
-        },
-        3: {
-            name: "Amit Patel",
-            phone: "+91 76543 21098",
-            email: "amit@vamika.com",
-            area: "Residential Area",
-            status: "active",
-            assignedOutlets: 22,
-            stats: {
-                visited: 7,
-                notVisited: 15,
-                withOrder: 5,
-                noOrder: 2
-            },
-            totalOrders: 42,
-            lastVisit: "Today, 09:45 AM",
-            visitsToday: [
-                {
-                    id: 301,
-                    outlet: "Fresh Grocers",
-                    time: "09:45 AM",
-                    orderAmount: 1890,
-                    status: "with-order",
-                    orderId: "ORD-2024-007",
-                    outletId: 401,
-                    items: [
-                        { name: "Product G", quantity: 3, price: 630, total: 1890 }
-                    ]
-                },
-                {
-                    id: 302,
-                    outlet: "SuperMart",
-                    time: "11:00 AM",
-                    orderAmount: 2340,
-                    status: "with-order",
-                    orderId: "ORD-2024-008",
-                    outletId: 402,
-                    items: [
-                        { name: "Product H", quantity: 6, price: 390, total: 2340 }
-                    ]
-                },
-                {
-                    id: 303,
-                    outlet: "Corner Shop",
-                    time: "12:15 PM",
-                    orderAmount: 0,
-                    status: "no-order",
-                    orderId: null,
-                    outletId: 403,
-                    items: []
-                }
-            ],
-            performance: {
-                visitRate: 32,
-                conversionRate: 71,
-                avgOrderValue: 1410
-            },
-            activity: {
-                startTime: "Today at 9:15 AM",
-                lastUpdate: "Today at 12:15 PM",
-                totalValue: 4230
-            }
-        },
-        4: {
-            name: "Sneha Reddy",
-            phone: "+91 65432 10987",
-            email: "sneha@vamika.com",
-            area: "Highway Road",
-            status: "inactive",
-            assignedOutlets: 18,
-            stats: {
-                visited: 0,
-                notVisited: 18,
-                withOrder: 0,
-                noOrder: 0
-            },
-            totalOrders: 35,
-            lastVisit: "Yesterday, 03:45 PM",
-            visitsToday: [],
-            performance: {
-                visitRate: 0,
-                conversionRate: 0,
-                avgOrderValue: 0
-            },
-            activity: {
-                startTime: "Not started",
-                lastUpdate: "Yesterday at 3:45 PM",
-                totalValue: 0
-            }
-        },
-        5: {
-            name: "Vikram Singh",
-            phone: "+91 54321 09876",
-            email: "vikram@vamika.com",
-            area: "School Road",
-            status: "active",
-            assignedOutlets: 15,
-            stats: {
-                visited: 5,
-                notVisited: 10,
-                withOrder: 3,
-                noOrder: 2
-            },
-            totalOrders: 28,
-            lastVisit: "Today, 01:00 PM",
-            visitsToday: [
-                {
-                    id: 501,
-                    outlet: "Family Store",
-                    time: "01:00 PM",
-                    orderAmount: 0,
-                    status: "no-order",
-                    orderId: null,
-                    outletId: 501,
-                    items: []
-                },
-                {
-                    id: 502,
-                    outlet: "Kids Corner",
-                    time: "02:30 PM",
-                    orderAmount: 890,
-                    status: "with-order",
-                    orderId: "ORD-2024-009",
-                    outletId: 502,
-                    items: [
-                        { name: "Product I", quantity: 1, price: 890, total: 890 }
-                    ]
-                },
-                {
-                    id: 503,
-                    outlet: "School Store",
-                    time: "03:15 PM",
-                    orderAmount: 1250,
-                    status: "with-order",
-                    orderId: "ORD-2024-010",
-                    outletId: 503,
-                    items: [
-                        { name: "Product J", quantity: 5, price: 250, total: 1250 }
-                    ]
-                }
-            ],
-            performance: {
-                visitRate: 33,
-                conversionRate: 60,
-                avgOrderValue: 1070
-            },
-            activity: {
-                startTime: "Today at 10:00 AM",
-                lastUpdate: "Today at 3:15 PM",
-                totalValue: 2140
-            }
-        },
-        6: {
-            name: "Anjali Mehta",
-            phone: "+91 43210 98765",
-            email: "anjali@vamika.com",
-            area: "Central Mall",
-            status: "active",
-            assignedOutlets: 30,
-            stats: {
-                visited: 12,
-                notVisited: 18,
-                withOrder: 9,
-                noOrder: 3
-            },
-            totalOrders: 52,
-            lastVisit: "Today, 02:45 PM",
-            visitsToday: [
-                {
-                    id: 601,
-                    outlet: "Mall Store",
-                    time: "09:30 AM",
-                    orderAmount: 3450,
-                    status: "with-order",
-                    orderId: "ORD-2024-011",
-                    outletId: 601,
-                    items: [
-                        { name: "Product K", quantity: 10, price: 345, total: 3450 }
-                    ]
-                },
-                {
-                    id: 602,
-                    outlet: "Food Court",
-                    time: "11:00 AM",
-                    orderAmount: 1250,
-                    status: "with-order",
-                    orderId: "ORD-2024-012",
-                    outletId: 602,
-                    items: [
-                        { name: "Product L", quantity: 5, price: 250, total: 1250 }
-                    ]
-                },
-                {
-                    id: 603,
-                    outlet: "ElectroMart",
-                    time: "01:30 PM",
-                    orderAmount: 0,
-                    status: "no-order",
-                    orderId: null,
-                    outletId: 603,
-                    items: []
-                },
-                {
-                    id: 604,
-                    outlet: "Book Store",
-                    time: "02:45 PM",
-                    orderAmount: 890,
-                    status: "with-order",
-                    orderId: "ORD-2024-013",
-                    outletId: 604,
-                    items: [
-                        { name: "Product M", quantity: 2, price: 445, total: 890 }
-                    ]
-                }
-            ],
-            performance: {
-                visitRate: 40,
-                conversionRate: 75,
-                avgOrderValue: 1863
-            },
-            activity: {
-                startTime: "Today at 9:00 AM",
-                lastUpdate: "Today at 2:45 PM",
-                totalValue: 5590
-            }
-        }
-    };
-
-    // Get salesperson ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const salespersonId = urlParams.get('id') || "{{ $salespersonId }}";
+    // Real Data for Salesperson Details
+    const salespersonData = @json($salespersonData);
+    const salespersonId = "{{ $id }}";
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', () => {
-        loadSalespersonData(parseInt(salespersonId));
+        loadSalespersonData();
     });
 
-    function loadSalespersonData(id) {
-        const sp = salespersonData[id];
+    function loadSalespersonData() {
+        const sp = salespersonData;
 
         if (!sp) {
             // Redirect back if salesperson not found
@@ -772,7 +406,7 @@ $pageConfig = [
             visitCount.textContent = `${sp.visitsToday.length} visits`;
             visitsList.innerHTML = sp.visitsToday.map(visit => `
                 <div class="visit-item flex items-center justify-between p-3 bg-gray-50 rounded-lg" 
-                     onclick="viewOrderDetails(${visit.id}, ${id})">
+                     onclick="viewOrderDetails(${visit.id})">
                     <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
                             <h4 class="font-medium text-gray-900">${visit.outlet}</h4>
@@ -801,60 +435,21 @@ $pageConfig = [
     }
 
     // Redirect to order details page
-    function viewOrderDetails(visitId, salespersonId) {
+    function viewOrderDetails(visitId) {
         // Find the visit data
-        const sp = salespersonData[salespersonId];
+        const sp = salespersonData;
         const visit = sp.visitsToday.find(v => v.id === visitId);
 
-        if (visit) {
-            // Create a form to pass data to order-details page
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = "{{ route('admin.orders.details', ':orderId') }}".replace(':orderId', visit.orderId);
-
-            // Add CSRF token
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = "{{ csrf_token() }}";
-            form.appendChild(csrfToken);
-
-            // Add salesperson info
-            const spInput = document.createElement('input');
-            spInput.type = 'hidden';
-            spInput.name = 'salesperson_id';
-            spInput.value = salespersonId;
-            form.appendChild(spInput);
-
-            // Add salesperson name
-            const spNameInput = document.createElement('input');
-            spNameInput.type = 'hidden';
-            spNameInput.name = 'salesperson_name';
-            spNameInput.value = sp.name;
-            form.appendChild(spNameInput);
-
-            // Add visit data as JSON
-            const visitInput = document.createElement('input');
-            visitInput.type = 'hidden';
-            visitInput.name = 'visit_data';
-            visitInput.value = JSON.stringify(visit);
-            form.appendChild(visitInput);
-
-            // Add outlet info
-            const outletInput = document.createElement('input');
-            outletInput.type = 'hidden';
-            outletInput.name = 'outlet_name';
-            outletInput.value = visit.outlet;
-            form.appendChild(outletInput);
-
-            // Submit the form
-            document.body.appendChild(form);
-            form.submit();
+        if (visit && visit.orderId) {
+            window.location.href = "{{ route('admin.orders.details', ':orderId') }}".replace(':orderId', visit.orderId);
+        } else if (visit) {
+            // If No Order, maybe show visit details or just alert
+            alert('This visit did not result in an order.');
         }
     }
 
     function callSalesperson() {
-        const sp = salespersonData[salespersonId];
+        const sp = salespersonData;
         if (!sp) return;
 
         // Clean phone number for tel:
@@ -863,14 +458,14 @@ $pageConfig = [
     }
 
     function emailSalesperson() {
-        const sp = salespersonData[salespersonId];
+        const sp = salespersonData;
         if (!sp) return;
 
         window.location.href = `mailto:${sp.email}`;
     }
 
     function viewArea() {
-        const sp = salespersonData[salespersonId];
+        const sp = salespersonData;
         if (!sp) return;
 
         // Optional: Google Maps search

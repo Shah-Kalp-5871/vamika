@@ -4,7 +4,6 @@
 @php
 $pageConfig = [
     'title' => 'Manage Users',
-    'subtitle' => 'Admins, salespersons & shop owners',
     'showBack' => true,
     'backUrl' => route('admin.dashboard'),
     'role' => 'Admin Access',

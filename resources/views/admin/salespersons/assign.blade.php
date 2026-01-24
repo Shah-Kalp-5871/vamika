@@ -308,8 +308,8 @@
                 <div class="leading-tight">
                     <h1 class="text-lg font-semibold text-slate-900 tracking-tight">Assign Area & Shop</h1>
                     <p class="text-sm text-slate-500 truncate" id="salespersonName">
-                        @if(request()->has('user_id'))
-                            Loading...
+                        @if($salesperson)
+                            {{ $salesperson->name }}
                         @else
                             Select Salesperson First
                         @endif
@@ -325,15 +325,33 @@
     </header>
 
     <main class="p-6 space-y-6">
+        <!-- Already Assigned Warning -->
+        @if($salesperson && ($salesperson->area_id || $salesperson->managedShops->count() > 0))
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 animate-slide-up mb-6">
+            <div class="flex items-start gap-3">
+                <iconify-icon icon="lucide:alert-triangle" width="20" class="text-amber-600 mt-0.5"></iconify-icon>
+                <div>
+                    <h4 class="font-semibold text-amber-900">Already Assigned</h4>
+                    <p class="text-sm text-amber-700 mt-1">
+                        This salesperson is currently assigned to 
+                        <span class="font-medium">{{ $salesperson->area->name ?? 'an area' }}</span> 
+                        with {{ $salesperson->managedShops->count() }} shops. 
+                        Proceeding will update their assignment.
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Salesperson Info Card -->
-        <div class="info-card animate-slide-up">
+        <div class="info-card animate-slide-up" id="salespersonInfoCard" style="{{ $salesperson ? '' : 'display: none;' }}">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
                     <iconify-icon icon="lucide:user-tie" width="24" class="text-white"></iconify-icon>
                 </div>
                 <div class="flex-1">
-                    <h3 class="font-semibold text-lg" id="salespersonNameInfo">Salesperson Name</h3>
-                    <p class="text-white/80 text-sm mt-1" id="salespersonContact">Loading contact info...</p>
+                    <h3 class="font-semibold text-lg" id="salespersonNameInfo">{{ $salesperson->name ?? 'Salesperson Name' }}</h3>
+                    <p class="text-white/80 text-sm mt-1" id="salespersonContact">{{ $salesperson->phone ?? 'Contact info...' }}</p>
                 </div>
                 <span class="badge badge-sales">
                     <iconify-icon icon="lucide:user-tie" width="12" class="mr-1"></iconify-icon>
@@ -344,13 +362,17 @@
 
         <!-- Progress Steps -->
         <div class="progress-steps">
-            <div class="step active" id="step1">
+            <div class="step {{ !$salesperson ? 'active' : 'completed' }}" id="step0">
+                <div class="step-number">0</div>
+                <span class="step-label">Salesperson</span>
+            </div>
+            <div class="step {{ $salesperson ? 'active' : '' }}" id="step1">
                 <div class="step-number">1</div>
-                <span class="step-label">Select Area</span>
+                <span class="step-label">Area</span>
             </div>
             <div class="step" id="step2">
                 <div class="step-number">2</div>
-                <span class="step-label">Select Shop</span>
+                <span class="step-label">Shop</span>
             </div>
             <div class="step" id="step3">
                 <div class="step-number">3</div>
@@ -358,23 +380,34 @@
             </div>
         </div>
 
-        <!-- Currently Assigned -->
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 animate-slide-up" style="display: none;"
-            id="currentAssignment">
-            <div class="flex items-start gap-3">
-                <iconify-icon icon="lucide:info" width="20" class="text-amber-600 mt-0.5"></iconify-icon>
-                <div class="flex-1">
-                    <h4 class="font-medium text-amber-900">Currently Assigned</h4>
-                    <p class="text-sm text-amber-800 mt-1" id="currentAssignmentText"></p>
+        <!-- Step 0: Select Salesperson -->
+        <div id="step0Content" class="animate-slide-up" style="{{ $salesperson ? 'display: none;' : '' }}">
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Select Salesperson</h3>
+                <p class="text-slate-500 text-sm">Choose the salesperson you want to manage assignments for</p>
+            </div>
+
+            <div class="space-y-3 mb-8">
+                @foreach($salespersons as $sp)
+                <div class="area-card" onclick="selectSalesperson({{ $sp->id }}, '{{ $sp->name }}', '{{ $sp->phone }}')">
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-slate-900">{{ $sp->name }}</h4>
+                                <p class="text-sm text-slate-500">{{ $sp->phone }}</p>
+                            </div>
+                            <button class="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg font-medium text-sm hover:bg-indigo-100 transition-colors">
+                                Select
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button class="text-amber-600 hover:text-amber-800" onclick="removeAssignment()">
-                    <iconify-icon icon="lucide:x" width="16"></iconify-icon>
-                </button>
+                @endforeach
             </div>
         </div>
 
         <!-- Step 1: Select Area -->
-        <div id="step1Content" class="animate-slide-up">
+        <div id="step1Content" class="animate-slide-up" style="{{ $salesperson ? '' : 'display: none;' }}">
             <div class="mb-6">
                 <h3 class="text-lg font-semibold text-slate-900 mb-2">Select Delivery Area</h3>
                 <p class="text-slate-500 text-sm">Choose the area where this salesperson will operate</p>
@@ -558,13 +591,13 @@
 
 @section('scripts')
 <script>
-    const userId = '{{ $salesperson->id }}';
-    const userName = '{{ $salesperson->name }}';
+    let userId = '{{ $salesperson->id ?? "" }}';
+    let userName = '{{ $salesperson->name ?? "" }}';
 
     // State
     let selectedArea = null;
     let selectedShops = [];
-    let currentStep = 1;
+    let currentStep = {{ $salesperson ? 1 : 0 }};
 
     document.addEventListener('DOMContentLoaded', function () {
         // Load areas from PHP
@@ -576,7 +609,31 @@
 
         loadAreas(areaData);
         setupAreaSearch();
+
+        if (userId) {
+            checkCurrentAssignment();
+        }
     });
+
+    function selectSalesperson(id, name, phone) {
+        userId = id;
+        userName = name;
+        
+        document.getElementById('salespersonName').textContent = name;
+        document.getElementById('salespersonNameInfo').textContent = name;
+        document.getElementById('salespersonContact').textContent = phone;
+        document.getElementById('salespersonInfoCard').style.display = 'block';
+        
+        document.getElementById('step0').classList.add('completed');
+        document.getElementById('step0').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+        
+        document.getElementById('step0Content').style.display = 'none';
+        document.getElementById('step1Content').style.display = 'block';
+        
+        currentStep = 1;
+        checkCurrentAssignment();
+    }
 
     function loadAreas(data) {
         const areasList = document.getElementById('areasList');
@@ -626,22 +683,68 @@
     function loadShops(data) {
         const shopsList = document.getElementById('shopsList');
         shopsList.innerHTML = '';
-        data.forEach(shop => {
-            const shopCard = document.createElement('div');
-            shopCard.className = 'shop-card';
-            shopCard.id = `shop-card-${shop.id}`;
-            shopCard.innerHTML = `
+
+        // Split into assigned and unassigned
+        const assignedShops = data.filter(shop => shop.salesperson_id !== null);
+        const unassignedShops = data.filter(shop => shop.salesperson_id === null);
+
+        // Helper to create shop card HTML
+        const createShopCard = (shop, isAssigned) => `
+            <div class="shop-card ${isAssigned ? 'border-amber-200 bg-amber-50/30' : ''}" 
+                 id="shop-card-${shop.id}"
+                 onclick="toggleShop(${shop.id}, '${shop.name.replace(/'/g, "\\'")}')">
                 <div class="flex items-center justify-between">
-                    <h4 class="font-semibold text-slate-900">${shop.name}</h4>
-                    <button class="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg font-medium text-sm" 
-                            onclick="event.stopPropagation(); toggleShop(${shop.id}, '${shop.name}')">
+                    <div>
+                        <h4 class="font-semibold text-slate-900">${shop.name}</h4>
+                        ${isAssigned && shop.salesperson ? 
+                            `<p class="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                                <iconify-icon icon="lucide:user" width="12"></iconify-icon>
+                                Assigned to: ${shop.salesperson.name}
+                            </p>` : ''}
+                    </div>
+                    <button class="px-4 py-1.5 ${isAssigned ? 'bg-amber-100 text-amber-700' : 'bg-indigo-50 text-indigo-600'} rounded-lg font-medium text-sm" 
+                            onclick="event.stopPropagation(); toggleShop(${shop.id}, '${shop.name.replace(/'/g, "\\'")}')">
                         Select
                     </button>
                 </div>
-            `;
-            shopCard.onclick = () => toggleShop(shop.id, shop.name);
-            shopsList.appendChild(shopCard);
-        });
+            </div>
+        `;
+
+        // Render Unassigned Section
+        if (unassignedShops.length > 0) {
+            const unassignedHeader = document.createElement('h4');
+            unassignedHeader.className = "text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 mt-2";
+            unassignedHeader.textContent = "Unassigned Shops";
+            shopsList.appendChild(unassignedHeader);
+
+            unassignedShops.forEach(shop => {
+                const div = document.createElement('div');
+                div.innerHTML = createShopCard(shop, false);
+                shopsList.appendChild(div.firstElementChild);
+            });
+        }
+
+        // Render Assigned Section
+        if (assignedShops.length > 0) {
+            const assignedHeader = document.createElement('h4');
+            assignedHeader.className = "text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 mt-6";
+            assignedHeader.textContent = "Already Assigned Shops";
+            shopsList.appendChild(assignedHeader);
+
+            assignedShops.forEach(shop => {
+                const div = document.createElement('div');
+                div.innerHTML = createShopCard(shop, true);
+                shopsList.appendChild(div.firstElementChild);
+            });
+        }
+
+        if (data.length === 0) {
+             shopsList.innerHTML = `
+                <div class="text-center py-8 text-slate-500">
+                    <p>No shops found in this area.</p>
+                </div>
+             `;
+        }
     }
 
     function toggleShop(id, name) {

@@ -686,11 +686,9 @@
     }
 
     function setupImageUpload() {
-        document.getElementById('imageUploadBox').addEventListener('click', function() {
-            if (!document.getElementById('imagePreviewContainer').style.display || 
-                document.getElementById('imagePreviewContainer').style.display === 'none') {
-                document.getElementById('imageInput').click();
-            }
+        document.getElementById('imageUploadBox').addEventListener('click', function(e) {
+            if (e.target.closest('.image-actions')) return;
+            document.getElementById('imageInput').click();
         });
     }
 
@@ -752,18 +750,28 @@
     }
 
     function validateForm() {
-        const sku = document.getElementById('sku').value.trim();
-        const name = document.getElementById('name').value.trim();
-        const category = document.getElementById('category_id').value;
-        const brand = document.getElementById('brand').value.trim();
-        const unit = document.getElementById('unit').value.trim();
-        const packSize = document.getElementById('pack_size').value.trim();
-        const mrp = parseFloat(document.getElementById('mrp').value) || 0;
-        const price = parseFloat(document.getElementById('price').value) || 0;
-        const stock = parseInt(document.getElementById('stock').value) || 0;
+        const skuInput = document.getElementById('sku');
+        const nameInput = document.getElementById('name');
+        const categoryInput = document.getElementById('category_id');
+        const brandInput = document.getElementById('brand');
+        const mrpInput = document.getElementById('mrp');
+        const priceInput = document.getElementById('price');
+
+        if (!skuInput || !nameInput || !categoryInput || !brandInput || !mrpInput || !priceInput) {
+            console.error('Some form fields are missing');
+            return true; // Allow submission if elements are missing to prevent total lock
+        }
+
+        const sku = skuInput.value.trim();
+        const name = nameInput.value.trim();
+        const category = categoryInput.value;
+        const brand = brandInput.value.trim();
+        
+        const mrp = parseFloat(mrpInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
 
         // Check required fields
-        if (!sku || !name || !category || !brand || !unit || !packSize) {
+        if (!sku || !name || !category || !brand) {
             showToast('Please fill in all required fields', 'error');
             return false;
         }
@@ -776,12 +784,6 @@
 
         if (price > mrp) {
             showToast('Selling price cannot be higher than MRP', 'error');
-            return false;
-        }
-
-        // Check stock
-        if (stock < 0) {
-            showToast('Stock cannot be negative', 'error');
             return false;
         }
 

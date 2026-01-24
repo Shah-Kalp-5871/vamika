@@ -2,11 +2,16 @@
 namespace App\Http\Controllers\Salesperson;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return view('salesperson.products.index');
+        $products = Product::with(['images' => function($q) {
+            $q->where('is_primary', true);
+        }])->where('status', 'active')->orderBy('name')->get();
+
+        return view('salesperson.products.index', compact('products'));
     }
 }

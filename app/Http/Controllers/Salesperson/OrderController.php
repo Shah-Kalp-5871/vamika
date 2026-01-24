@@ -26,8 +26,11 @@ class OrderController extends Controller
         }
 
         $products = Product::where('status', 'active')->get();
+        $categories = Product::CATEGORIES;
+        $brands = Product::BRANDS;
+        $subBrands = Product::SUB_BRANDS;
         
-        return view('salesperson.orders.create', compact('shop', 'products'));
+        return view('salesperson.orders.create', compact('shop', 'products', 'categories', 'brands', 'subBrands'));
     }
     
     public function store(Request $request)
@@ -72,6 +75,20 @@ class OrderController extends Controller
             }
 
             $order->update(['total_amount' => $totalAmount]);
+
+            // Always record this as a visit
+            \App\Models\Visit::updateOrCreate(
+                [
+                    'salesperson_id' => Auth::id(),
+                    'shop_id' => $request->shop_id,
+                    'visit_date' => now()->toDateString(),
+                ],
+                [
+                    'status' => 'ordered',
+                    'order_id' => $order->id,
+                    'visit_date' => now(), // Full timestamp
+                ]
+            );
 
             DB::commit();
 

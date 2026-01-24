@@ -12,42 +12,75 @@ class VisitController extends Controller
 {
     public function index()
     {
-        $visits = Visit::with('shop')
-            ->where('salesperson_id', Auth::id())
-            ->latest('visit_date')
-            ->get();
-            
-        return view('salesperson.visits.index', compact('visits'));
+        $salesperson = Auth::user();
+        
+        // Get all shops assigned to this salesperson
+        $shops = Shop::where('salesperson_id', $salesperson->id)
+            ->with(['area', 'visits' => function($q) use ($salesperson) {
+                $q->where('salesperson_id', $salesperson->id)
+                  ->whereDate('visit_date', now()->toDateString());
+            }])
+            ->get()
+            ->map(function($shop) {
+                $todayVisit = $shop->visits->first();
+                $shop->status_today = $todayVisit ? $todayVisit->status : 'pending';
+                $shop->visited_today = $todayVisit ? true : false;
+                $shop->visited_time = $todayVisit ? $todayVisit->created_at->format('h:i A') : null;
+                return $shop;
+            });
+
+        // Statistics for today
+        $stats = [
+            'total' => $shops->count(),
+            'visited' => $shops->where('visited_today', true)->count(),
+            'not_visited' => $shops->where('visited_today', false)->count(),
+            'orders' => $shops->where('status_today', 'ordered')->count(),
+            'no_orders' => $shops->where('status_today', 'no_order')->count(),
+        ];
+
+        return view('salesperson.visits.index', compact('shops', 'stats'));
     }
     
-    public function create()
+    public function markAsNoOrder(Request $request, $id)
     {
-        $user = Auth::user();
-        $shops = Shop::where('area_id', $user->area_id)
-            ->where('status', 'active')
-            ->orderBy('name')
-            ->get();
-            
-        return view('salesperson.visits.create', compact('shops'));
+        $shop = Shop::where('salesperson_id', Auth::id())->findOrFail($id);
+        
+        Visit::updateOrCreate(
+            [
+                'salesperson_id' => Auth::id(),
+                'shop_id' => $id,
+                'visit_date' => now()->toDateString(),
+            ],
+            [
+                'status' => 'no_order',
+                'notes' => $request->notes ?? 'No order placed during visit',
+                'visit_date' => now(), // Full timestamp for created_at logic if needed
+            ]
+        );
+        
+        return redirect()->back()->with('success', 'Visit marked as No Order');
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
             'shop_id' => 'required|exists:shops,id',
+            'status' => 'required|in:ordered,no_order',
             'notes' => 'nullable|string',
-            'location_lat' => 'nullable|numeric',
-            'location_lng' => 'nullable|numeric',
         ]);
         
-        Visit::create([
-            'salesperson_id' => Auth::id(),
-            'shop_id' => $request->shop_id,
-            'visit_date' => now(),
-            'notes' => $request->notes,
-            'location_lat' => $request->location_lat,
-            'location_lng' => $request->location_lng,
-        ]);
+        Visit::updateOrCreate(
+            [
+                'salesperson_id' => Auth::id(),
+                'shop_id' => $request->shop_id,
+                'visit_date' => now()->toDateString(),
+            ],
+            [
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'visit_date' => now(),
+            ]
+        );
         
         return redirect()->route('salesperson.visits.index')
             ->with('success', 'Visit logged successfully');

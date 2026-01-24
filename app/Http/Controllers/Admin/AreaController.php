@@ -85,8 +85,40 @@ class AreaController extends Controller
     
     public function performance($id)
     {
-        $area = Area::findOrFail($id);
-        return view('admin.areas.performance', compact('area'));
+        $area = Area::with(['shops.orders'])->findOrFail($id);
+        
+        // Calculate stats
+        $totalShops = $area->shops->count();
+        $totalOrders = $area->shops->sum(fn($shop) => $shop->orders->count());
+        $totalRevenue = $area->shops->sum(fn($shop) => $shop->orders->sum('total_amount'));
+        $avgOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+        
+        // Get assigned salespersons (unique)
+        $salespersonsCount = \App\Models\User::whereHas('managedShops', function($query) use ($id) {
+            $query->where('area_id', $id);
+        })->count();
+
+        // Get recent shops performance
+        $shopsPerformance = $area->shops->map(function($shop) {
+            return [
+                'name' => $shop->name,
+                'owner' => $shop->user->name ?? 'N/A',
+                'orders' => $shop->orders->count(),
+                'revenue' => $shop->orders->sum('total_amount'),
+                'last_order' => $shop->orders->max('created_at'),
+            ];
+        })->sortByDesc('revenue')->take(5);
+
+        $stats = [
+            'total_shops' => $totalShops,
+            'total_orders' => $totalOrders,
+            'total_revenue' => $totalRevenue,
+            'avg_order_value' => $avgOrderValue,
+            'salespersons_count' => $salespersonsCount,
+            'shops_performance' => $shopsPerformance,
+        ];
+
+        return view('admin.areas.performance', compact('area', 'stats'));
     }
     
     public function assignForm()

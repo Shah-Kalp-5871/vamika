@@ -34,6 +34,18 @@ class OrderController extends Controller
         $order = Order::with(['shop.area', 'salesperson', 'items.product', 'walletTransactions'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
+
+    public function details($id)
+    {
+        $order = Order::with(['shop.area', 'salesperson', 'items.product'])->findOrFail($id);
+        return view('admin.orders.details', compact('order'));
+    }
+
+    public function updateStatusForm($id)
+    {
+        $order = Order::findOrFail($id);
+        return view('admin.orders.update-status', compact('order'));
+    }
     
     public function updateStatus(Request $request, $id)
     {
@@ -56,7 +68,7 @@ class OrderController extends Controller
 
         });
 
-        return redirect()->back()->with('success', 'Order status updated successfully');
+        return redirect()->route('admin.orders.index')->with('success', 'Order status updated successfully');
     }
 
     public function destroy($id)

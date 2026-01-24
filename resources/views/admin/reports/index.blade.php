@@ -128,9 +128,16 @@ $pageConfig = [
                 <div class="mb-3">
                     <iconify-icon icon="lucide:award" width="20" class="text-rose-600"></iconify-icon>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight">120</p>
+                @php
+                    $topProduct = $topProducts->first();
+                @endphp
+                <p class="text-2xl font-semibold text-slate-900 tracking-tight">
+                    {{ $topProduct ? $topProduct->total_sales : 0 }}
+                </p>
                 <p class="text-xs text-slate-500 font-medium mt-1">Top Product Sales</p>
-                <div class="text-xs text-slate-600 mt-2 truncate" title="Aashirvaad Atta">Aashirvaad Atta</div>
+                <div class="text-xs text-slate-600 mt-2 truncate" title="{{ $topProduct ? $topProduct->name : 'No sales' }}">
+                    {{ $topProduct ? $topProduct->name : 'No data' }}
+                </div>
             </div>
         </div>
 

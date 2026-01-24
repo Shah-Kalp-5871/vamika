@@ -17,12 +17,18 @@ class ProductController extends Controller
             $q->where('is_primary', true);
         }])->orderBy('created_at', 'desc')->get();
         
-        return view('admin.products.index', compact('products'));
+        $categories = Product::CATEGORIES;
+        $brands = Product::BRANDS;
+        
+        return view('admin.products.index', compact('products', 'categories', 'brands'));
     }
     
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Product::CATEGORIES;
+        $brands = Product::BRANDS;
+        $subBrands = Product::SUB_BRANDS;
+        return view('admin.products.create', compact('categories', 'brands', 'subBrands'));
     }
 
     public function store(Request $request)
@@ -30,28 +36,30 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:50|unique:products,sku',
-            'category' => 'required|string|max:100',
+            'category' => 'required|string|in:' . implode(',', array_keys(Product::CATEGORIES)),
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Allow multiple images
+            'brand' => 'nullable|string|max:100',
+            'sub_brand' => 'nullable|string|max:100',
+            'unit' => 'nullable|string|max:50',
+            'mrp' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // Single image up to 5MB
         ]);
 
         $product = Product::create($validated);
 
-        // Handle Image Uploads
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $file) {
-                $path = $file->store('products', 'public');
-                $isPrimary = $index === 0; // First uploaded image is primary
+        // Handle Single Image Upload
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store('products', 'public');
 
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'is_primary' => $isPrimary,
-                    'sort_order' => $index,
-                ]);
-            }
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => $path,
+                'is_primary' => true,
+                'sort_order' => 0,
+            ]);
         }
 
         return redirect()->route('admin.products.index')
@@ -61,7 +69,10 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::with('images')->findOrFail($id);
-        return view('admin.products.create', compact('product')); // Reusing create view
+        $categories = Product::CATEGORIES;
+        $brands = Product::BRANDS;
+        $subBrands = Product::SUB_BRANDS;
+        return view('admin.products.create', compact('product', 'categories', 'brands', 'subBrands')); // Reusing create view
     }
 
     public function update(Request $request, $id)
@@ -71,33 +82,40 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:50|unique:products,sku,' . $id,
-            'category' => 'required|string|max:100',
+            'category' => 'required|string|in:' . implode(',', array_keys(Product::CATEGORIES)),
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'brand' => 'nullable|string|max:100',
+            'sub_brand' => 'nullable|string|max:100',
+            'unit' => 'nullable|string|max:50',
+            'mrp' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'remove_image' => 'nullable|boolean',
         ]);
 
         $product->update($validated);
 
-        // Handle New Image Uploads
-        if ($request->hasFile('images')) {
-            // Check if there are existing images to determine sort order
-            $currentMaxSort = $product->images()->max('sort_order') ?? -1;
-
-            foreach ($request->file('images') as $index => $file) {
-                 $path = $file->store('products', 'public');
-                 
-                 // If no images existed, first new one is primary
-                 $isPrimary = $product->images()->count() === 0 && $index === 0;
-
-                 ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'is_primary' => $isPrimary,
-                    'sort_order' => $currentMaxSort + 1 + $index,
-                ]);
+        // Handle Image Deletion or Replacement
+        if ($request->boolean('remove_image') || $request->hasFile('image')) {
+            // Delete old physical images and records
+            foreach ($product->images as $img) {
+                Storage::disk('public')->delete($img->image_path);
             }
+            $product->images()->delete();
+        }
+
+        // Handle New Image Upload
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store('products', 'public');
+
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => $path,
+                'is_primary' => true,
+                'sort_order' => 0,
+            ]);
         }
 
         return redirect()->route('admin.products.index')

@@ -186,23 +186,13 @@ class ReportController extends Controller
 
         // 1. Overall Statistics (All Today)
         $totalShopsCount = Shop::count();
-        $visitedTodayCount = Visit::whereBetween('created_at', [$today, $tomorrow])
-            ->distinct('shop_id')
-            ->count('shop_id');
+        $visitsToday = Visit::whereDate('created_at', today())->get();
         
+        $visitedTodayCount = $visitsToday->unique('shop_id')->count();
         $notVisitedTodayCount = max(0, $totalShopsCount - $visitedTodayCount);
         
-        // Visits today that have an order in the same shop today
-        $visitedWithOrderCount = Visit::whereBetween('created_at', [$today, $tomorrow])
-            ->whereIn('shop_id', function($query) use ($today, $tomorrow) {
-                $query->select('shop_id')
-                    ->from('orders')
-                    ->whereBetween('created_at', [$today, $tomorrow]);
-            })
-            ->distinct('shop_id')
-            ->count('shop_id');
-            
-        $visitedWithoutOrderCount = max(0, $visitedTodayCount - $visitedWithOrderCount);
+        $visitedWithOrderCount = $visitsToday->where('status', 'ordered')->unique('shop_id')->count();
+        $visitedWithoutOrderCount = $visitsToday->where('status', 'no_order')->unique('shop_id')->count();
 
         $overallStats = [
             'totalShops' => $totalShopsCount,
@@ -227,23 +217,15 @@ class ReportController extends Controller
 
             // Visits by this SP today
             $visitsToday = Visit::where('salesperson_id', $sp->id)
-                ->whereBetween('created_at', [$today, $tomorrow])
+                ->whereDate('created_at', today())
                 ->get();
                 
             $visitedIds = $visitsToday->pluck('shop_id')->unique()->toArray();
             $visitedCount = count($visitedIds);
             $notVisitedCount = max(0, $assignedShopsCount - $visitedCount);
 
-            // Shophs visited by this SP today that have an order by this SP today
-            $withOrderIds = Order::where('salesperson_id', $sp->id)
-                ->whereBetween('created_at', [$today, $tomorrow])
-                ->whereIn('shop_id', $visitedIds)
-                ->distinct('shop_id')
-                ->pluck('shop_id')
-                ->toArray();
-            
-            $withOrderCount = count($withOrderIds);
-            $noOrderCount = max(0, $visitedCount - $withOrderCount);
+            $withOrderCount = $visitsToday->where('status', 'ordered')->unique('shop_id')->count();
+            $noOrderCount = $visitsToday->where('status', 'no_order')->unique('shop_id')->count();
 
             // MTD Orders
             $mtdOrderCount = Order::where('salesperson_id', $sp->id)

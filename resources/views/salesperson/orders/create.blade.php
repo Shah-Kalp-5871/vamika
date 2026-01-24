@@ -1,6 +1,39 @@
 @extends('layouts.salesperson')
 
 @section('content')
+<style>
+    .filter-chip {
+        padding: 6px 12px;
+        border-radius: 8px;
+        background-color: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 12px;
+        font-weight: 500;
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .filter-chip:hover {
+        background-color: #F1F5F9;
+        border-color: #CBD5E1;
+    }
+
+    .filter-chip.active {
+        background-color: #4F46E5;
+        color: white;
+        border-color: #4F46E5;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 <div class="max-w-2xl mx-auto min-h-screen pb-32 bg-slate-50 relative">
     <!-- Header -->
     <header class="sticky top-0 z-30 bg-white border-b border-slate-100 p-4 shadow-sm">
@@ -15,19 +48,45 @@
         </div>
 
         <!-- Search & Filter -->
-        <div class="flex gap-2">
-            <div class="relative flex-1">
+        <div class="space-y-3">
+            <div class="relative">
                 <iconify-icon icon="lucide:search" width="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
-                <input type="text" id="productSearch" oninput="filterProducts()" placeholder="Search products..." 
+                <input type="text" id="productSearch" oninput="filterProducts()" placeholder="Search items, brands..." 
                     class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all">
             </div>
-            <select id="categoryFilter" onchange="filterProducts()" 
-                class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all appearance-none cursor-pointer">
-                <option value="all">All Items</option>
-                @foreach($products->pluck('category')->unique() as $category)
-                    <option value="{{ $category }}">{{ $category }}</option>
-                @endforeach
-            </select>
+
+            <!-- Category Filter -->
+            <div>
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Category</h4>
+                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                    <div onclick="filterByCategory('all')" class="filter-chip active category-chip">All</div>
+                    @foreach($categories as $key => $label)
+                        <div onclick="filterByCategory('{{ $key }}')" class="filter-chip category-chip">{{ $label }}</div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Brand Filter -->
+            <div>
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Brand</h4>
+                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                    <div onclick="filterByBrand('all')" class="filter-chip active brand-chip">All Brands</div>
+                    @foreach($brands as $key => $label)
+                        <div onclick="filterByBrand('{{ $key }}')" class="filter-chip brand-chip">{{ $label }}</div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Sub-Brand Filter -->
+            <div>
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Product Type</h4>
+                <div class="flex gap-2 overflow-x-auto hide-scrollbar">
+                    <div onclick="filterBySubBrand('all')" class="filter-chip active sub-brand-chip">All Types</div>
+                    @foreach($subBrands as $key => $label)
+                        <div onclick="filterBySubBrand('{{ $key }}')" class="filter-chip sub-brand-chip">{{ $label }}</div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </header>
 
@@ -37,6 +96,8 @@
             @foreach($products as $product)
                 <div class="product-item bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3" 
                      data-name="{{ strtolower($product->name) }}" 
+                     data-brand="{{ strtolower($product->brand ?? '') }}"
+                     data-sub-brand="{{ strtolower($product->sub_brand ?? '') }}"
                      data-category="{{ $product->category }}">
                     
                     <div class="h-16 w-16 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden border border-slate-100">
@@ -51,8 +112,11 @@
                         <h4 class="text-sm font-semibold text-slate-900 truncate">{{ $product->name }}</h4>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span class="text-xs font-bold text-indigo-600">₹{{ number_format($product->price, 2) }}</span>
+                            @if($product->mrp > $product->price)
+                                <span class="text-[10px] text-slate-400 line-through">₹{{ number_format($product->mrp, 2) }}</span>
+                            @endif
                             <span class="text-[10px] text-slate-400">•</span>
-                            <span class="text-[10px] {{ $product->stock_quantity < 10 ? 'text-amber-500 font-medium' : 'text-slate-500' }}">Stock: {{ $product->stock_quantity }}</span>
+                            <span class="text-[10px] text-slate-500">{{ $product->unit ?? 'No Unit' }}</span>
                         </div>
                     </div>
 
@@ -123,6 +187,9 @@
             <form id="orderForm" action="{{ route('salesperson.orders.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <input type="hidden" name="shop_id" value="{{ $shop->id }}">
+                @if(request()->has('visit'))
+                    <input type="hidden" name="visit" value="true">
+                @endif
                 <div id="hiddenInputs"></div>
 
                 <div>
@@ -164,18 +231,68 @@
 <script>
     let cart = {};
     const products = @json($products);
+    let currentCategory = 'all';
+    let currentBrand = 'all';
+    let currentSubBrand = 'all';
+    let currentSearch = '';
+
+    function filterByCategory(category) {
+        if (currentCategory === category && category !== 'all') {
+            currentCategory = 'all';
+        } else {
+            currentCategory = category;
+        }
+        updateUIActiveState(event.currentTarget, currentCategory, 'category');
+        filterProducts();
+    }
+
+    function filterByBrand(brand) {
+        if (currentBrand === brand && brand !== 'all') {
+            currentBrand = 'all';
+        } else {
+            currentBrand = brand;
+        }
+        updateUIActiveState(event.currentTarget, currentBrand, 'brand');
+        filterProducts();
+    }
+
+    function filterBySubBrand(subBrand) {
+        if (currentSubBrand === subBrand && subBrand !== 'all') {
+            currentSubBrand = 'all';
+        } else {
+            currentSubBrand = subBrand;
+        }
+        updateUIActiveState(event.currentTarget, currentSubBrand, 'sub-brand');
+        filterProducts();
+    }
+
+    function updateUIActiveState(clickedElement, value, type) {
+        const container = clickedElement.parentElement;
+        container.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+
+        if (value === 'all') {
+            container.querySelector('.filter-chip:first-child').classList.add('active');
+        } else {
+            clickedElement.classList.add('active');
+        }
+    }
 
     function filterProducts() {
-        const query = document.getElementById('productSearch').value.toLowerCase();
-        const category = document.getElementById('categoryFilter').value;
+        currentSearch = document.getElementById('productSearch').value.toLowerCase();
         const items = document.querySelectorAll('.product-item');
         let count = 0;
 
         items.forEach(item => {
-            const matchesQuery = item.dataset.name.includes(query);
-            const matchesCategory = category === 'all' || item.dataset.category === category;
+            const matchesSearch = !currentSearch || 
+                item.dataset.name.includes(currentSearch) || 
+                item.dataset.brand.includes(currentSearch);
+            const matchesCategory = currentCategory === 'all' || item.dataset.category === currentCategory;
+            const matchesBrand = currentBrand === 'all' || item.dataset.brand === currentBrand;
+            const matchesSubBrand = currentSubBrand === 'all' || item.dataset.subBrand === currentSubBrand;
 
-            if (matchesQuery && matchesCategory) {
+            if (matchesSearch && matchesCategory && matchesBrand && matchesSubBrand) {
                 item.style.display = 'flex';
                 count++;
             } else {

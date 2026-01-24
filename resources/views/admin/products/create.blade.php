@@ -383,33 +383,27 @@
                 <div class="image-upload-box" id="imageUploadBox">
                     <div class="upload-placeholder" id="uploadPlaceholder" style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:none;' : '' }}">
                         <iconify-icon icon="lucide:image" width="48" class="text-slate-400"></iconify-icon>
-                        <span>Click to upload product images</span>
-                        <span class="text-xs text-slate-500">PNG, JPG, GIF up to 5MB (Multiple allowed)</span>
+                        <span>Click to upload product image</span>
+                        <span class="text-xs text-slate-500">PNG, JPG, GIF up to 5MB</span>
                     </div>
                     <div class="image-preview-container" id="imagePreviewContainer" style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:flex;' : 'display:none;' }}">
-                        @if(isset($product) && $product->images->isNotEmpty())
-                             <div class="flex gap-2 overflow-x-auto p-2" id="existingImages">
-                                @foreach($product->images as $img)
-                                    <div class="relative">
-                                         <img src="{{ asset('storage/' . $img->image_path) }}" class="h-32 w-32 object-cover rounded border">
-                                    </div>
-                                @endforeach
-                             </div>
-                        @else
-                             <img id="imagePreview" class="image-preview" src="" alt="Product Preview" style="display:none;">
-                        @endif
+                        <img id="imagePreview" class="image-preview" 
+                             src="{{ (isset($product) && $product->images->isNotEmpty()) ? asset('storage/' . $product->images->first()->image_path) : '' }}" 
+                             alt="Product Preview" 
+                             style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:block;' : 'display:none;' }}">
                         
                         <div class="image-actions">
                             <button type="button" class="change-image-btn" onclick="document.getElementById('imageInput').click()">
-                                {{ isset($product) ? 'Add/Change Images' : 'Select Images' }}
+                                Change Image
                             </button>
                             <button type="button" class="remove-image-btn" onclick="removeImage()">
-                                Clear Selection
+                                Remove
                             </button>
                         </div>
                     </div>
                 </div>
-                <input type="file" id="imageInput" name="images[]" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <input type="hidden" id="remove_image" name="remove_image" value="0">
                 @error('images')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -441,19 +435,53 @@
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label class="form-label" for="category">Category *</label>
-                    <input type="text" id="category" name="category" class="form-input" required
-                        placeholder="Enter category (e.g., Snacks)"
-                        value="{{ old('category', $product->category ?? '') }}">
+                    <label class="form-label" for="category">Product Category *</label>
+                    <select id="category" name="category" class="form-select" required>
+                        <option value="">Select Category</option>
+                        @foreach($categories as $key => $label)
+                            <option value="{{ $key }}" {{ (old('category', $product->category ?? '') == $key) ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
                     @error('category')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <!-- Brand removed as it's not in schema -->
+                <div class="form-group">
+                    <label class="form-label" for="brand">Brand</label>
+                    <select id="brand" name="brand" class="form-select">
+                        <option value="">Select Brand</option>
+                        @foreach($brands as $key => $label)
+                            <option value="{{ $key }}" {{ (old('brand', $product->brand ?? '') == $key) ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('brand')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <div class="grid-3">
-                 <!-- Unit and Pack Size removed to match schema -->
+                <div class="form-group">
+                    <label class="form-label" for="sub_brand">Sub-Brand</label>
+                    <select id="sub_brand" name="sub_brand" class="form-select">
+                        <option value="">Select Sub-Brand</option>
+                        @foreach($subBrands as $key => $label)
+                            <option value="{{ $key }}" {{ (old('sub_brand', $product->sub_brand ?? '') == $key) ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('sub_brand')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="unit">Unit (e.g. 5kg, 500ml)</label>
+                    <input type="text" id="unit" name="unit" class="form-input"
+                        placeholder="e.g. 1kg"
+                        value="{{ old('unit', $product->unit ?? '') }}">
+                    @error('unit')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
                 <div class="form-group">
                     <label class="form-label" for="status">Status *</label>
                     <select id="status" name="status" class="form-select" required>
@@ -470,17 +498,29 @@
                 <h3 class="details-section-title">Pricing</h3>
                 <div class="grid-3">
                     <div class="form-group">
-                        <!-- MRP is not in schema but might be needed for logic, or if we removed it from schema. Schema has 'price' (decimal). Let's assume Price is Selling Price. If MRP is needed we might need to add it or store in JSON/Description. For now, I will keep it if it was in the view but map it to 'price' or something? Wait, schema has `price` only. I will assume `price` is the Selling Price. I will remove MRP from view to match Schema strictly, or if the user wants it I should have added it. The previous view had MRP and Selling Price. The Schema has `price`. I will treat `price` as the main price. I will remove MRP field to avoid confusion if not in DB. -->
-                        <label class="form-label" for="price">Price (₹) *</label>
+                        <label class="form-label" for="mrp">MRP (₹) *</label>
+                        <input type="number" id="mrp" name="mrp" class="form-input" required step="0.01"
+                            placeholder="0.00" min="0"
+                            value="{{ old('mrp', $product->mrp ?? '') }}">
+                        @error('mrp')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="price">Selling Price (₹) *</label>
                         <input type="number" id="price" name="price" class="form-input" required step="0.01"
                             placeholder="0.00" min="0"
                             value="{{ old('price', $product->price ?? '') }}">
-                        <div class="helper-text">Selling Price</div>
                         @error('price')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                     <!-- Discount was auto-calculated. Removing as MRP is gone. -->
+                    <div class="form-group">
+                        <label class="form-label">Discount</label>
+                        <div id="discountBadge" class="h-[42px] flex items-center px-4 bg-green-50 text-green-700 font-semibold rounded-lg border border-green-200">
+                            0% OFF
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -515,8 +555,9 @@
     });
 
     function setupFormEventListeners() {
-        // Auto-calculate discount removed
-        // document.getElementById('price').addEventListener('input', calculateDiscount);
+        document.getElementById('mrp').addEventListener('input', calculateDiscount);
+        document.getElementById('price').addEventListener('input', calculateDiscount);
+        calculateDiscount(); // Initial calculation
 
         // Form validation before submission
         document.getElementById('productForm').addEventListener('submit', function(event) {
@@ -527,73 +568,111 @@
     }
 
     function setupImageUpload() {
-        document.getElementById('imageUploadBox').addEventListener('click', function() {
-            if (!document.getElementById('imagePreviewContainer').style.display || 
-                document.getElementById('imagePreviewContainer').style.display === 'none') {
-                document.getElementById('imageInput').click();
-            }
+        document.getElementById('imageUploadBox').addEventListener('click', function(e) {
+            // Only trigger if clicking the box itself or the placeholder (not buttons)
+            if (e.target.closest('.image-actions')) return;
+            document.getElementById('imageInput').click();
         });
     }
 
     function calculateDiscount() {
-        // Feature removed as MRP is not in schema
+        const mrpInput = document.getElementById('mrp');
+        const priceInput = document.getElementById('price');
+        const badge = document.getElementById('discountBadge');
+        
+        if (!mrpInput || !priceInput || !badge) return;
+
+        const mrp = parseFloat(mrpInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+
+        if (mrp > 0 && price > 0 && mrp >= price) {
+            const discount = Math.round(((mrp - price) / mrp) * 100);
+            badge.textContent = `${discount}% OFF`;
+            badge.className = 'h-[42px] flex items-center px-4 bg-green-50 text-green-700 font-semibold rounded-lg border border-green-200';
+        } else if (price > mrp && mrp > 0) {
+            badge.textContent = `Price > MRP!`;
+            badge.className = 'h-[42px] flex items-center px-4 bg-red-50 text-red-600 font-semibold rounded-lg border border-red-200';
+        } else {
+            badge.textContent = `0% OFF`;
+            badge.className = 'h-[42px] flex items-center px-4 bg-green-50 text-green-700 font-semibold rounded-lg border border-green-200';
+        }
     }
 
     function handleImageUpload(event) {
         const file = event.target.files[0];
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        const uploadBox = document.getElementById('imageUploadBox');
+        const previewImg = document.getElementById('imagePreview');
+        const removeFlag = document.getElementById('remove_image');
+
         if (file) {
-            // Check file size (5MB limit)
             if (file.size > 5 * 1024 * 1024) {
                 showToast('File size should be less than 5MB', 'error');
-                document.getElementById('imageInput').value = '';
+                event.target.value = '';
                 return;
             }
 
-            // Check file type
             if (!file.type.match('image.*')) {
                 showToast('Please select an image file', 'error');
-                document.getElementById('imageInput').value = '';
+                event.target.value = '';
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const imageData = e.target.result;
-                document.getElementById('imagePreview').src = imageData;
-                document.getElementById('uploadPlaceholder').style.display = 'none';
-                document.getElementById('imagePreviewContainer').style.display = 'flex';
-                document.getElementById('imageUploadBox').classList.add('has-image');
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                placeholder.style.display = 'none';
+                previewContainer.style.display = 'flex';
+                uploadBox.classList.add('has-image');
+                if (removeFlag) removeFlag.value = '0';
             };
             reader.readAsDataURL(file);
         }
     }
 
     function removeImage() {
-        document.getElementById('imagePreview').src = '';
+        const preview = document.getElementById('imagePreview');
+        if (preview) {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+        
         document.getElementById('imagePreviewContainer').style.display = 'none';
         document.getElementById('uploadPlaceholder').style.display = 'flex';
         document.getElementById('imageUploadBox').classList.remove('has-image');
         document.getElementById('imageInput').value = '';
+        
+        const removeFlag = document.getElementById('remove_image');
+        if (removeFlag) removeFlag.value = '1';
     }
-
     function validateForm() {
         const sku = document.getElementById('sku').value.trim();
         const name = document.getElementById('name').value.trim();
         const category = document.getElementById('category').value;
-        const price = parseFloat(document.getElementById('price').value) || 0;
+        const priceInput = document.getElementById('price');
+        const mrpInput = document.getElementById('mrp');
+        
+        const price = parseFloat(priceInput.value) || 0;
+        const mrp = parseFloat(mrpInput.value) || 0;
 
         // Check required fields
-        if (!sku || !name || !category) {
+        if (!sku || !name || !category || !mrp || !price) {
             showToast('Please fill in all required fields', 'error');
             return false;
         }
 
         // Check pricing
-        if (price <= 0) {
-            showToast('Price must be greater than 0', 'error');
+        if (price <= 0 || mrp <= 0) {
+            showToast('Price and MRP must be greater than 0', 'error');
             return false;
         }
 
+        if (price > mrp) {
+            showToast('Selling price cannot be higher than MRP', 'error');
+            return false;
+        }
 
         return true;
     }
