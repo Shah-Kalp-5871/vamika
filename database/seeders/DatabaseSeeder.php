@@ -14,101 +14,122 @@ use App\Models\OrderItem;
 use App\Models\Offer;
 use App\Models\Visit;
 use App\Models\Wallet;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // -----------------------------------------------
-        // 1. Create Admin, Salesperson, Shop Owner
-        // -----------------------------------------------
-        User::factory()->admin()->create([
+        // 1. Create Users
+        $admin = User::create([
             'name' => 'Admin User',
             'email' => 'admin@vamika.com',
             'password' => Hash::make('demo123'),
+            'role' => 'admin',
+            'phone' => '1234567890',
+            'status' => 'active',
         ]);
 
-        User::factory()->salesperson()->create([
+        $salesperson1 = User::create([
             'name' => 'Sales Person',
             'email' => 'sales@vamika.com',
             'password' => Hash::make('demo123'),
+            'role' => 'salesperson',
+            'phone' => '9876543210',
+            'status' => 'active',
         ]);
 
-        User::factory()->shopOwner()->create([
+        $shopOwner1 = User::create([
             'name' => 'Shop Owner',
             'email' => 'shop@vamika.com',
             'password' => Hash::make('demo123'),
+            'role' => 'shop-owner',
+            'phone' => '1122334455',
+            'status' => 'active',
         ]);
 
-        // -----------------------------------------------
         // 2. Create Areas
-        // -----------------------------------------------
-        $areas = Area::factory()->count(5)->create();
+        $area1 = Area::create([
+            'name' => 'Mumbai South',
+            'code' => 'MUM-S',
+            'pincodes' => ['400001', '400002'],
+            'status' => 'active',
+        ]);
 
-        // -----------------------------------------------
-        // 3. Create additional Salespersons
-        // -----------------------------------------------
-        $salespersons = User::factory()->salesperson()->count(5)->create();
+        $area2 = Area::create([
+            'name' => 'Delhi Central',
+            'code' => 'DEL-C',
+            'pincodes' => ['110001', '110002'],
+            'status' => 'active',
+        ]);
 
-        // -----------------------------------------------
-        // 4. Create Products with Images
-        // -----------------------------------------------
-        $products = Product::factory()->count(50)->create()->each(function ($product) {
-            $images = ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
-            // Set first image as primary
-            $primary = $images->first();
-            if ($primary) {
-                $primary->update(['is_primary' => true]);
-            }
-        });
+        // 3. Create Products
+        $product1 = Product::create([
+            'name' => 'Paracetamol 500mg',
+            'sku' => 'MED001',
+            'description' => 'Effective pain reliever and fever reducer.',
+            'price' => 20.00,
+            'stock_quantity' => 100,
+            'category' => 'Medicine',
+            'status' => 'active',
+        ]);
 
-        // -----------------------------------------------
-        // 5. Create Offers
-        // -----------------------------------------------
-        Offer::factory()->count(5)->create();
+        $product2 = Product::create([
+            'name' => 'Vitamin C Supplements',
+            'sku' => 'SUP001',
+            'description' => 'Immunity booster supplements.',
+            'price' => 150.00,
+            'stock_quantity' => 50,
+            'category' => 'Supplements',
+            'status' => 'active',
+        ]);
 
-        // -----------------------------------------------
-        // 6. Create Shops, Wallets, Visits, Orders
-        // -----------------------------------------------
-        foreach ($areas as $area) {
-            // Shops in this area
-            $shops = Shop::factory()->count(4)->create([
-                'area_id' => $area->id,
-            ]);
+        // 3.1 Product Images
+        ProductImage::create([
+            'product_id' => $product1->id,
+            'image_path' => 'https://placehold.co/600x400?text=Paracetamol',
+            'is_primary' => true,
+            'sort_order' => 1,
+        ]);
 
-            foreach ($shops as $shop) {
-                // Wallet for shop
-                Wallet::factory()->create(['shop_id' => $shop->id]);
+         ProductImage::create([
+            'product_id' => $product2->id,
+            'image_path' => 'https://placehold.co/600x400?text=Vitamin+C',
+            'is_primary' => true,
+            'sort_order' => 1,
+        ]);
 
-                // Visits by random salespersons
-                Visit::factory()->count(3)->create([
-                    'shop_id' => $shop->id,
-                    'salesperson_id' => $salespersons->random()->id,
-                ]);
 
-                // Orders
-                Order::factory()->count(2)->create([
-                    'shop_id' => $shop->id,
-                    'salesperson_id' => $salespersons->random()->id,
-                ])->each(function ($order) use ($products) {
-                    // Order Items
-                    $orderItems = OrderItem::factory()->count(3)->create([
-                        'order_id' => $order->id,
-                        'product_id' => $products->random()->id,
-                    ]);
+        // 4. Create Shops
+        $shop1 = Shop::create([
+            'user_id' => $shopOwner1->id,
+            'area_id' => $area1->id,
+            'name' => 'Healthy Life Pharmacy',
+            'address' => '123 Marine Drive, Mumbai',
+            'phone' => '022-12345678',
+            'status' => 'active',
+            'credit_limit' => 50000.00,
+            'current_balance' => 0.00,
+        ]);
 
-                    // Update order total
-                    $order->update([
-                        'total_amount' => $orderItems->sum('subtotal')
-                    ]);
-                });
-            }
-        }
+        // 5. Create Wallet for Shop
+        Wallet::create([
+            'shop_id' => $shop1->id,
+            'balance' => 0.00,
+        ]);
 
-        // -----------------------------------------------
-        // 7. Output info in console
-        // -----------------------------------------------
-        $this->command->info('Database seeded successfully!');
+        // 6. Create Offer
+        Offer::create([
+            'title' => 'Monsoon Sale',
+            'description' => 'Flat 10% off on all medicines.',
+            'discount_type' => 'percentage',
+            'discount_value' => 10.00,
+            'start_date' => Carbon::now(),
+            'end_date' => Carbon::now()->addDays(30),
+            'status' => 'active',
+        ]);
+
+        $this->command->info('Database seeded successfully with static data!');
         $this->command->info('Admin: admin@vamika.com / demo123');
         $this->command->info('Salesperson: sales@vamika.com / demo123');
         $this->command->info('Shop Owner: shop@vamika.com / demo123');
