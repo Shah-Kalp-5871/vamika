@@ -24,14 +24,14 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => faker()->name(),
+            'email' => faker()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => fake()->randomElement(['salesperson', 'shop-owner']), // Admin created manually
-            'phone' => fake()->phoneNumber(),
-            'avatar' => fake()->imageUrl(100, 100, 'people'),
+            'role' => faker()->randomElement(['salesperson', 'shop-owner']), // Admin created manually
+            'phone' => faker()->phoneNumber(),
+            'avatar' => faker()->imageUrl(100, 100, 'people'),
             'status' => 'active',
         ];
     }
