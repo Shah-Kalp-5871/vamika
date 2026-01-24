@@ -40,70 +40,70 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('demo123'),
         ]);
 
-        // // -----------------------------------------------
-        // // 2. Create Areas
-        // // -----------------------------------------------
-        // $areas = Area::factory()->count(5)->create();
+        // -----------------------------------------------
+        // 2. Create Areas
+        // -----------------------------------------------
+        $areas = Area::factory()->count(5)->create();
 
-        // // -----------------------------------------------
-        // // 3. Create additional Salespersons
-        // // -----------------------------------------------
-        // $salespersons = User::factory()->salesperson()->count(5)->create();
+        // -----------------------------------------------
+        // 3. Create additional Salespersons
+        // -----------------------------------------------
+        $salespersons = User::factory()->salesperson()->count(5)->create();
 
-        // // -----------------------------------------------
-        // // 4. Create Products with Images
-        // // -----------------------------------------------
-        // $products = Product::factory()->count(50)->create()->each(function ($product) {
-        //     $images = ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
-        //     // Set first image as primary
-        //     $primary = $images->first();
-        //     if ($primary) {
-        //         $primary->update(['is_primary' => true]);
-        //     }
-        // });
+        // -----------------------------------------------
+        // 4. Create Products with Images
+        // -----------------------------------------------
+        $products = Product::factory()->count(50)->create()->each(function ($product) {
+            $images = ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
+            // Set first image as primary
+            $primary = $images->first();
+            if ($primary) {
+                $primary->update(['is_primary' => true]);
+            }
+        });
 
-        // // -----------------------------------------------
-        // // 5. Create Offers
-        // // -----------------------------------------------
-        // Offer::factory()->count(5)->create();
+        // -----------------------------------------------
+        // 5. Create Offers
+        // -----------------------------------------------
+        Offer::factory()->count(5)->create();
 
-        // // -----------------------------------------------
-        // // 6. Create Shops, Wallets, Visits, Orders
-        // // -----------------------------------------------
-        // foreach ($areas as $area) {
-        //     // Shops in this area
-        //     $shops = Shop::factory()->count(4)->create([
-        //         'area_id' => $area->id,
-        //     ]);
+        // -----------------------------------------------
+        // 6. Create Shops, Wallets, Visits, Orders
+        // -----------------------------------------------
+        foreach ($areas as $area) {
+            // Shops in this area
+            $shops = Shop::factory()->count(4)->create([
+                'area_id' => $area->id,
+            ]);
 
-        //     foreach ($shops as $shop) {
-        //         // Wallet for shop
-        //         Wallet::factory()->create(['shop_id' => $shop->id]);
+            foreach ($shops as $shop) {
+                // Wallet for shop
+                Wallet::factory()->create(['shop_id' => $shop->id]);
 
-        //         // Visits by random salespersons
-        //         Visit::factory()->count(3)->create([
-        //             'shop_id' => $shop->id,
-        //             'salesperson_id' => $salespersons->random()->id,
-        //         ]);
+                // Visits by random salespersons
+                Visit::factory()->count(3)->create([
+                    'shop_id' => $shop->id,
+                    'salesperson_id' => $salespersons->random()->id,
+                ]);
 
-        //         // Orders
-        //         Order::factory()->count(2)->create([
-        //             'shop_id' => $shop->id,
-        //             'salesperson_id' => $salespersons->random()->id,
-        //         ])->each(function ($order) use ($products) {
-        //             // Order Items
-        //             $orderItems = OrderItem::factory()->count(3)->create([
-        //                 'order_id' => $order->id,
-        //                 'product_id' => $products->random()->id,
-        //             ]);
+                // Orders
+                Order::factory()->count(2)->create([
+                    'shop_id' => $shop->id,
+                    'salesperson_id' => $salespersons->random()->id,
+                ])->each(function ($order) use ($products) {
+                    // Order Items
+                    $orderItems = OrderItem::factory()->count(3)->create([
+                        'order_id' => $order->id,
+                        'product_id' => $products->random()->id,
+                    ]);
 
-        //             // Update order total
-        //             $order->update([
-        //                 'total_amount' => $orderItems->sum('subtotal')
-        //             ]);
-        //         });
-        //     }
-        // }
+                    // Update order total
+                    $order->update([
+                        'total_amount' => $orderItems->sum('subtotal')
+                    ]);
+                });
+            }
+        }
 
         // -----------------------------------------------
         // 7. Output info in console

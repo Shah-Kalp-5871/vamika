@@ -19,10 +19,10 @@ class OrderFactory extends Factory
         return [
             'shop_id' => \App\Models\Shop::factory(),
             'salesperson_id' => \App\Models\User::factory()->salesperson(),
-            'total_amount' => fake()->randomFloat(2, 100, 5000),
-            'status' => fake()->randomElement(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
-            'payment_status' => fake()->randomElement(['pending', 'paid']),
-            'notes' => fake()->sentence(),
+            'total_amount' => $this->faker->randomFloat(2, 100, 5000),
+            'status' => $this->faker->randomElement(['pending', 'processing', 'shipped', 'delivered', 'cancelled']),
+            'payment_status' => $this->faker->randomElement(['pending', 'paid']),
+            'notes' => $this->faker->sentence(),
         ];
     }
 }

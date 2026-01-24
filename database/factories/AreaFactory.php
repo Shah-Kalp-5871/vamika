@@ -17,9 +17,9 @@ class AreaFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => faker()->city(),
-            'code' => strtoupper(fake()->unique()->lexify('??###')),
-            'pincodes' => [fake()->postcode(), fake()->postcode()],
+            'name' => $this->faker->city(),
+            'code' => strtoupper($this->faker->unique()->lexify('??###')),
+            'pincodes' => [$this->faker->postcode(), $this->faker->postcode()],
             'status' => 'active',
         ];
     }

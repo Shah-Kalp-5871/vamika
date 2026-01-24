@@ -19,10 +19,10 @@ class VisitFactory extends Factory
         return [
             'salesperson_id' => \App\Models\User::factory()->salesperson(),
             'shop_id' => \App\Models\Shop::factory(),
-            'visit_date' => fake()->dateTimeThisMonth(),
-            'notes' => fake()->sentence(),
-            'location_lat' => fake()->latitude(),
-            'location_lng' => fake()->longitude(),
+            'visit_date' => $this->faker->dateTimeThisMonth(),
+            'notes' => $this->faker->sentence(),
+            'location_lat' => $this->faker->latitude(),
+            'location_lng' => $this->faker->longitude(),
         ];
     }
 }

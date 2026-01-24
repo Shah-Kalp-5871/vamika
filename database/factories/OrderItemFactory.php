@@ -19,8 +19,8 @@ class OrderItemFactory extends Factory
         return [
             'order_id' => \App\Models\Order::factory(),
             'product_id' => \App\Models\Product::factory(),
-            'quantity' => fake()->numberBetween(1, 10),
-            'price' => fake()->randomFloat(2, 10, 500),
+            'quantity' => $this->faker->numberBetween(1, 10),
+            'price' => $this->faker->randomFloat(2, 10, 500),
             'subtotal' => function (array $attributes) {
                 return $attributes['quantity'] * $attributes['price'];
             },

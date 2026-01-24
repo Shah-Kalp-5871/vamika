@@ -18,9 +18,9 @@ class ProductImageFactory extends Factory
     {
         return [
             'product_id' => \App\Models\Product::factory(),
-            'image_path' => fake()->imageUrl(640, 480, 'product'),
+            'image_path' => $this->faker->imageUrl(640, 480, 'product'),
             'is_primary' => false,
-            'sort_order' => fake()->numberBetween(0, 10),
+            'sort_order' => $this->faker->numberBetween(0, 10),
         ];
     }
 }

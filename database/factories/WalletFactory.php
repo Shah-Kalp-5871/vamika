@@ -18,7 +18,7 @@ class WalletFactory extends Factory
     {
         return [
             'shop_id' => \App\Models\Shop::factory(),
-            'balance' => fake()->randomFloat(2, 0, 10000),
+            'balance' => $this->faker->randomFloat(2, 0, 10000),
         ];
     }
 }

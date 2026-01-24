@@ -19,9 +19,9 @@ class WalletTransactionFactory extends Factory
         return [
             'wallet_id' => \App\Models\Wallet::factory(),
             'order_id' => null,
-            'type' => fake()->randomElement(['credit', 'debit']),
-            'amount' => fake()->randomFloat(2, 10, 1000),
-            'description' => fake()->sentence(),
+            'type' => $this->faker->randomElement(['credit', 'debit']),
+            'amount' => $this->faker->randomFloat(2, 10, 1000),
+            'description' => $this->faker->sentence(),
         ];
     }
 }

@@ -19,12 +19,12 @@ class ShopFactory extends Factory
         return [
             'user_id' => \App\Models\User::factory()->shopOwner(),
             'area_id' => \App\Models\Area::factory(),
-            'name' => fake()->company(),
-            'address' => fake()->address(),
-            'phone' => fake()->phoneNumber(),
+            'name' => $this->faker->company(),
+            'address' => $this->faker->address(),
+            'phone' => $this->faker->phoneNumber(),
             'status' => 'active',
-            'credit_limit' => fake()->numberBetween(10000, 100000),
-            'current_balance' => fake()->numberBetween(0, 5000),
+            'credit_limit' => $this->faker->numberBetween(10000, 100000),
+            'current_balance' => $this->faker->numberBetween(0, 5000),
         ];
     }
 }
