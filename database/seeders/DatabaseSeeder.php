@@ -19,77 +19,95 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Create Admin
+        // -----------------------------------------------
+        // 1. Create Admin, Salesperson, Shop Owner
+        // -----------------------------------------------
         User::factory()->admin()->create([
             'name' => 'Admin User',
             'email' => 'admin@vamika.com',
             'password' => Hash::make('demo123'),
         ]);
 
-        // Demo Salesperson
         User::factory()->salesperson()->create([
             'name' => 'Sales Person',
             'email' => 'sales@vamika.com',
             'password' => Hash::make('demo123'),
         ]);
 
-        // Demo Shop Owner
         User::factory()->shopOwner()->create([
             'name' => 'Shop Owner',
             'email' => 'shop@vamika.com',
             'password' => Hash::make('demo123'),
         ]);
 
-        // 2. Create Areas
-        $areas = Area::factory()->count(5)->create();
+        // // -----------------------------------------------
+        // // 2. Create Areas
+        // // -----------------------------------------------
+        // $areas = Area::factory()->count(5)->create();
 
-        // // 3. Create Salespersons
+        // // -----------------------------------------------
+        // // 3. Create additional Salespersons
+        // // -----------------------------------------------
         // $salespersons = User::factory()->salesperson()->count(5)->create();
 
+        // // -----------------------------------------------
         // // 4. Create Products with Images
+        // // -----------------------------------------------
         // $products = Product::factory()->count(50)->create()->each(function ($product) {
-        //     ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
-        //     // Set first one as primary
-        //     $product->images()->first()->update(['is_primary' => true]);
+        //     $images = ProductImage::factory()->count(3)->create(['product_id' => $product->id]);
+        //     // Set first image as primary
+        //     $primary = $images->first();
+        //     if ($primary) {
+        //         $primary->update(['is_primary' => true]);
+        //     }
         // });
 
+        // // -----------------------------------------------
         // // 5. Create Offers
+        // // -----------------------------------------------
         // Offer::factory()->count(5)->create();
 
-        // // 6. Create Shops, Wallets, and Orders
+        // // -----------------------------------------------
+        // // 6. Create Shops, Wallets, Visits, Orders
+        // // -----------------------------------------------
         // foreach ($areas as $area) {
-        //     // Create Shops for this area
+        //     // Shops in this area
         //     $shops = Shop::factory()->count(4)->create([
         //         'area_id' => $area->id,
         //     ]);
 
         //     foreach ($shops as $shop) {
-        //         // Create Wallet for shop
+        //         // Wallet for shop
         //         Wallet::factory()->create(['shop_id' => $shop->id]);
 
-        //         // Assign random visits by salespersons
+        //         // Visits by random salespersons
         //         Visit::factory()->count(3)->create([
         //             'shop_id' => $shop->id,
         //             'salesperson_id' => $salespersons->random()->id,
         //         ]);
 
-        //         // Create Orders
+        //         // Orders
         //         Order::factory()->count(2)->create([
         //             'shop_id' => $shop->id,
         //             'salesperson_id' => $salespersons->random()->id,
         //         ])->each(function ($order) use ($products) {
-        //             // Create Order Items
+        //             // Order Items
         //             $orderItems = OrderItem::factory()->count(3)->create([
         //                 'order_id' => $order->id,
         //                 'product_id' => $products->random()->id,
         //             ]);
-                    
-        //             // Update Order Total
-        //             $order->update(['total_amount' => $orderItems->sum('subtotal')]);
+
+        //             // Update order total
+        //             $order->update([
+        //                 'total_amount' => $orderItems->sum('subtotal')
+        //             ]);
         //         });
         //     }
         // }
 
+        // -----------------------------------------------
+        // 7. Output info in console
+        // -----------------------------------------------
         $this->command->info('Database seeded successfully!');
         $this->command->info('Admin: admin@vamika.com / demo123');
         $this->command->info('Salesperson: sales@vamika.com / demo123');
