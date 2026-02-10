@@ -21,6 +21,8 @@ $pageConfig['role'] = $pageConfig['role'] ?? 'Admin';
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Iconify -->
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Common CSS -->

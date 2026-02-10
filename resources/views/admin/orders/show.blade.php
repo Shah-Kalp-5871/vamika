@@ -388,13 +388,13 @@
                 Print Invoice
             </button>
             @if($order->status !== 'cancelled')
-            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this order?');" class="inline">
+            <button type="button" onclick="confirmDeleteOrder('{{ $order->id }}')" class="btn-danger no-print">
+                <iconify-icon icon="lucide:trash-2" width="16"></iconify-icon>
+                Delete Order
+            </button>
+            <form id="delete-order-{{ $order->id }}" action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display: none;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-danger no-print">
-                    <iconify-icon icon="lucide:trash-2" width="16"></iconify-icon>
-                    Delete Order
-                </button>
             </form>
             @endif
         </div>
@@ -442,6 +442,22 @@
         setTimeout(() => {
             window.print();
         }, 500);
+    }
+
+    function confirmDeleteOrder(orderId) {
+        Swal.fire({
+            title: 'Delete Order?',
+            text: "Are you sure you want to delete this order? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-order-' + orderId).submit();
+            }
+        });
     }
 </script>
 @endsection

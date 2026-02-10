@@ -1196,17 +1196,27 @@ $pageConfig = [
     }
 
     function deleteProduct(productId) {
-        if (confirm('Are you sure you want to delete this product?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("admin.products.destroy", ":id") }}'.replace(':id', productId);
-            form.innerHTML = `
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="_method" value="DELETE">
-            `;
-            document.body.appendChild(form);
-            form.submit();
-        }
+        Swal.fire({
+            title: 'Delete Product?',
+            text: "Are you sure you want to delete this product? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("admin.products.destroy", ":id") }}'.replace(':id', productId);
+                form.innerHTML = `
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_method" value="DELETE">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
 
     function bulkDeleteProducts() {
@@ -1215,35 +1225,42 @@ $pageConfig = [
             return;
         }
         
-        if (confirm(`Are you sure you want to delete ${selectedProducts.length} product(s)?`)) {
-            fetch('{{ route("admin.products.bulk-destroy") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ ids: selectedProducts })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove products from local state
-                    allProducts = allProducts.filter(product => !selectedProducts.includes(product.id));
-                    
-                    // Refresh table
-                    productsTable.replaceData(allProducts);
-                    updateMobileStats();
-                    clearSelection();
-                    showMobileNotification(data.message, 'success');
-                } else {
-                    showMobileNotification(data.message || 'Failed to delete products', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMobileNotification('An error occurred during bulk deletion', 'error');
-            });
-        }
+        Swal.fire({
+            title: 'Delete Selected?',
+            text: `Are you sure you want to delete ${selectedProducts.length} product(s)? This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete all!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('{{ route("admin.products.bulk-destroy") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ ids: selectedProducts })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        allProducts = allProducts.filter(product => !selectedProducts.includes(product.id));
+                        productsTable.replaceData(allProducts);
+                        updateMobileStats();
+                        clearSelection();
+                        showMobileNotification(data.message, 'success');
+                    } else {
+                        showMobileNotification(data.message || 'Failed to delete products', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMobileNotification('An error occurred during bulk deletion', 'error');
+                });
+            }
+        });
     }
 
     function clearSelection() {

@@ -657,7 +657,13 @@ $pageConfig = [
         console.log(`Exporting report from ${startDate} to ${endDate}…`);
         
         // In a real app, you would make an API call to generate the report
-        alert(`Report export started for ${startDate} to ${endDate}. Check your downloads.`);
+        Swal.fire({
+            icon: 'info',
+            title: 'Export Initiated',
+            text: `Report export started for ${startDate} to ${endDate}. Check your downloads.`,
+            timer: 3000,
+            showConfirmButton: false
+        });
     }
 
     function printReport() {

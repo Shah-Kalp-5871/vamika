@@ -283,14 +283,27 @@
             // Resend OTP functionality
             resendLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('OTP resent to your email.');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'OTP Resent',
+                    text: 'OTP resent to your email.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
                 startTimer();
             });
         }
         
         function resetPassword() {
-            alert('Password reset successfully!');
-            window.location.href = "{{ route('login') }}";
+            Swal.fire({
+                icon: 'success',
+                title: 'Password Reset',
+                text: 'Password reset successfully!',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                window.location.href = "{{ route('login') }}";
+            });
         }
         
         // Auto-focus next OTP input

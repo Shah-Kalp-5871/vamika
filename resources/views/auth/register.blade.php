@@ -351,8 +351,14 @@
         // This simulates the demo behavior from the original code
         if (window.location.href.includes('demo=true')) {
             e.preventDefault();
-            alert('Account created successfully! ₹500 credited to your wallet.');
-            window.location.href = "{{ route('login') }}?role=shop-owner";
+            Swal.fire({
+                icon: 'success',
+                title: 'Account Created',
+                text: 'Account created successfully! ₹500 credited to your wallet.',
+                confirmButtonText: 'Login Now'
+            }).then(() => {
+                window.location.href = "{{ route('login') }}?role=shop-owner";
+            });
         }
     });
     
@@ -360,7 +366,13 @@
     document.querySelector('.copy-btn').addEventListener('click', function() {
         const referralInput = document.querySelector('.referral-input');
         if (referralInput.value.trim()) {
-            alert('Referral code applied successfully!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Applied',
+                text: 'Referral code applied successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     });
 </script>

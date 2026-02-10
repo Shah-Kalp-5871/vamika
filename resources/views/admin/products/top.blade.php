@@ -408,14 +408,24 @@
         if (!product) return;
 
         // You can replace this with a modal or redirect to product details page
-        alert(`Opening details for ${product.name}`);
+        Swal.fire({
+            icon: 'info',
+            title: 'Product Details',
+            text: `Opening details for ${product.name}`
+        });
         
         // For now, just show an alert. In a real app, you might want to:
         // window.location.href = '/admin/products/' + productId;
     }
 
     function reorderProduct(productId, productName) {
-        alert(`Reorder requested for: ${productName}`);
+        Swal.fire({
+            icon: 'success',
+            title: 'Reorder Requested',
+            text: `Reorder requested for: ${productName}`,
+            timer: 2000,
+            showConfirmButton: false
+        });
         
         // In a real app, you might want to:
         // 1. Open a reorder modal

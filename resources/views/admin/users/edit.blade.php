@@ -572,35 +572,51 @@ $pageConfig = [
         
         if (password && password !== confirmPassword) {
             e.preventDefault();
-            alert('Passwords do not match!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Passwords do not match!'
+            });
             return;
         }
     });
 
     // Delete confirmation
     function confirmDelete() {
-        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-            // Create a delete form
-            const deleteForm = document.createElement('form');
-            deleteForm.method = 'POST';
-            deleteForm.action = "{{ url('/admin/users/' . ($user->id ?? '')) }}";
-            deleteForm.style.display = 'none';
-            
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = "{{ csrf_token() }}";
-            
-            const methodField = document.createElement('input');
-            methodField.type = 'hidden';
-            methodField.name = '_method';
-            methodField.value = 'DELETE';
-            
-            deleteForm.appendChild(csrfToken);
-            deleteForm.appendChild(methodField);
-            document.body.appendChild(deleteForm);
-            deleteForm.submit();
-        }
+        Swal.fire({
+            title: 'Delete User?',
+            text: "Are you sure you want to delete this user? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete user!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create a delete form
+                const deleteForm = document.createElement('form');
+                deleteForm.method = 'POST';
+                deleteForm.action = "{{ url('/admin/users/' . ($user->id ?? '')) }}";
+                deleteForm.style.display = 'none';
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = "{{ csrf_token() }}";
+                
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                
+                deleteForm.appendChild(csrfToken);
+                deleteForm.appendChild(methodField);
+                
+                document.body.appendChild(deleteForm);
+                deleteForm.submit();
+            }
+        });
+    }
     }
 
     // Update avatar color based on user type

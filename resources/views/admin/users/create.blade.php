@@ -585,7 +585,11 @@ $pageConfig = [
         
         if (password !== confirmPassword) {
             e.preventDefault();
-            alert('Passwords do not match!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Passwords do not match!'
+            });
             return;
         }
     });
@@ -599,7 +603,11 @@ $pageConfig = [
         
         if (password !== confirmPassword) {
             e.preventDefault();
-            alert('Passwords do not match!');
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Passwords do not match!'
+            });
             return;
         }
     });

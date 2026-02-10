@@ -160,7 +160,7 @@
         </div>
 
         <!-- Export -->
-        <button class="btn-primary w-full" onclick="alert('Exporting bit report...')">
+        <button class="btn-primary w-full" onclick="Swal.fire({icon: 'info', title: 'Export Initiated', text: 'Exporting bit report...', timer: 2000, showConfirmButton: false})">
             <iconify-icon icon="lucide:download" width="16" class="mr-2"></iconify-icon>
             Export Bit Performance
         </button>

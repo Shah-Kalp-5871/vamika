@@ -315,26 +315,39 @@ $backUrl = route('shop-owner.orders.index');
     }
 
     function cancelOrder(orderNumber) {
-        if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
-            // In real app, this would be an API call
-            const savedOrders = localStorage.getItem('shop_orders');
-            if (savedOrders) {
-                const orders = JSON.parse(savedOrders);
-                const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
-                if (orderIndex !== -1) {
-                    orders[orderIndex].status = 'Cancelled';
-                    localStorage.setItem('shop_orders', JSON.stringify(orders));
-                    
-                    // Show success message
-                    alert('Order has been cancelled successfully.');
-                    
-                    // Reload the page to reflect changes
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
+        Swal.fire({
+            title: 'Cancel Order?',
+            text: "Are you sure you want to cancel this order? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // In real app, this would be an API call
+                const savedOrders = localStorage.getItem('shop_orders');
+                if (savedOrders) {
+                    const orders = JSON.parse(savedOrders);
+                    const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
+                    if (orderIndex !== -1) {
+                        orders[orderIndex].status = 'Cancelled';
+                        localStorage.setItem('shop_orders', JSON.stringify(orders));
+                        
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Cancelled',
+                            text: 'Order has been cancelled successfully.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }
                 }
             }
-        }
+        });
     }
 
     function showError(msg) {

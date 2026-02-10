@@ -2108,7 +2108,15 @@ $pageConfig = [
             Status: Ready for processing
         `;
 
-        alert(summary);
+        Swal.fire({
+            title: 'Order Consolidation Summary',
+            html: `<pre class="text-left text-sm font-mono whitespace-pre-wrap">${summary}</pre>`,
+            icon: 'info',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'w-auto max-w-2xl'
+            }
+        });
         showToast('Orders consolidated successfully!', 'success');
     }
 

@@ -15,14 +15,31 @@
                 <iconify-icon icon="lucide:edit" width="16"></iconify-icon>
                 Edit
             </a>
-            <form action="{{ route('admin.offers.destroy', $offer->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this offer?');">
+            <form id="delete-form" action="{{ route('admin.offers.destroy', $offer->id) }}" method="POST">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors text-sm font-medium">
+                <button type="button" onclick="confirmDelete()" class="inline-flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors text-sm font-medium">
                     <iconify-icon icon="lucide:trash-2" width="16"></iconify-icon>
                     Delete
                 </button>
             </form>
+            <script>
+                function confirmDelete() {
+                    Swal.fire({
+                        title: 'Delete Offer?',
+                        text: "Are you sure you want to delete this offer? This action cannot be undone.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#E11D48',
+                        cancelButtonColor: '#64748B',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('delete-form').submit();
+                        }
+                    });
+                }
+            </script>
         </div>
     </div>
 

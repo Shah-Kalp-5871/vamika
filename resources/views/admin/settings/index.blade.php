@@ -172,7 +172,11 @@ function uploadLogo() {
         const file = event.target.files[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
-                alert('File size must be less than 2MB');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File too large',
+                    text: 'File size must be less than 2MB'
+                });
                 return;
             }
             
@@ -182,7 +186,13 @@ function uploadLogo() {
                 <span class="text-sm text-slate-500">Logo Uploaded</span>
                 <span class="text-xs text-slate-400 mt-1">Click to change</span>
             `;
-            alert('Logo uploaded successfully!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Logo uploaded successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
     };
     

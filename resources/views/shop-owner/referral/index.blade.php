@@ -63,7 +63,13 @@
     function copyCode() {
         const code = "VAMIKA-{{ strtoupper(substr($user->name, 0, 3)) }}{{ $user->id }}";
         navigator.clipboard.writeText(code);
-        alert('Code copied to clipboard!');
+        Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'Referral code copied to clipboard',
+            timer: 1500,
+            showConfirmButton: false
+        });
     }
 </script>
 @endsection

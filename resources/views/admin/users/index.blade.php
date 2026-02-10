@@ -514,11 +514,10 @@ $pageConfig = [
                                     </a>
                                     @endif
 
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
-                                          onsubmit="return confirm('Are you sure you want to delete this user?');" class="inline">
+                                    <form id="delete-user-{{ $user->id }}" action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-danger">
+                                        <button type="button" onclick="confirmDeleteUser({{ $user->id }}, '{{ $user->name }}')" class="btn-danger">
                                             <iconify-icon icon="lucide:trash" width="14"></iconify-icon>
                                             Delete
                                         </button>
@@ -585,5 +584,22 @@ $pageConfig = [
             card.style.animationDelay = `${index * 0.1}s`;
         });
     });
+
+    function confirmDeleteUser(userId, userName) {
+        Swal.fire({
+            title: 'Delete User?',
+            text: `Are you sure you want to delete ${userName}? This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete user!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`delete-user-${userId}`).submit();
+            }
+        });
+    }
 </script>
 @endsection

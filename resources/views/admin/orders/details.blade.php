@@ -266,8 +266,11 @@
     // Action Functions
     function viewOutletDetails() {
         const outletName = "{{ addslashes($outletName) }}";
-        alert(`Viewing details for outlet: ${outletName}`);
-        // In real app: window.location.href = `{{ route('admin.shops.show', ':name') }}`.replace(':name', outletName);
+        Swal.fire({
+            icon: 'info',
+            title: 'Outlet Details',
+            text: `Viewing details for outlet: ${outletName}`
+        });
     }
 
     function printOrder() {
@@ -287,7 +290,11 @@
                 text: shareText
             });
         } else {
-            alert('Share feature not supported in this browser.\n\n' + shareText);
+            Swal.fire({
+                icon: 'error',
+                title: 'Share Not Supported',
+                text: 'Share feature not supported in this browser. You can manually copy the order info.'
+            });
         }
     }
 </script>

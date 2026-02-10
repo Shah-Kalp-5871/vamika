@@ -143,10 +143,10 @@ $pageConfig = [
                                    onclick="event.stopPropagation()">
                                     <iconify-icon icon="lucide:edit" width="16"></iconify-icon>
                                 </a>
-                                <form action="{{ route('admin.offers.destroy', $offer->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?');">
+                                <form id="delete-form-{{ $offer->id }}" action="{{ route('admin.offers.destroy', $offer->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" onclick="event.stopPropagation()">
+                                    <button type="button" class="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" onclick="confirmDelete({{ $offer->id }}); event.stopPropagation();">
                                         <iconify-icon icon="lucide:trash-2" width="16"></iconify-icon>
                                     </button>
                                 </form>
@@ -192,5 +192,21 @@ $pageConfig = [
     document.addEventListener('DOMContentLoaded', function () {
         // Any specific JS init
     });
+
+    function confirmDelete(offerId) {
+        Swal.fire({
+            title: 'Delete Offer?',
+            text: "Are you sure? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + offerId).submit();
+            }
+        });
+    }
 </script>
 @endsection

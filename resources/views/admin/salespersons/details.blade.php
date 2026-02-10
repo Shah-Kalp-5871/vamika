@@ -444,7 +444,12 @@ $pageConfig = [
             window.location.href = "{{ route('admin.orders.details', ':orderId') }}".replace(':orderId', visit.orderId);
         } else if (visit) {
             // If No Order, maybe show visit details or just alert
-            alert('This visit did not result in an order.');
+            Swal.fire({
+                icon: 'info',
+                title: 'No Order',
+                text: 'This visit did not result in an order.',
+                confirmButtonText: 'Close'
+            });
         }
     }
 

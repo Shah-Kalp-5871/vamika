@@ -108,11 +108,21 @@
                 localStorage.removeItem('shop_cart');
                 window.location.href = data.redirect_url;
             } else {
-                alert(data.message || 'Something went wrong');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Order Failed',
+                    text: data.message || 'Something went wrong',
+                    confirmButtonText: 'Try Again'
+                });
             }
         } catch (error) {
             console.error(error);
-            alert('Failed to place order');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to place order. Please check your connection.',
+                confirmButtonText: 'Close'
+            });
         } finally {
             btn.disabled = false;
             btn.innerHTML = 'Place Order Now <iconify-icon icon="lucide:shield-check" width="20"></iconify-icon>';

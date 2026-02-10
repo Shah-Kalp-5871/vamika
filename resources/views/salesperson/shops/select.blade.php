@@ -79,10 +79,10 @@
                        class="flex-1 bg-indigo-600 text-white text-center py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors no-underline">
                         Create Order
                     </a>
-                    <form action="{{ route('salesperson.visits.no-order', $shop->id) }}" method="POST" class="flex-1">
+                    <form id="no-order-form-{{ $shop->id }}" action="{{ route('salesperson.visits.no-order', $shop->id) }}" method="POST" class="flex-1">
                         @csrf
-                        <button type="submit" class="w-full bg-slate-100 text-slate-600 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
-                                onclick="return confirm('Mark as No Order for today?')">
+                        <button type="button" class="w-full bg-slate-100 text-slate-600 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 transition-colors"
+                                onclick="confirmNoOrder({{ $shop->id }})">
                             No Order
                         </button>
                     </form>
@@ -120,6 +120,22 @@
 </style>
 
 <script>
+    function confirmNoOrder(shopId) {
+        Swal.fire({
+            title: 'No Order?',
+            text: "Mark this shop as visited with no order for today?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6366F1',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, mark it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('no-order-form-' + shopId).submit();
+            }
+        });
+    }
+
     function filterShops(query) {
         const term = query.toLowerCase().trim();
         const cards = document.querySelectorAll('.shop-card');

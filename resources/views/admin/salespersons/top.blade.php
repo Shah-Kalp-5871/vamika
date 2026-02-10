@@ -332,7 +332,15 @@ $pageConfig = [
                 type: 'info'
             });
         } else {
-            alert('Exporting salespersons data…');
+            Swal.fire({
+                icon: 'info',
+                title: 'Exporting...',
+                text: 'Exporting salespersons data…',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
         
         // In real implementation, this would trigger a file download
@@ -344,7 +352,15 @@ $pageConfig = [
                     type: 'success'
                 });
             } else {
-                alert('Data exported successfully!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Data exported successfully!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
         }, 1500);
     }

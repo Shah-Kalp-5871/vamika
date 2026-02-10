@@ -664,27 +664,37 @@ $pageConfig = [
     }
     
     function deleteArea(areaId) {
-        if (confirm('Are you sure you want to delete this bit?\n\nThis will affect all shops in this bit.')) {
-            // Create a form to submit DELETE request
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = "{{ route('admin.bits.destroy', ':id') }}".replace(':id', areaId);
-            
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-            
-            const methodField = document.createElement('input');
-            methodField.type = 'hidden';
-            methodField.name = '_method';
-            methodField.value = 'DELETE';
-            form.appendChild(methodField);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This will affect all shops in this bit. This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{{ route('admin.bits.destroy', ':id') }}".replace(':id', areaId);
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                const methodField = document.createElement('input');
+                methodField.type = 'hidden';
+                methodField.name = '_method';
+                methodField.value = 'DELETE';
+                form.appendChild(methodField);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
     
     function searchAreas(searchTerm) {
