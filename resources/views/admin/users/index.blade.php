@@ -557,8 +557,13 @@ $pageConfig = [
         </div>
 
         <!-- Pagination -->
-        <div class="mt-4">
-            {{ $users->withQueryString()->links() }}
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 pt-6">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                Showing {{ $users->firstItem() ?? 0 }}-{{ $users->lastItem() ?? 0 }} of {{ $users->total() }} Users
+            </p>
+            <div class="pagination-wrapper">
+                {{ $users->withQueryString()->links() }}
+            </div>
         </div>
     </main>
 </div>
