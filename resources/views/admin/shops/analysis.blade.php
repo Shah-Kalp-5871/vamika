@@ -80,6 +80,21 @@ $pageConfig = [
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
+    .stat-card-blue {
+        border-top: 4px solid #3b82f6 !important;
+        background-color: #eff6ff !important;
+    }
+
+    .stat-card-emerald {
+        border-top: 4px solid #10b981 !important;
+        background-color: #ecfdf5 !important;
+    }
+
+    .stat-card-purple {
+        border-top: 4px solid #8b5cf6 !important;
+        background-color: #f5f3ff !important;
+    }
+
     /* Badges */
     .status-badge {
         display: inline-flex;
@@ -351,48 +366,48 @@ $pageConfig = [
         <!-- Performance Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Total Orders -->
-            <div class="stat-card animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div class="stat-card stat-card-blue animate-fade-in-up" style="animation-delay: 0.1s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Total Orders</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['total_orders'] ?? 0) }}</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Orders</p>
+                        <p class="text-2xl font-black text-slate-900 mt-1">{{ number_format($stats['total_orders'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
-                            <span class="text-sm text-slate-500">Order history in period</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">Order history</span>
                         </div>
                     </div>
-                    <div class="p-3 bg-blue-50 rounded-full border border-blue-100">
+                    <div class="p-3 bg-blue-100 rounded-xl border border-blue-200 shadow-sm">
                         <iconify-icon icon="lucide:shopping-bag" width="24" class="text-blue-600"></iconify-icon>
                     </div>
                 </div>
             </div>
 
             <!-- Total Revenue -->
-            <div class="stat-card animate-fade-in-up" style="animation-delay: 0.2s;">
+            <div class="stat-card stat-card-emerald animate-fade-in-up" style="animation-delay: 0.2s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Total Revenue</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($stats['total_revenue'] ?? 0) }}</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Revenue</p>
+                        <p class="text-2xl font-black text-slate-900 mt-1">₹{{ number_format($stats['total_revenue'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
-                            <span class="text-sm text-slate-500">Total sales in period</span>
+                            <span class="text-[10px] font-bold text-emerald-600 uppercase">Gross Sales</span>
                         </div>
                     </div>
-                    <div class="p-3 bg-emerald-50 rounded-full border border-emerald-100">
+                    <div class="p-3 bg-emerald-100 rounded-xl border border-emerald-200 shadow-sm">
                         <iconify-icon icon="lucide:indian-rupee" width="24" class="text-emerald-600"></iconify-icon>
                     </div>
                 </div>
             </div>
 
             <!-- Average Order Value -->
-            <div class="stat-card animate-fade-in-up" style="animation-delay: 0.3s;">
+            <div class="stat-card stat-card-purple animate-fade-in-up" style="animation-delay: 0.3s;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600">Average Order Value</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-2">₹{{ number_format($stats['avg_order_value'] ?? 0) }}</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Avg. Order Value</p>
+                        <p class="text-2xl font-black text-slate-900 mt-1">₹{{ number_format($stats['avg_order_value'] ?? 0) }}</p>
                         <div class="flex items-center mt-2">
-                            <span class="text-sm text-slate-500">Per order average</span>
+                            <span class="text-[10px] font-bold text-purple-600 uppercase">Per Ticket</span>
                         </div>
                     </div>
-                    <div class="p-3 bg-purple-50 rounded-full border border-purple-100">
+                    <div class="p-3 bg-purple-100 rounded-xl border border-purple-200 shadow-sm">
                         <iconify-icon icon="lucide:bar-chart" width="24" class="text-purple-600"></iconify-icon>
                     </div>
                 </div>
