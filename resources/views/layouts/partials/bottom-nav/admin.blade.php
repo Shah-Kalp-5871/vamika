@@ -28,6 +28,13 @@
         <span>Visits</span>
     </a>
 
+    <a href="{{ route('admin.bits.index') }}" class="nav-item">
+        <span class="nav-icon">
+            <iconify-icon icon="mdi:map-marker-path"></iconify-icon>
+        </span>
+        <span>Bits</span>
+    </a>
+
     <a href="{{ route('admin.orders.index') }}" class="nav-item">
         <span class="nav-icon">
             <iconify-icon icon="mdi:cash-multiple"></iconify-icon>

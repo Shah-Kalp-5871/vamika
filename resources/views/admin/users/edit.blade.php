@@ -10,7 +10,7 @@ $testUser = $user ?? (object)[
     'phone' => '9876543210',
     'type' => 'shop-owner',
     'status' => 'active',
-    'area' => 'Gandhi Nagar',
+    'bit' => 'Test Bit',
     'address' => 'Test Address',
     'shop_name' => 'Test Shop',
     'employee_id' => null,
@@ -441,22 +441,23 @@ $pageConfig = [
                         </div>
                     @endif
 
+                    @if($user->role === 'shop-owner')
                     <div class="form-group">
-                        <label class="form-label">Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area_id" required>
-                            <option value="">Select area</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}" 
-                                    {{ (old('area_id', $user->area_id) == $area->id) ? 'selected' : '' }}>
-                                    {{ $area->name }}
+                        <label class="form-label">Bit <span class="form-required">*</span></label>
+                        <select class="form-input" name="bit_id" required>
+                            <option value="">Select bit</option>
+                            @foreach($bits as $bit)
+                                <option value="{{ $bit->id }}" 
+                                    {{ (old('bit_id', $user->shop ? $user->shop->bit_id : '') == $bit->id) ? 'selected' : '' }}>
+                                    {{ $bit->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('area_id')
+                        @error('bit_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
-
+                    @endif
                     <div class="form-group">
                         <label class="form-label">Address @if($user->role === 'shop-owner')<span class="form-required">*</span>@endif</label>
                         <input type="text" class="form-input" name="address" 

@@ -312,7 +312,7 @@
             phone: "9876543210"
         };
 
-        const selectedArea = JSON.parse(localStorage.getItem('selectedArea')) || {
+        const selectedArea = JSON.parse(localStorage.getItem('selectedBit')) || {
             name: "South Mumbai"
         };
 

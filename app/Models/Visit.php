@@ -10,7 +10,7 @@ class Visit extends Model
     use HasFactory;
     protected $fillable = [
         'salesperson_id', 'shop_id', 'visit_date', 
-        'status', 'order_id', 'notes', 
+        'status', 'order_id', 'notes', 'no_order_reason',
         'location_lat', 'location_lng'
     ];
 

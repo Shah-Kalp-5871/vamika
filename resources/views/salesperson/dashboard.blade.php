@@ -9,10 +9,17 @@
                 <h2 class="text-xl font-normal text-slate-500 tracking-tight">{{ explode(' ', auth()->user()->name)[0] }}</h2>
             </div>
             <div class="flex flex-col items-end">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                    <iconify-icon icon="lucide:map-pin" width="12" class="mr-1.5"></iconify-icon>
-                    <span>{{ auth()->user()->area->name ?? 'No Area' }}</span>
-                </span>
+                @if($is_off_hours ?? false)
+                    <div class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-400 border border-slate-200 opacity-70 cursor-not-allowed shadow-sm">
+                        <iconify-icon icon="lucide:map-pin" width="12" class="mr-1.5"></iconify-icon>
+                        <span>{{ auth()->user()->bit->name ?? 'Select Bit' }}</span>
+                    </div>
+                @else
+                    <a href="{{ route('salesperson.bits.select') }}" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all no-underline shadow-sm">
+                        <iconify-icon icon="lucide:map-pin" width="12" class="mr-1.5"></iconify-icon>
+                        <span>{{ auth()->user()->bit->name ?? 'Select Bit' }}</span>
+                    </a>
+                @endif
                 <span class="text-xs text-slate-400 mt-2">{{ now()->format('l, M d') }}</span>
             </div>
         </div>
@@ -61,13 +68,15 @@
         <!-- Quick Actions -->
         <div class="grid grid-cols-2 gap-3">
             <button onclick="window.location.href='{{ route('salesperson.visits.index') }}'"
-                class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                <iconify-icon icon="lucide:map-pin" width="16" class="text-slate-400 group-hover:text-indigo-600 transition-colors"></iconify-icon>
+                @if($is_off_hours ?? false) disabled @endif
+                class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'active:scale-95 shadow-sm group' }}">
+                <iconify-icon icon="lucide:map-pin" width="16" class="text-slate-400 {{ ($is_off_hours ?? false) ? '' : 'group-hover:text-indigo-600' }} transition-colors"></iconify-icon>
                 Daily Visits
             </button>
             <button onclick="window.location.href='{{ route('salesperson.shops.index') }}'"
-                class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 shadow-sm group">
-                <iconify-icon icon="lucide:plus-circle" width="16" class="text-slate-400 group-hover:text-indigo-600 transition-colors"></iconify-icon>
+                @if($is_off_hours ?? false) disabled @endif
+                class="flex items-center justify-center gap-2 p-3 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'active:scale-95 shadow-sm group' }}">
+                <iconify-icon icon="lucide:plus-circle" width="16" class="text-slate-400 {{ ($is_off_hours ?? false) ? '' : 'group-hover:text-indigo-600' }} transition-colors"></iconify-icon>
                 New Order
             </button>
         </div>

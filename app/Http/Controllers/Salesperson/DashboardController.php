@@ -12,7 +12,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $salespersonId = Auth::id();
+        $user = Auth::user();
+        if (!$user->bit_id) {
+            return redirect()->route('salesperson.bits.select');
+        }
+
+        $salespersonId = $user->id;
         $today = Carbon::today();
         $startOfMonth = Carbon::now()->startOfMonth();
 

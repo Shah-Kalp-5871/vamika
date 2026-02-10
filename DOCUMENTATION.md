@@ -25,7 +25,7 @@ The platform facilitates:
 - Product catalog management
 - Order management and tracking
 - Sales performance monitoring
-- Area/territory assignment
+- Bit/territory assignment
 - Wallet & payment management
 - Referral programs
 
@@ -46,7 +46,7 @@ The platform facilitates:
 - **Responsibilities**:
   - Manage all users (create, edit, view)
   - Manage salespersons and their assignments
-  - Manage areas/territories
+  - Manage bits/territories
   - Product management and inventory
   - Order monitoring and status updates
   - Offer/promotion management
@@ -208,16 +208,16 @@ Request
 | `/admin/salespersons/{id}/details` | GET | `AdminUser@salespersonDetails` | View salesperson details |
 | `/admin/salespersons/assign` | GET | `AdminUser@assignSalespersonForm` | Assign form |
 | `/admin/salespersons/top` | GET | `AdminUser@topSalespersons` | Top performers |
-| `/admin/assignments` | GET | `AdminArea@viewAssignments` | View area assignments |
+| `/admin/assignments` | GET | `AdminBit@viewAssignments` | View bit assignments |
 
-#### Area/Territory Management
+#### Bit/Territory Management
 | Route | Method | Controller | Purpose |
 |-------|--------|-----------|---------|
-| `/admin/areas` | GET | `AdminArea@index` | List areas |
-| `/admin/areas/create` | GET | `AdminArea@create` | Create area form |
-| `/admin/areas/{id}/edit` | GET | `AdminArea@edit` | Edit area form |
-| `/admin/areas/{id}/performance` | GET | `AdminArea@performance` | Area performance metrics |
-| `/admin/areas/assign` | GET | `AdminArea@assignForm` | Assign salesperson to area |
+| `/admin/bits` | GET | `AdminBit@index` | List bits |
+| `/admin/bits/create` | GET | `AdminBit@create` | Create bit form |
+| `/admin/bits/{id}/edit` | GET | `AdminBit@edit` | Edit bit form |
+| `/admin/bits/{id}/performance` | GET | `AdminBit@performance` | Bit performance metrics |
+| `/admin/bits/assign` | GET | `AdminBit@assignForm` | Assign salesperson to bit |
 
 #### Product Management
 | Route | Method | Controller | Purpose |
@@ -398,13 +398,13 @@ Request
 - topSalespersons()          → Top performers
 ```
 
-**AdminArea**
+**AdminBit**
 ```php
-- index()              → List areas
-- create()             → Create area form
-- edit($id)            → Edit area form
-- performance($id)     → Area performance
-- assignForm()         → Assign salesperson to area
+- index()              → List bits
+- create()             → Create bit form
+- edit($id)            → Edit bit form
+- performance($id)     → Bit performance
+- assignForm()         → Assign salesperson to bit
 - viewAssignments()    → View all assignments
 ```
 
@@ -590,7 +590,7 @@ Based on the routes and features, the following models should exist:
 | Model | Table | Purpose |
 |-------|-------|---------|
 | User | users | User accounts and authentication |
-| Area | areas | Geographic territories |
+| Bit | bits | Geographic territories |
 | Product | products | Product catalog |
 | Order | orders | Customer orders |
 | OrderItem | order_items | Individual items in orders |
@@ -606,10 +606,10 @@ Based on the routes and features, the following models should exist:
 ### Workflow 1: Admin Managing Sales Operations
 ```
 1. Admin logs in → /admin/dashboard
-2. Creates area → /admin/areas/create
+2. Creates bit → /admin/bits/create
 3. Creates products → /admin/products/create
 4. Adds salesperson → /admin/users/create (role: salesperson)
-5. Assigns salesperson to area → /admin/areas/assign
+5. Assigns salesperson to bit → /admin/bits/assign
 6. Creates promotional offers → /admin/offers/create
 7. Monitors orders → /admin/orders
 8. Updates order status → /admin/orders/{id}/update-status
@@ -697,13 +697,13 @@ Stage 6: Closure
 - GET `/admin/salespersons/{id}/details`
 - GET `/admin/salespersons/assign`
 
-**Salespersons & Areas (8)**
+**Salespersons & Bits (8)**
 - GET `/admin/salespersons/top`
-- GET `/admin/areas`
-- GET `/admin/areas/create`
-- GET `/admin/areas/{id}/edit`
-- GET `/admin/areas/{id}/performance`
-- GET `/admin/areas/assign`
+- GET `/admin/bits`
+- GET `/admin/bits/create`
+- GET `/admin/bits/{id}/edit`
+- GET `/admin/bits/{id}/performance`
+- GET `/admin/bits/assign`
 - GET `/admin/assignments`
 
 **Products (5)**

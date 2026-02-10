@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('employee_id')->nullable()->after('status');
-            $table->foreignId('area_id')->nullable()->after('employee_id')->constrained('areas')->nullOnDelete();
+            $table->foreignId('bit_id')->nullable()->after('employee_id')->constrained('bits')->nullOnDelete();
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['area_id']);
-            $table->dropColumn(['employee_id', 'area_id']);
+            $table->dropForeign(['bit_id']);
+            $table->dropColumn(['employee_id', 'bit_id']);
         });
     }
 };

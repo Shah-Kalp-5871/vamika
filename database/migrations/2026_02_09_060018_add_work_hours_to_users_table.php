@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('shops', function (Blueprint $table) {
-            $table->foreignId('salesperson_id')->nullable()->constrained('users')->onDelete('set null')->after('bit_id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->time('work_start_time')->nullable()->after('bit_id');
+            $table->time('work_end_time')->nullable()->after('work_start_time');
         });
     }
 
@@ -21,9 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('shops', function (Blueprint $table) {
-            $table->dropForeign(['salesperson_id']);
-            $table->dropColumn('salesperson_id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['work_start_time', 'work_end_time']);
         });
     }
 };

@@ -357,19 +357,19 @@ $pageConfig = [
                     </div>
 
                    <div class="form-group">
-                        <label class="form-label">Area <span class="form-required">*</span></label>
-                        <select class="form-input" name="area_id" required>
-                            <option value="">Select area</option>
-                            @foreach($areas as $area)
-                                <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
-                                    {{ $area->name }}
+                        <label class="form-label">Bit <span class="form-required">*</span></label>
+                        <select class="form-input" name="bit_id" required>
+                            <option value="">Select bit</option>
+                            @foreach($bits as $bit)
+                                <option value="{{ $bit->id }}" {{ old('bit_id') == $bit->id ? 'selected' : '' }}>
+                                    {{ $bit->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('area_id')
+                        @error('bit_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
-                        <a href="{{ route('admin.areas.index') }}" class=" text-blue-500 hover:text-blue-600 padding-16px">Add New Area</a>
+                        <a href="{{ route('admin.bits.index') }}" class=" text-blue-500 hover:text-blue-600 padding-16px">Add New Bit</a>
                     </div>
 
                     <div class="form-group">
@@ -462,6 +462,8 @@ $pageConfig = [
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
+
+
 
 
 

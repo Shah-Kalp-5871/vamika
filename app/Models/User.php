@@ -19,7 +19,9 @@ class User extends Authenticatable
         'avatar',
         'status',
         'employee_id',
-        'area_id',
+        'bit_id',
+        'work_start_time',
+        'work_end_time',
     ];
 
     public function managedShops()
@@ -40,9 +42,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function area()
+    public function bit()
     {
-        return $this->belongsTo(Area::class);
+        return $this->belongsTo(Bit::class);
     }
 
     public function shop()

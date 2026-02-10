@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', $area->name . ' Performance - Admin')
+@section('title', $bit->name . ' Performance - Admin')
 
 @section('styles')
 <style>
@@ -72,19 +72,19 @@
     <header class="sticky top-0 z-20 bg-white border-b border-slate-100">
         <div class="px-6 py-4 space-y-3">
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.areas.index') }}"
+                <a href="{{ route('admin.bits.index') }}"
                     class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
                     <iconify-icon icon="lucide:arrow-left" width="18"></iconify-icon>
-                    Back to Areas
+                    Back to Bits
                 </a>
             </div>
 
             <div>
                 <h1 class="text-xl font-bold text-slate-900 tracking-tight">
-                    {{ $area->name }} Performance
+                    {{ $bit->name }} Performance
                 </h1>
                 <p class="text-sm text-slate-500">
-                    Detailed metrics for {{ $area->code }}
+                    Detailed metrics for {{ $bit->code }}
                 </p>
             </div>
         </div>
@@ -119,10 +119,10 @@
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-slate-900">{{ $stats['salespersons_count'] }} Salespersons</p>
-                    <p class="text-xs text-slate-500">Currently assigned to shops in this area</p>
+                    <p class="text-xs text-slate-500">Currently assigned to shops in this bit</p>
                 </div>
             </div>
-            <a href="{{ route('admin.salespersons.assign.form', ['area_id' => $area->id]) }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">
+            <a href="{{ route('admin.salespersons.assign.form', ['bit_id' => $bit->id]) }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">
                 Manage
             </a>
         </div>
@@ -130,7 +130,7 @@
         <!-- Top Shops in Area -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="text-sm font-semibold text-slate-900 uppercase tracking-wider">Top Shops by Revenue</h3>
+                <h3 class="text-sm font-semibold text-slate-900 uppercase tracking-wider">Top Shops by Revenue in Bit</h3>
                 <span class="text-xs text-slate-500">{{ $stats['shops_performance']->count() }} shops listed</span>
             </div>
 
@@ -160,9 +160,9 @@
         </div>
 
         <!-- Export -->
-        <button class="btn-primary w-full" onclick="alert('Exporting area report...')">
+        <button class="btn-primary w-full" onclick="alert('Exporting bit report...')">
             <iconify-icon icon="lucide:download" width="16" class="mr-2"></iconify-icon>
-            Export Area Performance
+            Export Bit Performance
         </button>
     </main>
 </div>

@@ -95,17 +95,74 @@ $pageConfig = [
         </div>
     </div>
 
-    <!-- Salespersons List -->
-    <main class="p-4 pb-24">
+    <!-- Tab Navigation -->
+    <div class="px-4 bg-white border-b border-gray-200">
+        <div class="flex gap-6">
+            <button onclick="switchAdminTab('team')" id="team-tab-btn" class="py-4 text-sm font-bold border-b-2 border-blue-600 text-blue-600 transition-all">
+                Sales Team
+            </button>
+            <button onclick="switchAdminTab('insights')" id="insights-tab-btn" class="py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 transition-all">
+                No Order Insights
+            </button>
+        </div>
+    </div>
+
+    <!-- Salespersons List Section -->
+    <div id="team-section" class="p-4">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="font-semibold text-gray-900">Sales Team</h3>
-            <span class="text-sm text-gray-500">
-                Today: {{ date('d M Y') }}
-            </span>
+            <h3 class="font-semibold text-gray-900">Sales Team Overview</h3>
+            <span class="text-sm text-gray-500">Today: {{ date('d M Y') }}</span>
+        </div>
+        <div id="salespersonsList" class="space-y-3"></div>
+    </div>
+
+    <!-- No Order Insights Section -->
+    <div id="insights-section" class="hidden p-4">
+        <div class="mb-4">
+            <h3 class="font-semibold text-gray-900">Recent No-Order Reasons</h3>
+            <p class="text-xs text-gray-500 mt-1">Detailed context for missed order opportunities</p>
         </div>
 
-        <div id="salespersonsList" class="space-y-3"></div>
-    </main>
+        <div class="space-y-3">
+            @forelse($noOrderVisits as $visit)
+                <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500 animate-slide-up">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h4 class="font-bold text-gray-900">{{ $visit->shop->name ?? 'Unknown Shop' }}</h4>
+                            <p class="text-xs text-gray-500">{{ $visit->shop->bit->name ?? 'N/A' }} • {{ $visit->created_at->format('d M, h:i A') }}</p>
+                        </div>
+                        <span class="px-2 py-1 bg-yellow-50 text-yellow-700 text-[10px] font-bold uppercase rounded">No Order</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
+                            <iconify-icon icon="ph:user" width="12" class="text-gray-500"></iconify-icon>
+                        </div>
+                        <p class="text-xs font-medium text-gray-700">{{ $visit->salesperson->name ?? 'Unknown SP' }}</p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-1">Reason:</p>
+                        <p class="text-sm text-gray-900 italic">
+                            {{ ucfirst(str_replace('_', ' ', $visit->no_order_reason)) }}
+                        </p>
+                        @if($visit->notes)
+                            <div class="mt-2 pt-2 border-t border-gray-200">
+                                <p class="text-xs font-bold text-gray-500 uppercase mb-1">Additional Notes:</p>
+                                <p class="text-sm text-gray-700">{{ $visit->notes }}</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white rounded-xl p-8 text-center text-gray-500">
+                    <iconify-icon icon="ph:check-circle" width="32" class="text-green-300 mb-2"></iconify-icon>
+                    <p class="text-sm">No "No Order" visits recorded recently.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</main>
 </div>
 
 <!-- Toast Notification -->
@@ -239,6 +296,33 @@ $pageConfig = [
         toast: document.getElementById('toast'),
         salespersonsList: document.getElementById('salespersonsList')
     };
+
+    function switchAdminTab(tab) {
+        const teamSection = document.getElementById('team-section');
+        const insightsSection = document.getElementById('insights-section');
+        const teamBtn = document.getElementById('team-tab-btn');
+        const insightsBtn = document.getElementById('insights-tab-btn');
+
+        if (tab === 'team') {
+            teamSection.classList.remove('hidden');
+            insightsSection.classList.add('hidden');
+            
+            teamBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
+            teamBtn.classList.remove('border-transparent', 'text-gray-500', 'font-medium');
+            
+            insightsBtn.classList.add('border-transparent', 'text-gray-500', 'font-medium');
+            insightsBtn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
+        } else {
+            teamSection.classList.add('hidden');
+            insightsSection.classList.remove('hidden');
+            
+            insightsBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
+            insightsBtn.classList.remove('border-transparent', 'text-gray-500', 'font-medium');
+            
+            teamBtn.classList.add('border-transparent', 'text-gray-500', 'font-medium');
+            teamBtn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
+        }
+    }
 
     // Initialize App
     document.addEventListener('DOMContentLoaded', () => {

@@ -449,7 +449,7 @@ $pageConfig = [
                         window.location.href = "#"; // No shop page in routes yet
                         break;
                     case 'user':
-                        window.location.href = "{{ route('admin.salespersons.index') }}";
+                        window.location.href = "{{ route('admin.bits.index') }}";
                         break;
                     case 'offer':
                         window.location.href = "{{ route('admin.offers.index') }}";

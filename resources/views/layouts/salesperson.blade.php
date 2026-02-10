@@ -22,6 +22,17 @@ $pageConfig['title'] = $pageConfig['title'] ?? 'Sales Panel';
     <link rel="stylesheet" href="{{ asset('assets/css/bottom-nav.css') }}">
 </head>
 <body class="text-slate-600">
+    @if($is_off_hours ?? false)
+        <div class="bg-amber-50 border-b border-amber-200 px-4 py-2 sticky top-0 z-[100] flex items-center gap-3">
+            <div class="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                <iconify-icon icon="lucide:clock" width="18"></iconify-icon>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs font-bold text-amber-900 leading-tight">View-Only Mode</p>
+                <p class="text-[10px] text-amber-700 leading-tight mt-0.5">Off-duty. Working hours: {{ $work_hours_string ?? 'N/A' }} (IST)</p>
+            </div>
+        </div>
+    @endif
     @include('layouts.partials.salesperson.header')
     
     <main class="page-wrapper">

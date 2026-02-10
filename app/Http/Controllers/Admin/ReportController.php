@@ -69,7 +69,7 @@ class ReportController extends Controller
             ->withCount(['orders as total_orders' => function($q) use ($start, $end) {
                 $q->whereBetween('created_at', [$start, $end]);
             }])
-            ->with('area')
+            ->with('bit')
             ->orderByDesc('total_revenue')
             ->limit(5)
             ->get();
@@ -144,7 +144,7 @@ class ReportController extends Controller
             'name' => $shop->name,
             'orders' => $shop->total_orders,
             'revenue' => (float)($shop->total_revenue ?? 0),
-            'area' => $shop->area->name ?? 'N/A'
+            'bit' => $shop->bit->name ?? 'N/A'
         ]);
 
         $topProductsData = $topProducts->map(fn($p) => [
@@ -207,7 +207,7 @@ class ReportController extends Controller
 
         // 2. Salesperson-wise Statistics
         $salespersons = User::where('role', 'salesperson')
-            ->with(['managedShops', 'area'])
+            ->with(['managedShops', 'bit'])
             ->get();
 
         $salespersonsData = $salespersons->map(function($sp) use ($today, $tomorrow) {
@@ -257,7 +257,7 @@ class ReportController extends Controller
                 'name' => $sp->name,
                 'phone' => $sp->phone ?? 'N/A',
                 'email' => $sp->email,
-                'area' => $sp->area->name ?? 'Unassigned',
+                'bit' => $sp->bit->name ?? 'Unassigned',
                 'status' => $sp->status ?? 'active',
                 'assignedOutlets' => $assignedShopsCount,
                 'stats' => [
@@ -272,13 +272,21 @@ class ReportController extends Controller
             ];
         });
 
+        // 3. No Order Insights (Latest 50 No-Order Visits)
+        $noOrderVisits = Visit::where('status', 'no_order')
+            ->with(['salesperson', 'shop'])
+            ->latest()
+            ->limit(50)
+            ->get();
+
         // Areas for filter (though the view doesn't use it yet in the redesign)
-        $areas = \App\Models\Area::all();
+        $bits = \App\Models\Bit::all();
 
         return view('admin.reports.visit', compact(
             'overallStats',
             'salespersonsData',
-            'areas'
+            'noOrderVisits',
+            'bits'
         ));
     }
     
@@ -289,7 +297,7 @@ class ReportController extends Controller
         $dateTo = $request->get('date_to', now()->format('Y-m-d'));
 
         if ($shop_id) {
-            $shop = Shop::with(['area', 'user', 'salesperson'])->findOrFail($shop_id);
+            $shop = Shop::with(['bit', 'user', 'salesperson'])->findOrFail($shop_id);
             
             // Stats for this specific shop
             $stats = [
@@ -361,7 +369,7 @@ class ReportController extends Controller
         $sortBy = $request->get('sort_by', 'revenue'); 
         $sortOrder = $request->get('sort_order', 'desc');
         
-        $shops = Shop::with(['area'])
+        $shops = Shop::with(['bit'])
             ->withCount(['orders' => function($q) use ($dateFrom, $dateTo) {
                 $q->whereBetween('created_at', [$dateFrom, $dateTo]);
             }])
@@ -378,7 +386,7 @@ class ReportController extends Controller
                 return [
                     'id' => $shop->id,
                     'name' => $shop->name,
-                    'area' => $shop->area->name ?? 'N/A',
+                    'bit' => $shop->bit->name ?? 'N/A',
                     'total_orders' => $orderCount,
                     'total_revenue' => $totalRevenue,
                     'avg_order_value' => $avgOrderValue,
@@ -428,14 +436,14 @@ class ReportController extends Controller
         $dateFrom = $request->get('date_from', now()->subMonth()->format('Y-m-d'));
         $dateTo = $request->get('date_to', now()->format('Y-m-d'));
         
-        // Area filter
-        $areaId = $request->get('area_id');
+        // Bit filter
+        $bitId = $request->get('bit_id');
         
         // Build base query
-        $query = Shop::with(['area']);
+        $query = Shop::with(['bit']);
         
-        if ($areaId) {
-            $query->where('area_id', $areaId);
+        if ($bitId) {
+            $query->where('bit_id', $bitId);
         }
         
         // Get shops with statistics
@@ -455,7 +463,7 @@ class ReportController extends Controller
                 return [
                     'id' => $shop->id,
                     'name' => $shop->name,
-                    'area' => $shop->area->name ?? 'N/A',
+                    'bit' => $shop->bit->name ?? 'N/A',
                     'total_orders' => $orderCount,
                     'total_revenue' => $totalRevenue,
                     'avg_order_value' => $avgOrderValue,
@@ -477,15 +485,15 @@ class ReportController extends Controller
         $topShops = $shops->take(20);
         
         // Get areas for filter
-        $areas = \App\Models\Area::all();
+        $bits = \App\Models\Bit::all();
         
         return view('admin.shops.top', compact(
             'topShops',
             'rankBy',
             'dateFrom',
             'dateTo',
-            'areaId',
-            'areas'
+            'bitId',
+            'bits'
         ));
     }
 }

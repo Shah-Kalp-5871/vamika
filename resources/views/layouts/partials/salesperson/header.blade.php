@@ -50,6 +50,18 @@
                 <a href="{{ route('salesperson.profile.index') }}">
                     <iconify-icon icon="lucide:user" width="18"></iconify-icon>
                 </a>
+            @elseif (($pageConfig['headerRight'] ?? '') === 'add-shop')
+                @if($is_off_hours ?? false)
+                    <button disabled 
+                       class="p-2 rounded-lg bg-indigo-600 text-white opacity-50 cursor-not-allowed shadow-sm">
+                        <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+                    </button>
+                @else
+                    <a href="{{ route('salesperson.shops.create') }}" 
+                       class="p-2 rounded-lg bg-indigo-600 text-white active:scale-95 shadow-sm">
+                        <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+                    </a>
+                @endif
             @endif
             @if (($pageConfig['headerRight'] ?? '') === 'edit')
                 <button onclick="openEditProfile()"

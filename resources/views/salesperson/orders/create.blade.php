@@ -133,7 +133,8 @@
                             </div>
                         </div>
                         <button onclick="showQty({{ $product->id }}, {{ $product->price }}, '{{ $product->name }}')" id="add-{{ $product->id }}" 
-                            class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 active:scale-95 transition-all shadow-sm shadow-indigo-100">
+                            @if($is_off_hours ?? false) disabled @endif
+                            class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold transition-all {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 active:scale-95 shadow-sm shadow-indigo-100' }}">
                             Add
                         </button>
                     </div>
@@ -204,7 +205,9 @@
                         <span id="finalTotal" class="text-2xl font-bold text-slate-900">₹0.00</span>
                     </div>
                     
-                    <button type="submit" class="w-full py-4 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <button type="submit" 
+                            @if($is_off_hours ?? false) disabled @endif
+                            class="w-full py-4 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-100 transition-all flex items-center justify-center gap-2 {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'active:scale-[0.98]' }}">
                         Confirm & Place Order
                     </button>
                     <button type="button" onclick="closeCheckout()" class="w-full mt-2 py-3 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors">

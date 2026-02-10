@@ -3,13 +3,9 @@
         <iconify-icon icon="lucide:layout-dashboard" width="20" class="mb-1 nav-icon"></iconify-icon>
         <span>Dashboard</span>
     </a>
-    <!-- <a href="{{ route('salesperson.shops.index') }}" class="nav-item">
+    <a href="{{ route('salesperson.shops.index') }}" class="nav-item">
         <iconify-icon icon="lucide:store" width="20" class="mb-1 nav-icon"></iconify-icon>
         <span>Shops</span>
-    </a> -->
-    <a href="{{ route('salesperson.shops.select') }}" class="nav-item">
-        <iconify-icon icon="lucide:shopping-bag" width="20" class="mb-1 nav-icon"></iconify-icon>
-        <span>Order</span>
     </a>
 
     <a href="{{ route('salesperson.visits.index') }}" class="nav-item">

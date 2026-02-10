@@ -66,8 +66,8 @@
         <!-- Summary -->
         <div class="p-6 rounded-2xl bg-slate-900 text-white flex items-center justify-between shadow-xl shadow-slate-200">
             <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Grand Total</p>
-                <h3 class="text-2xl font-black">₹{{ number_format($order->total_amount, 2) }}</h3>
+                <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Grand Total</p>
+                <h3 class="text-2xl font-black text-white">₹{{ number_format($order->total_amount, 2) }}</h3>
             </div>
             <a href="{{ route('shop-owner.invoices.show', $order->id) }}" class="h-12 px-6 rounded-xl bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-center border border-white/20 hover:bg-white/20 transition-all">
                 View Invoice

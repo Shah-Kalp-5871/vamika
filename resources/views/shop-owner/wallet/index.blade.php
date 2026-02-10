@@ -20,17 +20,17 @@
                     </div>
                     <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">Active Wallet</span>
                 </div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mb-1">Available Balance</p>
-                <h3 class="text-4xl font-black tracking-tight">₹{{ number_format($wallet->balance ?? 0, 2) }}</h3>
+                <p class="text-[10px] text-white/70 font-bold uppercase tracking-[0.2em] mb-1">Available Balance</p>
+                <h3 class="text-4xl font-black tracking-tight text-white">₹{{ number_format($wallet->balance ?? 0, 2) }}</h3>
                 
                 <div class="mt-8 flex items-center gap-6">
                     <div>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Total Credits</p>
+                        <p class="text-[9px] text-white/50 font-bold uppercase tracking-widest mb-1">Total Credits</p>
                         <p class="text-sm font-bold text-emerald-400">+₹{{ number_format($transactions->where('type', 'credit')->sum('amount'), 2) }}</p>
                     </div>
                     <div class="w-px h-8 bg-white/10"></div>
                     <div>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Total Debits</p>
+                        <p class="text-[9px] text-white/50 font-bold uppercase tracking-widest mb-1">Total Debits</p>
                         <p class="text-sm font-bold text-rose-400">-₹{{ number_format(abs($transactions->where('type', 'debit')->sum('amount')), 2) }}</p>
                     </div>
                 </div>

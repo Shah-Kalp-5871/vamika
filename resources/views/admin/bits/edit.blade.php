@@ -1,25 +1,25 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Area - Admin')
+@section('title', 'Edit Bit - Admin')
 
 @php
-// Create a dummy area if $area is not passed
-$dummyArea = $area ?? (object)[
+// Create a dummy bit if $bit is not passed
+$dummyBit = $bit ?? (object)[
     'id' => request()->route('id') ?? 1,
-    'name' => 'Test Area',
+    'name' => 'Test Bit',
     'pincode' => '400001',
     'delivery_charge' => 50,
     'status' => 'active',
-    'description' => 'Test area description',
+    'description' => 'Test bit description',
     'shops_count' => 0,
     'salespersons_count' => 0,
 ];
 
-$area = $area ?? $dummyArea;
+$bit = $bit ?? $dummyBit;
 
 // If ID is still ":id", set it to 1
-if ($area->id === ':id') {
-    $area->id = 1;
+if ($bit->id === ':id') {
+    $bit->id = 1;
 }
 @endphp
 
@@ -176,7 +176,7 @@ if ($area->id === ':id') {
     <header class="sticky top-0 z-20 bg-white border-b border-slate-100">
         <div class="px-6 py-4 flex items-center gap-4">
             <!-- Back Button -->
-            <a href="{{ route('admin.areas.index') }}"
+            <a href="{{ route('admin.bits.index') }}"
                class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center">
                 <iconify-icon icon="lucide:arrow-left" width="18" class="text-slate-600"></iconify-icon>
             </a>
@@ -193,10 +193,10 @@ if ($area->id === ':id') {
             <!-- Title + Subtitle -->
             <div class="flex-1 min-w-0">
                 <h1 class="text-lg font-semibold text-slate-900 tracking-tight">
-                    Edit Area
+                    Edit Bit
                 </h1>
                 <p class="text-sm text-slate-500">
-                    Update delivery area details
+                    Update delivery bit details
                 </p>
             </div>
 
@@ -208,15 +208,15 @@ if ($area->id === ':id') {
     </header>
 
     <main class="p-6">
-        <form id="areaForm" class="space-y-6" action="{{ url('/admin/areas/' . ($area->id ?? '')) }}" method="POST">
+        <form id="bitForm" class="space-y-6" action="{{ url('/admin/bits/' . ($bit->id ?? '')) }}" method="POST">
             @csrf
             @method('PUT')
             
             <div class="form-group">
-                <label class="form-label" for="areaName">Area Name *</label>
-                <input type="text" id="areaName" name="name" class="form-input" required 
-                       placeholder="Enter area name (e.g., Downtown District)"
-                       value="{{ old('name', $area->name) }}">
+                <label class="form-label" for="bitName">Bit Name *</label>
+                <input type="text" id="bitName" name="name" class="form-input" required 
+                       placeholder="Enter bit name (e.g., Downtown District)"
+                       value="{{ old('name', $bit->name) }}">
                 @error('name')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -224,19 +224,19 @@ if ($area->id === ':id') {
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="form-group">
-                    <label class="form-label" for="areaPincode">Pincode *</label>
-                    <input type="text" id="areaPincode" name="pincode" class="form-input" required 
+                    <label class="form-label" for="bitPincode">Pincode *</label>
+                    <input type="text" id="bitPincode" name="pincode" class="form-input" required 
                            placeholder="Enter pincode (e.g., 400001)"
-                           value="{{ old('pincode', $area->pincode) }}">
+                           value="{{ old('pincode', $bit->pincode) }}">
                     @error('pincode')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="areaDeliveryCharge">Delivery Charge (₹) *</label>
-                    <input type="number" id="areaDeliveryCharge" name="delivery_charge" class="form-input" required 
+                    <label class="form-label" for="bitDeliveryCharge">Delivery Charge (₹) *</label>
+                    <input type="number" id="bitDeliveryCharge" name="delivery_charge" class="form-input" required 
                            step="0.01" placeholder="0.00"
-                           value="{{ old('delivery_charge', $area->delivery_charge) }}">
+                           value="{{ old('delivery_charge', $bit->delivery_charge) }}">
                     @error('delivery_charge')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -244,10 +244,10 @@ if ($area->id === ':id') {
             </div>
             
             <div class="form-group">
-                <label class="form-label" for="areaStatus">Status</label>
-                <select id="areaStatus" name="status" class="form-input">
-                    <option value="active" {{ old('status', $area->status) == 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ old('status', $area->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                <label class="form-label" for="bitStatus">Status</label>
+                <select id="bitStatus" name="status" class="form-input">
+                    <option value="active" {{ old('status', $bit->status) == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ old('status', $bit->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
                 @error('status')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -255,9 +255,9 @@ if ($area->id === ':id') {
             </div>
             
             <div class="form-group">
-                <label class="form-label" for="areaDescription">Description (Optional)</label>
-                <textarea id="areaDescription" name="description" class="form-input" rows="4" 
-                          placeholder="Enter area description (e.g., Covers major shopping malls and residential complexes)">{{ old('description', $area->description) }}</textarea>
+                <label class="form-label" for="bitDescription">Description (Optional)</label>
+                <textarea id="bitDescription" name="description" class="form-input" rows="4" 
+                          placeholder="Enter bit description (e.g., Covers major shopping malls and residential complexes)">{{ old('description', $bit->description) }}</textarea>
                 @error('description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -265,14 +265,14 @@ if ($area->id === ':id') {
             
             <!-- Additional Stats (Read-only) -->
             <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <h3 class="text-sm font-semibold text-slate-700 mb-3">Area Statistics</h3>
+                <h3 class="text-sm font-semibold text-slate-700 mb-3">Bit Statistics</h3>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-slate-900">{{ $area->shops_count ?? 0 }}</div>
+                        <div class="text-2xl font-bold text-slate-900">{{ $bit->shops_count ?? 0 }}</div>
                         <div class="text-xs text-slate-500">Total Shops</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-slate-900">{{ $area->salespersons_count ?? 0 }}</div>
+                        <div class="text-2xl font-bold text-slate-900">{{ $bit->salespersons_count ?? 0 }}</div>
                         <div class="text-xs text-slate-500">Assigned Salespersons</div>
                     </div>
                 </div>
@@ -280,18 +280,18 @@ if ($area->id === ':id') {
             
             <div class="flex justify-between gap-4 pt-6 border-t border-slate-200">
                 <div>
-                    <button type="button" onclick="deleteArea()" 
+                    <button type="button" onclick="deleteBit()" 
                             class="px-4 py-2 text-sm font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg border border-rose-200 transition-colors flex items-center gap-2">
                         <iconify-icon icon="lucide:trash-2" width="14"></iconify-icon>
-                        Delete Area
+                        Delete Bit
                     </button>
                 </div>
                 <div class="flex gap-4">
-                    <a href="{{ route('admin.areas.index') }}" class="btn-secondary no-underline">
+                    <a href="{{ route('admin.bits.index') }}" class="btn-secondary no-underline">
                         Cancel
                     </a>
                     <button type="submit" class="btn-primary">
-                        Update Area
+                        Update Bit
                     </button>
                 </div>
             </div>
@@ -307,21 +307,21 @@ if ($area->id === ':id') {
                             <iconify-icon icon="lucide:alert-triangle" width="24" class="text-rose-600"></iconify-icon>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Delete Area</h3>
+                            <h3 class="text-lg font-semibold text-slate-900">Delete Bit</h3>
                             <p class="text-sm text-slate-500">This action cannot be undone</p>
                         </div>
                     </div>
                     
                     <div class="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <p class="text-sm text-slate-700 mb-2">You're about to delete:</p>
-                        <p class="font-medium text-slate-900">{{ $area->name }}</p>
-                        <p class="text-xs text-slate-500">{{ $area->pincode }}</p>
+                        <p class="font-medium text-slate-900">{{ $bit->name }}</p>
+                        <p class="text-xs text-slate-500">{{ $bit->pincode }}</p>
                     </div>
                     
                     <div class="text-sm text-slate-600 mb-6">
                         <p class="mb-2"><strong>Warning:</strong> This will affect:</p>
                         <ul class="list-disc list-inside space-y-1 text-slate-500">
-                            <li>All shops in this area</li>
+                            <li>All shops in this bit</li>
                             <li>Salesperson assignments</li>
                             <li>Delivery schedules</li>
                             <li>Historical data</li>
@@ -333,12 +333,12 @@ if ($area->id === ':id') {
                                 class="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors">
                             Cancel
                         </button>
-                            <form id="deleteForm" action="{{ url('/admin/areas/' . ($area->id ?? '')) }}" method="POST" class="inline">
+                            <form id="deleteForm" action="{{ url('/admin/bits/' . ($bit->id ?? '')) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                     class="px-4 py-2 text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors">
-                                Delete Area
+                                Delete Bit
                             </button>
                         </form>
                     </div>
@@ -352,13 +352,13 @@ if ($area->id === ':id') {
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('areaForm');
+        const form = document.getElementById('bitForm');
         
         form.addEventListener('submit', function(event) {
             // Client-side validation
-            const name = document.getElementById('areaName').value.trim();
-            const pincode = document.getElementById('areaPincode').value.trim();
-            const deliveryCharge = document.getElementById('areaDeliveryCharge').value;
+            const name = document.getElementById('bitName').value.trim();
+            const pincode = document.getElementById('bitPincode').value.trim();
+            const deliveryCharge = document.getElementById('bitDeliveryCharge').value;
             
             if (!name || !pincode || !deliveryCharge) {
                 event.preventDefault();
@@ -381,7 +381,7 @@ if ($area->id === ':id') {
         });
     });
     
-    function deleteArea() {
+    function deleteBit() {
         document.getElementById('deleteModal').classList.remove('hidden');
     }
     

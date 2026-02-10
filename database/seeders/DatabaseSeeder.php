@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Area;
+use App\Models\Bit;
 use App\Models\Shop;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Base Settings
+        $this->call(SettingSeeder::class);
+        $this->call(AhmedabadDataSeeder::class);
+
         // 1. Create Users
         $admin = User::create([
             'name' => 'Admin User',
@@ -48,15 +52,15 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // 2. Create Areas
-        $area1 = Area::create([
+        // 2. Create Bits
+        $bit1 = Bit::create([
             'name' => 'Mumbai South',
             'code' => 'MUM-S',
             'pincodes' => ['400001', '400002'],
             'status' => 'active',
         ]);
 
-        $area2 = Area::create([
+        $bit2 = Bit::create([
             'name' => 'Delhi Central',
             'code' => 'DEL-C',
             'pincodes' => ['110001', '110002'],
@@ -105,7 +109,7 @@ class DatabaseSeeder extends Seeder
         // 4. Create Shops
         $shop1 = Shop::create([
             'user_id' => $shopOwner1->id,
-            'area_id' => $area1->id,
+            'bit_id' => $bit1->id,
             'name' => 'Healthy Life Pharmacy',
             'address' => '123 Marine Drive, Mumbai',
             'phone' => '022-12345678',
@@ -131,6 +135,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
+        // 7. Info messages
         $this->command->info('Database seeded successfully with static data!');
         $this->command->info('Admin: admin@vamika.com / demo123');
         $this->command->info('Salesperson: sales@vamika.com / demo123');

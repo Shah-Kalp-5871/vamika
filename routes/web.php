@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUser;
-use App\Http\Controllers\Admin\AreaController as AdminArea;
+use App\Http\Controllers\Admin\BitController as AdminBit;
 use App\Http\Controllers\Admin\ProductController as AdminProduct;
 use App\Http\Controllers\Admin\OrderController as AdminOrder;
 use App\Http\Controllers\Admin\OfferController as AdminOffer;
@@ -98,23 +98,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/users/{id}', [AdminUser::class, 'destroy'])->name('users.destroy');
     
     // Salespersons
-    Route::get('/salespersons', [AdminUser::class, 'salespersons'])->name('salespersons.index');
     Route::get('/salespersons/{id}/details', [AdminUser::class, 'salespersonDetails'])->name('salespersons.details');
-    Route::get('/salespersons/assign', [AdminUser::class, 'assignSalespersonForm'])->name('salespersons.assign.form');
-    Route::post('/salespersons/assign', [AdminUser::class, 'storeAssignment'])->name('salespersons.assign.store');
-    Route::get('/salespersons/shops-by-area/{area_id}', [AdminUser::class, 'getShopsByArea'])->name('salespersons.shops-by-area');
     Route::get('/salespersons/top', [AdminUser::class, 'topSalespersons'])->name('salespersons.top');
     
-    // Areas
-    Route::get('/areas', [AdminArea::class, 'index'])->name('areas.index');
-    Route::get('/areas/create', [AdminArea::class, 'create'])->name('areas.create');
-    Route::post('/areas', [AdminArea::class, 'store'])->name('areas.store');
-    Route::get('/areas/{id}/edit', [AdminArea::class, 'edit'])->name('areas.edit');
-    Route::put('/areas/{id}', [AdminArea::class, 'update'])->name('areas.update');
-    Route::delete('/areas/{id}', [AdminArea::class, 'destroy'])->name('areas.destroy');
-    Route::get('/areas/{id}/performance', [AdminArea::class, 'performance'])->name('areas.performance');
-    Route::get('/areas/assign', [AdminArea::class, 'assignForm'])->name('areas.assign.form');
-    Route::get('/assignments', [AdminArea::class, 'viewAssignments'])->name('assignments.view');
+    // Bits
+    Route::get('/bits', [AdminBit::class, 'index'])->name('bits.index');
+    Route::get('/bits/create', [AdminBit::class, 'create'])->name('bits.create');
+    Route::post('/bits', [AdminBit::class, 'store'])->name('bits.store');
+    Route::get('/bits/{id}/edit', [AdminBit::class, 'edit'])->name('bits.edit');
+    Route::put('/bits/{id}', [AdminBit::class, 'update'])->name('bits.update');
+    Route::delete('/bits/{id}', [AdminBit::class, 'destroy'])->name('bits.destroy');
+    Route::get('/bits/{id}/performance', [AdminBit::class, 'performance'])->name('bits.performance');
+    Route::get('/bits/{id}/shops', [AdminBit::class, 'shops'])->name('bits.shops');
     
     // Products
     Route::get('/products', [AdminProduct::class, 'index'])->name('products.index');
@@ -154,36 +149,43 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Settings
     Route::get('/settings', [AdminSettings::class, 'index'])->name('settings.index');
+    Route::post('/settings', [AdminSettings::class, 'update'])->name('settings.update');
 });
 
 /*
 |--------------------------------------------------------------------------
-| SALESPERSON ROUTESw
+| SALESPERSON ROUTES
 |--------------------------------------------------------------------------
 */
-Route::prefix('salesperson')->name('salesperson.')->middleware(['auth', 'salesperson'])->group(function () {
+Route::prefix('salesperson')->name('salesperson.')->middleware(['auth', 'salesperson', 'working_hours'])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [SalespersonDashboard::class, 'index'])->name('dashboard');
     
+    // Bit Selection
+    Route::get('/bits/select', [SalespersonProfile::class, 'selectBit'])->name('bits.select');
+    Route::post('/bits/update', [SalespersonProfile::class, 'updateBit'])->name('bits.update');
+    
     // Shops
     Route::get('/shops', [SalespersonShop::class, 'index'])->name('shops.index');
     Route::get('/shops/select', [SalespersonShop::class, 'select'])->name('shops.select');
+    Route::get('/shops/create', [SalespersonShop::class, 'create'])->name('shops.create');
+    Route::post('/shops', [SalespersonShop::class, 'store'])->name('shops.store');
     Route::get('/shops/{id}', [SalespersonShop::class, 'show'])->name('shops.show');
     
     // Products
     Route::get('/products', [SalespersonProduct::class, 'index'])->name('products.index');
     
     // Orders
-    Route::get('/orders/create', [SalespersonOrder::class, 'create'])->name('orders.create');
-    Route::post('/orders', [SalespersonOrder::class, 'store'])->name('orders.store');
+    Route::get('/orders/create', [SalespersonOrder::class, 'create'])->name('orders.create')->middleware('working_hours');
+    Route::post('/orders', [SalespersonOrder::class, 'store'])->name('orders.store')->middleware('working_hours');
     Route::get('/orders/{id}/review', [SalespersonOrder::class, 'review'])->name('orders.review');
     Route::get('/orders/{id}/invoice', [SalespersonOrder::class, 'invoice'])->name('orders.invoice');
     
     // Visits
     Route::get('/visits', [SalespersonVisit::class, 'index'])->name('visits.index');
-    Route::post('/visits/{id}/no-order', [SalespersonVisit::class, 'markAsNoOrder'])->name('visits.no-order');
-    Route::post('/visits', [SalespersonVisit::class, 'store'])->name('visits.store');
+    Route::post('/visits/{id}/no-order', [SalespersonVisit::class, 'markAsNoOrder'])->name('visits.no-order')->middleware('working_hours');
+    Route::post('/visits', [SalespersonVisit::class, 'store'])->name('visits.store')->middleware('working_hours');
     
     // Sales
     Route::get('/sales', [SalespersonDashboard::class, 'sales'])->name('sales.index');

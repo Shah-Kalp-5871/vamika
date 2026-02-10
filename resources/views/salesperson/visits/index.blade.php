@@ -3,7 +3,7 @@
 @push('pageConfig')
 @php
     $pageConfig = [
-        'title' => 'Dashboard',
+        'title' => 'Daily Visits',
         'showBack' => false,
         'showBottomNav' => true,
         'headerRight' => 'profile'
@@ -116,24 +116,28 @@
 
     /* Progress bar */
     .progress-bar {
-        height: 8px;
-        border-radius: 4px;
-        background-color: #e5e7eb;
+        height: 10px;
+        border-radius: 5px;
+        background-color: #f1f5f9;
         overflow: hidden;
+        display: flex;
     }
 
     .progress-fill {
         height: 100%;
-        border-radius: 4px;
         transition: width 0.3s ease;
     }
 
-    .progress-fill-visited {
-        background-color: #E2E8F0;
+    .progress-fill-order {
+        background-color: #10b981; /* Green */
     }
 
-    .progress-fill-order {
-        background-color: #4F46E5;
+    .progress-fill-no-order {
+        background-color: #f59e0b; /* Amber */
+    }
+
+    .progress-fill-not-visited {
+        background-color: #e2e8f0; /* Light Slate */
     }
 
     .hide-scrollbar::-webkit-scrollbar {
@@ -146,23 +150,46 @@
 </style>
 
 <!-- Progress Bar -->
-<div class="sticky top-0 bg-white z-20 border-b border-gray-100">
+<div class="sticky top-0 bg-white z-20 border-b border-gray-100 shadow-sm">
     <div class="px-4 py-3">
         <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Today's Progress</span>
-            <span class="text-sm font-bold text-indigo-600" id="progress-percentage">{{ $stats['total'] > 0 ? round(($stats['visited'] / $stats['total']) * 100) : 0 }}%</span>
+            <div class="flex flex-col">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Today's Progress</span>
+                <p class="text-[10px] text-gray-400">Area: <span class="text-indigo-600 font-bold uppercase">{{ Auth::user()->bit->name ?? 'None' }}</span></p>
+            </div>
+            <div class="flex flex-col items-end gap-1.5">
+                <span class="text-sm font-bold text-indigo-600" id="progress-percentage">
+                    {{ $stats['total'] > 0 ? round(($stats['visited'] / $stats['total']) * 100) : 0 }}%
+                </span>
+                <a href="{{ route('salesperson.bits.select') }}" 
+                   class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-[10px] font-bold text-indigo-600 uppercase tracking-wide hover:bg-indigo-100 transition-all shadow-sm">
+                    <iconify-icon icon="lucide:map-pin" width="12"></iconify-icon>
+                    Change Bit
+                </a>
+            </div>
         </div>
         <div class="progress-bar">
             @php
-                $visitedPercent = $stats['total'] > 0 ? ($stats['visited'] / $stats['total']) * 100 : 0;
                 $ordersPercent = $stats['total'] > 0 ? ($stats['orders'] / $stats['total']) * 100 : 0;
+                $noOrdersPercent = $stats['total'] > 0 ? ($stats['no_orders'] / $stats['total']) * 100 : 0;
             @endphp
-            <div class="progress-fill progress-fill-order" style="width: {{ $ordersPercent }}%"></div>
-            <div class="progress-fill progress-fill-visited" style="width: {{ $visitedPercent - $ordersPercent }}%"></div>
+            <div class="progress-fill progress-fill-order" style="width: {{ $ordersPercent }}%" title="Orders"></div>
+            <div class="progress-fill progress-fill-no-order" style="width: {{ $noOrdersPercent }}%" title="No Orders"></div>
         </div>
-        <div class="flex justify-between mt-1">
-            <span class="text-[10px] font-medium text-gray-400">Visited: <span class="text-gray-700">{{ $stats['visited'] }}</span></span>
-            <span class="text-[10px] font-medium text-gray-400">Orders: <span class="text-indigo-600 font-bold">{{ $stats['orders'] }}</span></span>
+        <div class="flex justify-between mt-2">
+            <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1 text-[10px] font-medium text-gray-500">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Orders: <span class="text-gray-900 font-bold">{{ $stats['orders'] }}</span>
+                </span>
+                <span class="flex items-center gap-1 text-[10px] font-medium text-gray-500">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    No Order: <span class="text-gray-900 font-bold">{{ $stats['no_orders'] }}</span>
+                </span>
+            </div>
+            <span class="text-[10px] font-medium text-gray-400 italic">
+                Left: <span class="text-indigo-600 font-bold">{{ $stats['not_visited'] }}</span>
+            </span>
         </div>
     </div>
 
@@ -198,7 +225,7 @@
         <input type="text" 
                id="search-input" 
                oninput="filterOutlets()"
-               placeholder="Search shop name or area..."
+               placeholder="Search shop name or bit..."
                class="search-input w-full px-4 py-3 bg-slate-50 rounded-xl text-sm border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:bg-white focus:border-indigo-300 transition-all outline-none">
     </div>
 </div>
@@ -210,7 +237,7 @@
             <div class="outlet-card bg-white rounded-xl p-4 transition-all" 
                  data-id="{{ $shop->id }}"
                  data-name="{{ strtolower($shop->name) }}"
-                 data-area="{{ strtolower($shop->area->name ?? '') }}"
+                 data-area="{{ strtolower($shop->bit->name ?? '') }}"
                  data-status="{{ $shop->status_today }}"
                  data-visited="{{ $shop->visited_today ? 'true' : 'false' }}">
                 
@@ -221,7 +248,7 @@
                         </div>
                         <p class="text-xs text-gray-500 flex items-center gap-1 mb-2">
                             <iconify-icon icon="lucide:map-pin" width="12"></iconify-icon>
-                            {{ $shop->area->name ?? 'No Area' }}
+                            {{ $shop->bit->name ?? 'No Bit' }}
                         </p>
                         
                         <div class="flex flex-wrap gap-1.5">
@@ -264,14 +291,22 @@
                     
                     @if(!$shop->visited_today)
                         <div class="flex gap-2">
-                            <form action="{{ route('salesperson.visits.no-order', $shop->id) }}" method="POST" onsubmit="return confirm('Mark as Visited without Order?')">
-                                @csrf
-                                <button type="submit" class="action-btn btn-no-order">No Order</button>
-                            </form>
-                            <a href="{{ route('salesperson.orders.create', ['shop_id' => $shop->id, 'visit' => 'true']) }}" 
-                               class="action-btn btn-order">
-                                Take Order
-                            </a>
+                            <button type="button" 
+                                    onclick="openNoOrderModal({{ $shop->id }})"
+                                    @if($is_off_hours ?? false) disabled @endif
+                                    class="action-btn btn-no-order {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : '' }}">
+                                No Order
+                            </button>
+                            @if($is_off_hours ?? false)
+                                <button disabled class="action-btn btn-order opacity-50 cursor-not-allowed">
+                                    Take Order
+                                </button>
+                            @else
+                                <a href="{{ route('salesperson.orders.create', ['shop_id' => $shop->id, 'visit' => 'true']) }}" 
+                                   class="action-btn btn-order">
+                                    Take Order
+                                </a>
+                            @endif
                         </div>
                     @else
                         <span class="text-[10px] font-bold text-gray-400 uppercase italic">Recorded</span>
@@ -290,6 +325,48 @@
         <p class="text-slate-500 text-sm">Try adjusting your search or filter</p>
     </div>
 </main>
+
+<!-- No Order Modal -->
+<div id="no-order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeNoOrderModal()"></div>
+    <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl transform transition-all scale-95 opacity-0 overflow-hidden" id="modal-container">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-slate-900">Mark as No Order</h3>
+                <button onclick="closeNoOrderModal()" class="p-2 -mr-2 text-slate-400 hover:text-slate-600">
+                    <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+                </button>
+            </div>
+            
+            <form id="no-order-form" method="POST" action="">
+                @csrf
+                    <div class="space-y-4">
+                        <p class="text-sm text-slate-500">Please select a reason for no order:</p>
+                        
+                        <div class="grid grid-cols-1 gap-2">
+                            @foreach(['shop_closed' => 'Shop Closed', 'owner_not_available' => 'Owner Not Available', 'stock_sufficient' => 'Stock Sufficient', 'payment_issue' => 'Payment Issue', 'other' => 'Other'] as $value => $label)
+                                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-all has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50">
+                                    <input type="radio" name="no_order_reason" value="{{ $value }}" class="w-4 h-4 text-indigo-600" required>
+                                    <span class="text-sm font-medium text-slate-700">{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Additional Notes (Optional)</label>
+                            <textarea name="notes" rows="3" placeholder="Enter more details about why there was no order..." 
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none resize-none"></textarea>
+                        </div>
+                    </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeNoOrderModal()" class="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-600">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold shadow-lg shadow-indigo-200">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
     let currentTab = 'not-visited';
@@ -311,6 +388,31 @@
         });
 
         filterOutlets();
+    }
+
+    function openNoOrderModal(shopId) {
+        const modal = document.getElementById('no-order-modal');
+        const container = document.getElementById('modal-container');
+        const form = document.getElementById('no-order-form');
+        
+        form.action = `/salesperson/visits/${shopId}/no-order`;
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeNoOrderModal() {
+        const modal = document.getElementById('no-order-modal');
+        const container = document.getElementById('modal-container');
+        
+        container.classList.remove('scale-100', 'opacity-100');
+        container.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 200);
     }
 
     function filterOutlets() {

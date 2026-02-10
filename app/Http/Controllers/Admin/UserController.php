@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Area;
+use App\Models\Bit;
 use App\Models\Shop;
 use App\Models\User;
 use App\Models\Order;
@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['shop', 'area'])->whereIn('role', ['salesperson', 'shop-owner']);
+        $query = User::with(['shop', 'bit'])->whereIn('role', ['salesperson', 'shop-owner']);
 
         if ($request->has('role') && in_array($request->role, ['salesperson', 'shop-owner'])) {
             $query->where('role', $request->role);
@@ -44,8 +44,8 @@ class UserController extends Controller
     
     public function create()
     {
-        $areas = Area::where('status', 'active')->get();
-        return view('admin.users.create', compact('areas'));
+        $bits = Bit::where('status', 'active')->get();
+        return view('admin.users.create', compact('bits'));
     }
 
     public function store(Request $request)
@@ -56,7 +56,9 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'user_type' => 'required|in:shop-owner,salesperson',
-            'area_id' => 'required_if:user_type,shop-owner|exists:areas,id',
+            'bit_id' => 'required_if:user_type,shop-owner|exists:bits,id',
+            'work_start_time' => 'nullable|date_format:H:i',
+            'work_end_time' => 'nullable|date_format:H:i',
         ]);
         
         if ($request->user_type === 'shop-owner') {
@@ -66,9 +68,7 @@ class UserController extends Controller
             ]);
         }
         
-        
-        $area = $request->area_id ? Area::find($request->area_id) : null;
-
+        $bit = $request->bit_id ? Bit::find($request->bit_id) : null;
 
         try {
             DB::beginTransaction();
@@ -80,21 +80,17 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'role' => $request->user_type === 'shop-owner' ? 'shop-owner' : 'salesperson',
                 'status' => 'active',
-                'area_id' => ($request->user_type === 'salesperson' && $area) ? $area->id : null, // Salesperson might not have area initially
-
+                'bit_id' => ($request->user_type === 'salesperson' && $bit) ? $bit->id : null,
                 'employee_id' => $request->user_type === 'salesperson' ? $request->employee_id : null,
+                'work_start_time' => $request->work_start_time,
+                'work_end_time' => $request->work_end_time,
             ]);
 
             if ($request->user_type === 'shop-owner') {
-                $request->validate([
-                    'shop_name' => 'required|string|max:255',
-                ]);
-
                 // Create Shop
                 Shop::create([
                     'user_id' => $user->id,
-                    'area_id' => $area->id ?? null,
-
+                    'bit_id' => $bit->id ?? null,
                     'name' => $request->shop_name,
                     'address' => $request->address,
                     'phone' => $request->phone,
@@ -115,8 +111,8 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::with('shop')->findOrFail($id);
-        $areas = Area::where('status', 'active')->get();
-        return view('admin.users.edit', compact('user', 'areas'));
+        $bits = Bit::where('status', 'active')->get();
+        return view('admin.users.edit', compact('user', 'bits'));
     }
 
     public function update(Request $request, $id)
@@ -127,59 +123,50 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
-            'area_id' => 'required|exists:areas,id',
-            'status' => 'nullable|in:active,inactive', // Form sends checkbox value if checked, or nothing
+            'bit_id' => 'required_if:role,shop-owner|exists:bits,id',
+            'status' => 'nullable|in:active,inactive',
+            'work_start_time' => 'nullable|string', // Support H:i or H:i:s
+            'work_end_time' => 'nullable|string',
         ]);
 
-        $area = Area::findOrFail($request->area_id);
-        $status = $request->has('status') ? 'active' : 'inactive'; // Handle checkbox
+        $status = $request->has('status') ? 'active' : 'inactive';
 
         try {
             DB::beginTransaction();
 
-            $user->update([
+            $updateData = [
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'status' => $status,
-                'area_id' => $user->role === 'salesperson' ? $area->id : $user->area_id, // Keep null if shop-owner, or update if salesperson? 
-                // Wait, Shop Owner has area via Shop. Salesperson has area via User. 
-                // Let's be consistent.
-                // If salesperson, update area_id.
-            ]);
-            
+                'work_start_time' => $request->work_start_time,
+                'work_end_time' => $request->work_end_time,
+            ];
+
             if ($user->role === 'salesperson') {
-                 $user->update([
-                    'area_id' => $area->id,
-                    'employee_id' => $request->employee_id,
-                 ]);
+                $updateData['employee_id'] = $request->employee_id;
             }
 
+            $user->update($updateData);
+
             if ($request->filled('password')) {
-                $request->validate([
-                    'password' => 'string|min:8|confirmed',
-                ]);
+                $request->validate(['password' => 'string|min:8|confirmed']);
                 $user->update(['password' => Hash::make($request->password)]);
             }
 
-            if ($user->role === 'shop-owner') {
-                $request->validate([
-                    'shop_name' => 'required|string|max:255',
-                ]);
-
-                // Update or Create Shop logic (in case it's missing for some reason)
+            if ($user->role === 'shop-owner' && $request->bit_id) {
                 $shop = $user->shop;
                 if ($shop) {
                     $shop->update([
                         'name' => $request->shop_name,
-                        'area_id' => $area->id,
+                        'bit_id' => $request->bit_id,
                         'address' => $request->address,
-                        'phone' => $request->phone, // Update shop phone too
+                        'phone' => $request->phone,
                     ]);
                 } else {
                      Shop::create([
                         'user_id' => $user->id,
-                        'area_id' => $area->id,
+                        'bit_id' => $request->bit_id,
                         'name' => $request->shop_name,
                         'address' => $request->address,
                         'phone' => $request->phone,
@@ -202,13 +189,11 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         
-        // Prevent deleting self or other admins if needed (though query filters unrelated roles)
         if ($user->role === 'admin') {
              return back()->with('error', 'Cannot delete admin users.');
         }
 
         try {
-            // DB constraints should handle cascade, but explicitly deleting shop is safer if no cascade
             if ($user->shop) {
                 $user->shop->delete();
             }
@@ -222,17 +207,17 @@ class UserController extends Controller
 
     public function salespersons()
     {
-        return view('admin.salespersons.index');
+        return redirect()->route('admin.users.index', ['role' => 'salesperson']);
     }
     
     public function salespersonDetails($id)
     {
-        $salesperson = User::with(['area', 'managedShops', 'visits', 'salespersonOrders'])->findOrFail($id);
+        $salesperson = User::with(['bit', 'managedShops', 'visits', 'salespersonOrders'])->findOrFail($id);
         
         $today = Carbon::today();
         $tomorrow = Carbon::tomorrow();
 
-        // 1. MTD Data
+        // MTD Data
         $mtdOrders = Order::where('salesperson_id', $id)
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
@@ -242,7 +227,10 @@ class UserController extends Controller
         $mtdRevenue = $mtdOrders->sum('total_amount');
         $avgOrderValue = $mtdOrderCount > 0 ? $mtdRevenue / $mtdOrderCount : 0;
 
-        // 2. Today's Stats
+        // Today's Stats
+        // In simple flow, ManagedShops might not be assigned by admin, 
+        // but it still tracks which shops this salesperson actually visited/ordered from?
+        // Actually, the relationship is still there in the DB.
         $assignedShopsCount = $salesperson->managedShops->count();
         
         $visitsToday = Visit::with('shop')
@@ -262,11 +250,11 @@ class UserController extends Controller
         $visitedWithOrderCount = $visitedIds->intersect($shopsWithOrderIds)->count();
         $noOrderCount = max(0, $visitedCount - $visitedWithOrderCount);
 
-        // 3. Performance Metrics
+        // Performance Metrics
         $visitRate = $assignedShopsCount > 0 ? ($visitedCount / $assignedShopsCount) * 100 : 0;
         $conversionRate = $visitedCount > 0 ? ($visitedWithOrderCount / $visitedCount) * 100 : 0;
 
-        // 4. Visits List for Today
+        // Visits List for Today
         $visitsList = $visitsToday->map(function($visit) use ($id, $ordersToday) {
             $order = $ordersToday->where('shop_id', $visit->shop_id)->first();
             return [
@@ -280,7 +268,6 @@ class UserController extends Controller
             ];
         });
 
-        // 5. Activity
         $firstVisit = $visitsToday->sortBy('created_at')->first();
         $lastVisit = $visitsToday->sortByDesc('created_at')->first();
         $totalValueToday = $ordersToday->sum('total_amount');
@@ -289,7 +276,7 @@ class UserController extends Controller
             'name' => $salesperson->name,
             'phone' => $salesperson->phone ?? 'N/A',
             'email' => $salesperson->email,
-            'area' => $salesperson->area->name ?? 'Unassigned',
+            'bit' => $salesperson->bit->name ?? 'Not Set',
             'status' => $salesperson->status ?? 'active',
             'assignedOutlets' => $assignedShopsCount,
             'stats' => [
@@ -314,60 +301,6 @@ class UserController extends Controller
 
         return view('admin.salespersons.details', compact('salespersonData', 'id'));
     }
-    
-    public function assignSalespersonForm(Request $request)
-    {
-        $user_id = $request->get('user_id');
-        $salesperson = $user_id ? User::with(['area', 'managedShops'])->find($user_id) : null;
-        
-        // Fetch all salespersons for the selection dropdown if needed
-        $salespersons = User::where('role', 'salesperson')->where('status', 'active')->get();
-        $areas = Area::where('status', 'active')->get();
-        
-        return view('admin.salespersons.assign', compact('salesperson', 'areas', 'salespersons'));
-    }
-
-    public function getShopsByArea($area_id)
-    {
-        $shops = Shop::with('salesperson:id,name')->where('area_id', $area_id)->where('status', 'active')->get(['id', 'name', 'salesperson_id']);
-        return response()->json($shops);
-    }
-
-    public function storeAssignment(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'area_id' => 'required|exists:areas,id',
-            'shop_ids' => 'required|array',
-            'shop_ids.*' => 'exists:shops,id',
-        ]);
-
-        try {
-            DB::beginTransaction();
-
-            $salesperson = User::findOrFail($request->user_id);
-            $salesperson->update(['area_id' => $request->area_id]);
-
-            // Clear previous shop assignments for this salesperson if any (optional, based on requirement)
-            // or just add to them. The request says "select the shop inside it".
-            // I'll update all selected shops to this salesperson.
-            
-            // First, remove this salesperson from shops they might have had before
-            Shop::where('salesperson_id', $salesperson->id)->update(['salesperson_id' => null]);
-            
-            // Then assign to new ones
-            Shop::whereIn('id', $request->shop_ids)->update(['salesperson_id' => $salesperson->id]);
-
-            DB::commit();
-
-            return redirect()->route('admin.users.index')->with('success', 'Assignment saved successfully.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Error saving assignment: ' . $e->getMessage());
-        }
-    }
-    
     public function topSalespersons()
     {
         return view('admin.salespersons.top');

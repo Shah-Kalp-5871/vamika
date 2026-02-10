@@ -48,7 +48,7 @@
             <div class="text-right">
                 <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Salesperson</h4>
                 <p class="text-sm font-bold text-slate-900">{{ auth()->user()->name }}</p>
-                <p class="text-xs text-slate-500 mt-1">{{ auth()->user()->area->name ?? 'N/A' }} Area</p>
+                <p class="text-xs text-slate-500 mt-1">{{ auth()->user()->bit->name ?? 'N/A' }} Bit</p>
             </div>
         </div>
 

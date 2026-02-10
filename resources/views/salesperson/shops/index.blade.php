@@ -77,7 +77,7 @@
                                 <div class="flex items-start justify-between">
                                     <div>
                                         <h3 class="text-sm font-semibold text-slate-900 truncate">{{ $shop->name }}</h3>
-                                        <p class="text-xs text-slate-500">{{ $shop->user->name ?? 'N/A' }} • {{ $shop->area->name ?? 'N/A' }}</p>
+                                        <p class="text-xs text-slate-500">{{ $shop->user->name ?? 'N/A' }} • {{ $shop->bit->name ?? 'N/A' }}</p>
                                     </div>
                                     <span class="px-2 py-1 rounded-full text-xs font-medium {{ $statusClass }}">
                                         {{ ucfirst($shop->status) }}
@@ -106,10 +106,17 @@
                                     class="px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 transition-all">
                                     Details
                                 </a>
-                                <a href="{{ route('salesperson.orders.create', ['shop_id' => $shop->id]) }}" 
-                                    class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition-all">
-                                    Order
-                                </a>
+                                @if($is_off_hours ?? false)
+                                    <button disabled 
+                                        class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-medium opacity-50 cursor-not-allowed">
+                                        Order
+                                    </button>
+                                @else
+                                    <a href="{{ route('salesperson.orders.create', ['shop_id' => $shop->id]) }}" 
+                                        class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition-all">
+                                        Order
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>

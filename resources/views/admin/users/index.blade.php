@@ -428,7 +428,7 @@ $pageConfig = [
                             <th>User</th>
                             <th>Type</th>
                             <th>Contact</th>
-                            <th>Area</th>
+                            <th>Bit</th>
                             <th>Status</th>
                             <th>Join Date</th>
                             <th>Actions</th>
@@ -468,15 +468,15 @@ $pageConfig = [
                                 </div>
                             </td>
                             <td>
-                                @if($user->area)
+                                @if($user->bit)
                                 <div class="flex items-center gap-1 text-sm">
                                     <iconify-icon icon="lucide:map-pin" width="14" class="text-slate-400"></iconify-icon>
-                                    <span>{{ $user->area->name }}</span>
+                                    <span>{{ $user->bit->name }}</span>
                                 </div>
-                                @elseif($user->shop && $user->shop->area)
+                                @elseif($user->shop && $user->shop->bit)
                                 <div class="flex items-center gap-1 text-sm">
                                     <iconify-icon icon="lucide:map-pin" width="14" class="text-slate-400"></iconify-icon>
-                                    <span>{{ $user->shop->area->name }}</span>
+                                    <span>{{ $user->shop->bit->name }}</span>
                                 </div>
                                 @else
                                 <span class="text-slate-400">-</span>
@@ -507,12 +507,10 @@ $pageConfig = [
                                         <iconify-icon icon="lucide:bar-chart-2" width="14"></iconify-icon>
                                         Analyze
                                     </a>
-                                    @endif
-
-                                    @if($user->role === 'salesperson')
-                                    <a href="{{ route('admin.salespersons.assign.form', ['user_id' => $user->id]) }}" class="btn-secondary" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none;">
-                                        <iconify-icon icon="lucide:map-pin" width="14"></iconify-icon>
-                                        Assign
+                                    @elseif($user->role === 'salesperson')
+                                    <a href="{{ route('admin.salespersons.details', $user->id) }}" class="btn-analyze" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
+                                        <iconify-icon icon="lucide:bar-chart-2" width="14"></iconify-icon>
+                                        Report
                                     </a>
                                     @endif
 

@@ -31,13 +31,13 @@ class OrderController extends Controller
     
     public function show($id)
     {
-        $order = Order::with(['shop.area', 'salesperson', 'items.product', 'walletTransactions'])->findOrFail($id);
+        $order = Order::with(['shop.bit', 'salesperson', 'items.product', 'walletTransactions'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
 
     public function details($id)
     {
-        $order = Order::with(['shop.area', 'salesperson', 'items.product'])->findOrFail($id);
+        $order = Order::with(['shop.bit', 'salesperson', 'items.product'])->findOrFail($id);
         return view('admin.orders.details', compact('order'));
     }
 

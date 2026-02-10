@@ -102,73 +102,61 @@ $pageConfig = [
 </style>
 
 <div class="main-content">
-    <main style="padding: 1.5rem;">
-        <!-- Company Logo -->
-        <div class="settings-section">
-            <h3 class="section-title">
-                <iconify-icon icon="lucide:image"></iconify-icon>
-                Company Logo
-            </h3>
-            <div class="logo-upload" onclick="uploadLogo()">
-                <iconify-icon icon="lucide:upload" width="32" class="text-slate-400 mb-2"></iconify-icon>
-                <span class="text-sm text-slate-500">Upload Logo</span>
-                <span class="text-xs text-slate-400 mt-1">JPG, PNG up to 2MB</span>
-            </div>
-            <p class="text-sm text-slate-500 text-center">Upload your company logo. Recommended size: 400x400px</p>
-        </div>
+        <form action="{{ route('admin.settings.update') }}" method="POST">
+            @csrf
+            
+            @if(session('success'))
+                <div class="mb-4 p-4 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-        <!-- Company Information -->
-        <div class="settings-section">
-            <h3 class="section-title">Company Information</h3>
-            
-            <div class="form-group">
-                <label class="form-label">Company Name</label>
-                <input type="text" class="form-input" value="Vamika Enterprise" readonly>
+            <!-- Salesperson Working Hours -->
+            <div class="settings-section">
+                <h3 class="section-title">
+                    <iconify-icon icon="lucide:clock" class="mr-2"></iconify-icon>
+                    Salesperson Working Hours (Global)
+                </h3>
+                <p class="text-xs text-slate-500 mb-4 italic">These hours will apply to all salespersons for "View-Only" mode enforcement.</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Global Start Time (IST)</label>
+                        <input type="time" name="salesperson_work_start" class="form-input" 
+                               value="{{ $settings['salesperson_work_start'] ?? '09:00' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Global End Time (IST)</label>
+                        <input type="time" name="salesperson_work_end" class="form-input" 
+                               value="{{ $settings['salesperson_work_end'] ?? '18:00' }}">
+                    </div>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Contact Email</label>
-                <input type="email" class="form-input" value="info@vamikaenterprise.com" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" class="form-input" value="011-12345678" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">GST Number</label>
-                <input type="text" class="form-input" value="07AABCU9603R1ZM" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Address</label>
-                <textarea class="form-input" rows="3" readonly>Delhi NCR, India</textarea>
-            </div>
-        </div>
 
-        <!-- Change Password -->
-        <div class="settings-section">
-            <h3 class="section-title">Change Password</h3>
-            
-            <div class="form-group">
-                <label class="form-label">Current Password</label>
-                <input type="password" class="form-input" placeholder="Enter current password">
+            <!-- Company Information -->
+            <div class="settings-section">
+                <h3 class="section-title">Company Information</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" name="company_name" class="form-input" value="{{ $settings['company_name'] ?? 'Vamika Enterprise' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contact Email</label>
+                    <input type="email" name="contact_email" class="form-input" value="{{ $settings['contact_email'] ?? 'info@vamikaenterprise.com' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="phone_number" class="form-input" value="{{ $settings['phone_number'] ?? '011-12345678' }}">
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">New Password</label>
-                <input type="password" class="form-input" placeholder="Enter new password">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Confirm New Password</label>
-                <input type="password" class="form-input" placeholder="Confirm new password">
-            </div>
-        </div>
 
-        <!-- Save Button -->
-        <button class="btn-primary" onclick="alert('Settings saved!')">Save All Changes</button>
+            <!-- Save Button -->
+            <button type="submit" class="btn-primary">Save All Changes</button>
+        </form>
     </main>
 </div>
 

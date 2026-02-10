@@ -9,7 +9,7 @@ class Shop extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'area_id', 'salesperson_id', 'name', 'address', 'phone', 
+        'user_id', 'bit_id', 'salesperson_id', 'name', 'address', 'phone', 
         'status', 'credit_limit', 'current_balance'
     ];
 
@@ -23,9 +23,9 @@ class Shop extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function area()
+    public function bit()
     {
-        return $this->belongsTo(Area::class);
+        return $this->belongsTo(Bit::class);
     }
 
     public function orders()

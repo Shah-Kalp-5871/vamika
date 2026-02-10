@@ -2,21 +2,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
-use App\Models\Area;
+use App\Models\Bit;
 use Illuminate\Http\Request;
 
-class AreaController extends Controller
+class BitController extends Controller
 {
     public function index()
     {
-        $areas = Area::withCount('shops')->get();
-        return view('admin.areas.index', compact('areas'));
+        $bits = Bit::withCount('shops')->get();
+        return view('admin.bits.index', compact('bits'));
     }
     
     public function create()
     {
-        return view('admin.areas.create');
+        return view('admin.bits.create');
     }
     
     public function store(Request $request)
@@ -29,27 +28,27 @@ class AreaController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:areas,code',
+            'code' => 'required|string|max:50|unique:bits,code',
             'pincodes' => 'nullable|array',
             'pincodes.*' => 'string|digits:6',
             'status' => 'required|in:active,inactive',
         ]);
 
-        Area::create($validated);
+        Bit::create($validated);
 
-        return redirect()->route('admin.areas.index')
-            ->with('success', 'Area created successfully.');
+        return redirect()->route('admin.bits.index')
+            ->with('success', 'Bit created successfully.');
     }
     
     public function edit($id)
     {
-        $area = Area::findOrFail($id);
-        return view('admin.areas.create', compact('area')); // Reusing create view for edit
+        $bit = Bit::findOrFail($id);
+        return view('admin.bits.create', compact('bit')); // Reusing create view for edit
     }
     
     public function update(Request $request, $id)
     {
-        $area = Area::findOrFail($id);
+        $bit = Bit::findOrFail($id);
         
         // Convert comma-separated string to array
         if ($request->has('pincodes_string')) {
@@ -59,47 +58,47 @@ class AreaController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:areas,code,' . $id,
+            'code' => 'required|string|max:50|unique:bits,code,' . $id,
             'pincodes' => 'nullable|array',
             'pincodes.*' => 'string|digits:6',
             'status' => 'required|in:active,inactive',
         ]);
 
-        $area->update($validated);
+        $bit->update($validated);
 
-        return redirect()->route('admin.areas.index')
-            ->with('success', 'Area updated successfully.');
+        return redirect()->route('admin.bits.index')
+            ->with('success', 'Bit updated successfully.');
     }
 
     public function destroy($id)
     {
-        $area = Area::withCount('shops')->findOrFail($id);
+        $bit = Bit::withCount('shops')->findOrFail($id);
         
-        if ($area->shops_count > 0) {
-            return back()->with('error', 'Cannot delete area with assigned shops. Please reassign shops first.');
+        if ($bit->shops_count > 0) {
+            return back()->with('error', 'Cannot delete bit with existing shops. Please reposition shops first.');
         }
 
-        $area->delete();
-        return back()->with('success', 'Area deleted successfully.');
+        $bit->delete();
+        return back()->with('success', 'Bit deleted successfully.');
     }
     
     public function performance($id)
     {
-        $area = Area::with(['shops.orders'])->findOrFail($id);
+        $bit = Bit::with(['shops.orders'])->findOrFail($id);
         
         // Calculate stats
-        $totalShops = $area->shops->count();
-        $totalOrders = $area->shops->sum(fn($shop) => $shop->orders->count());
-        $totalRevenue = $area->shops->sum(fn($shop) => $shop->orders->sum('total_amount'));
+        $totalShops = $bit->shops->count();
+        $totalOrders = $bit->shops->sum(fn($shop) => $shop->orders->count());
+        $totalRevenue = $bit->shops->sum(fn($shop) => $shop->orders->sum('total_amount'));
         $avgOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
         
         // Get assigned salespersons (unique)
         $salespersonsCount = \App\Models\User::whereHas('managedShops', function($query) use ($id) {
-            $query->where('area_id', $id);
+            $query->where('bit_id', $id);
         })->count();
 
         // Get recent shops performance
-        $shopsPerformance = $area->shops->map(function($shop) {
+        $shopsPerformance = $bit->shops->map(function($shop) {
             return [
                 'name' => $shop->name,
                 'owner' => $shop->user->name ?? 'N/A',
@@ -118,17 +117,15 @@ class AreaController extends Controller
             'shops_performance' => $shopsPerformance,
         ];
 
-        return view('admin.areas.performance', compact('area', 'stats'));
+        return view('admin.bits.performance', compact('bit', 'stats'));
     }
-    
-    public function assignForm()
+    public function shops($id)
     {
-        return view('admin.areas.assign');
-    }
-    
-    public function viewAssignments()
-    {
-        // This seems to be a placeholder for a different feature, keeping as is for now or implementing later
-        return view('admin.salespersons.view-assignments');
+        $bit = Bit::findOrFail($id);
+        $shops = \App\Models\Shop::where('bit_id', $id)->with('salesperson')->get();
+        return response()->json([
+            'bit' => $bit->name,
+            'shops' => $shops
+        ]);
     }
 }

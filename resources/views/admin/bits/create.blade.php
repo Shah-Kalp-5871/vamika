@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Add New Area - Admin')
+@section('title', 'Add New Bit - Admin')
 
 @section('styles')
 <style>
@@ -199,7 +199,7 @@
     <header class="sticky top-0 z-20 bg-white border-b border-slate-100">
         <div class="px-6 py-4 flex items-center gap-4">
             <!-- Back Button -->
-            <a href="{{ route('admin.areas.index') }}"
+            <a href="{{ route('admin.bits.index') }}"
                class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors flex items-center justify-center">
                 <iconify-icon icon="lucide:arrow-left" width="18" class="text-slate-600"></iconify-icon>
             </a>
@@ -216,10 +216,10 @@
             <!-- Title + Subtitle -->
             <div class="flex-1 min-w-0">
                 <h1 class="text-lg font-semibold text-slate-900 tracking-tight">
-                    {{ isset($area) ? 'Edit Area' : 'Add New Area' }}
+                    {{ isset($bit) ? 'Edit Bit' : 'Add New Bit' }}
                 </h1>
                 <p class="text-sm text-slate-500">
-                    {{ isset($area) ? 'Update delivery area details' : 'Configure delivery area details' }}
+                    {{ isset($bit) ? 'Update delivery bit details' : 'Configure delivery bit details' }}
                 </p>
             </div>
 
@@ -232,9 +232,9 @@
 
     <main class="p-6">
         <div class="form-container">
-            <form action="{{ isset($area) ? route('admin.areas.update', $area->id) : route('admin.areas.store') }}" method="POST" class="space-y-6">
+            <form action="{{ isset($bit) ? route('admin.bits.update', $bit->id) : route('admin.bits.store') }}" method="POST" class="space-y-6">
                 @csrf
-                @if(isset($area))
+                @if(isset($bit))
                     @method('PUT')
                 @endif
                 
@@ -249,26 +249,26 @@
                 @endif
                 
                 <div class="form-group">
-                    <label class="form-label" for="areaName">Area Name *</label>
-                    <input type="text" name="name" id="areaName" class="form-input" required 
-                           value="{{ old('name', $area->name ?? '') }}"
-                           placeholder="Enter area name (e.g., Downtown District)">
+                    <label class="form-label" for="bitName">Bit Name *</label>
+                    <input type="text" name="name" id="bitName" class="form-input" required 
+                           value="{{ old('name', $bit->name ?? '') }}"
+                           placeholder="Enter bit name (e.g., Downtown District)">
                     @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="form-group">
-                        <label class="form-label" for="areaCode">Area Code *</label>
-                        <input type="text" name="code" id="areaCode" class="form-input" required 
-                               value="{{ old('code', $area->code ?? '') }}"
-                               placeholder="Enter unique code (e.g., AREA-001)">
+                        <label class="form-label" for="bitCode">Bit Code *</label>
+                        <input type="text" name="code" id="bitCode" class="form-input" required 
+                               value="{{ old('code', $bit->code ?? '') }}"
+                               placeholder="Enter unique code (e.g., BIT-001)">
                          @error('code') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="areaStatus">Status *</label>
-                        <select name="status" id="areaStatus" class="form-input">
-                            <option value="active" {{ (old('status', $area->status ?? '') == 'active') ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ (old('status', $area->status ?? '') == 'inactive') ? 'selected' : '' }}>Inactive</option>
+                        <label class="form-label" for="bitStatus">Status *</label>
+                        <select name="status" id="bitStatus" class="form-input">
+                            <option value="active" {{ (old('status', $bit->status ?? '') == 'active') ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ (old('status', $bit->status ?? '') == 'inactive') ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
@@ -279,8 +279,8 @@
                     <label class="form-label" for="pincodes">Pincodes (Comma Separated) *</label>
                      @php
                         $pincodesString = '';
-                        if(isset($area) && is_array($area->pincodes)) {
-                             $pincodesString = implode(', ', $area->pincodes);
+                        if(isset($bit) && is_array($bit->pincodes)) {
+                             $pincodesString = implode(', ', $bit->pincodes);
                         }
                      @endphp
                     <input type="text" name="pincodes_string" id="pincodes" class="form-input" 
@@ -290,11 +290,11 @@
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4 mt-6">
-                    <button type="button" onclick="window.location.href='{{ route('admin.areas.index') }}'" class="btn-secondary">
+                    <button type="button" onclick="window.location.href='{{ route('admin.bits.index') }}'" class="btn-secondary">
                         Cancel
                     </button>
                     <button type="submit" class="btn-primary">
-                        {{ isset($area) ? 'Update Area' : 'Save Area' }}
+                        {{ isset($bit) ? 'Update Bit' : 'Save Bit' }}
                     </button>
                 </div>
             </form>
@@ -331,7 +331,7 @@
         
         // Redirect back to areas page
         setTimeout(() => {
-            window.location.href = '{{ route("admin.areas.index") }}';
+            window.location.href = '{{ route("admin.bits.index") }}';
         }, 1500);
     }
 
