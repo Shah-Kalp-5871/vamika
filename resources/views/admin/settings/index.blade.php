@@ -150,7 +150,9 @@ $pageConfig = [
                 
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone_number" class="form-input" value="{{ $settings['phone_number'] ?? '011-12345678' }}">
+                    <input type="tel" name="phone_number" class="form-input" maxlength="10"
+                           value="{{ $settings['phone_number'] ?? '9212345678' }}"
+                           oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
                 </div>
             </div>
 

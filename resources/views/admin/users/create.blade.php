@@ -340,8 +340,9 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Phone Number <span class="form-required">*</span></label>
-                        <input type="tel" class="form-input" name="phone" placeholder="Enter phone number" 
-                               value="{{ old('phone') }}" required>
+                        <input type="tel" class="form-input" name="phone" placeholder="Enter 10-digit number" 
+                               value="{{ old('phone') }}" maxlength="10" pattern="[0-9]{10}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" required>
                         @error('phone')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
@@ -447,8 +448,9 @@ $pageConfig = [
 
                     <div class="form-group">
                         <label class="form-label">Phone Number <span class="form-required">*</span></label>
-                        <input type="tel" class="form-input" name="phone" placeholder="Enter phone number" 
-                               value="{{ old('phone') }}" required>
+                        <input type="tel" class="form-input" name="phone" placeholder="Enter 10-digit number" 
+                               value="{{ old('phone') }}" maxlength="10" pattern="[0-9]{10}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" required>
                         @error('phone')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror

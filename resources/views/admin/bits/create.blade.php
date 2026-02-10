@@ -285,6 +285,7 @@
                      @endphp
                     <input type="text" name="pincodes_string" id="pincodes" class="form-input" 
                            value="{{ old('pincodes_string', $pincodesString) }}"
+                           oninput="let digits = this.value.replace(/[^0-9]/g, ''); let chunks = digits.match(/.{1,6}/g) || []; this.value = chunks.join(', ');"
                            placeholder="e.g., 400001, 400002, 400003">
                     <p class="text-xs text-slate-500 mt-1">Enter valid 6-digit pincodes separated by commas.</p>
                 </div>
