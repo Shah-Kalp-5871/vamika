@@ -122,7 +122,7 @@ class BitController extends Controller
     public function shops($id)
     {
         $bit = Bit::findOrFail($id);
-        $shops = \App\Models\Shop::where('bit_id', $id)->with('salesperson')->get();
+        $shops = \App\Models\Shop::where('bit_id', $id)->with(['salesperson', 'user'])->get();
         return response()->json([
             'bit' => $bit->name,
             'shops' => $shops

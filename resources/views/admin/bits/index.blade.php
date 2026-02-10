@@ -637,7 +637,7 @@ $pageConfig = [
                         <div class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                             <span class="flex items-center gap-1">
                                 <iconify-icon icon="lucide:user" width="12" class="text-slate-400"></iconify-icon>
-                                ${shop.owner || 'No owner'}
+                                ${shop.user ? shop.user.name : 'No owner'}
                             </span>
                             <span class="flex items-center gap-1">
                                 <iconify-icon icon="lucide:phone" width="12" class="text-slate-400"></iconify-icon>
@@ -741,6 +741,7 @@ $pageConfig = [
                             </div>
                             <div>
                                 <div class="text-sm font-medium text-slate-900">${shop.name}</div>
+                                <div class="text-xs text-slate-500">${shop.user ? 'Owner: ' + shop.user.name : 'No owner'}</div>
                                 <div class="text-xs text-slate-500">${shop.salesperson ? 'SP: ' + shop.salesperson.name : 'Unassigned'}</div>
                             </div>
                         </div>
