@@ -27,12 +27,15 @@ class AhmedabadDataSeeder extends Seeder
 
         $bits = [];
         foreach ($areas as $area) {
-            $bits[] = Bit::create([
-                'name' => $area['name'],
-                'code' => $area['code'],
-                'pincodes' => $area['pincodes'],
-                'status' => 'active',
-            ]);
+            $bit = Bit::updateOrCreate(
+                ['code' => $area['code']],
+                [
+                    'name' => $area['name'],
+                    'pincodes' => $area['pincodes'],
+                    'status' => 'active',
+                ]
+            );
+            $bits[] = $bit;
         }
 
         // 2. Create 10 Salespeople
@@ -44,18 +47,21 @@ class AhmedabadDataSeeder extends Seeder
         $salespersons = [];
         foreach ($salespersonNames as $index => $name) {
             $email = strtolower(explode(' ', $name)[0]) . ($index + 1) . '@vamika.com';
-            $salespersons[] = User::create([
-                'name' => $name,
-                'email' => $email,
-                'password' => Hash::make('demo123'),
-                'role' => 'salesperson',
-                'phone' => '9898' . str_pad($index, 6, '0', STR_PAD_LEFT),
-                'status' => 'active',
-                'employee_id' => 'EMP' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
-                'bit_id' => $bits[$index % 5]->id, // Assign to a bit
-                'work_start_time' => '09:00',
-                'work_end_time' => '18:00',
-            ]);
+            $salesperson = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'password' => Hash::make('demo123'),
+                    'role' => 'salesperson',
+                    'phone' => '9898' . str_pad($index, 6, '0', STR_PAD_LEFT),
+                    'status' => 'active',
+                    'employee_id' => 'EMP' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                    'bit_id' => $bits[$index % 5]->id,
+                    'work_start_time' => '09:00',
+                    'work_end_time' => '18:00',
+                ]
+            );
+            $salespersons[] = $salesperson;
         }
 
         // 3. Create 10 Products (FMCG/Local Gujarati focus)
@@ -73,24 +79,28 @@ class AhmedabadDataSeeder extends Seeder
         ];
 
         foreach ($productData as $index => $item) {
-            $product = Product::create([
-                'name' => $item['name'],
-                'sku' => 'PROD' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
-                'description' => 'Quality ' . $item['name'] . ' for your daily needs.',
-                'price' => $item['price'],
-                'mrp' => $item['mrp'],
-                'category' => $item['category'],
-                'brand' => $item['brand'],
-                'status' => 'active',
-                'unit' => 'piece',
-            ]);
+            $sku = 'PROD' . str_pad($index + 1, 3, '0', STR_PAD_LEFT);
+            $product = Product::updateOrCreate(
+                ['sku' => $sku],
+                [
+                    'name' => $item['name'],
+                    'description' => 'Quality ' . $item['name'] . ' for your daily needs.',
+                    'price' => $item['price'],
+                    'mrp' => $item['mrp'],
+                    'category' => $item['category'],
+                    'brand' => $item['brand'],
+                    'status' => 'active',
+                    'unit' => 'piece',
+                ]
+            );
 
-            ProductImage::create([
-                'product_id' => $product->id,
-                'image_path' => 'https://placehold.co/600x400?text=' . urlencode($item['name']),
-                'is_primary' => true,
-                'sort_order' => 1,
-            ]);
+            ProductImage::updateOrCreate(
+                ['product_id' => $product->id, 'is_primary' => true],
+                [
+                    'image_path' => 'https://placehold.co/600x400?text=' . urlencode($item['name']),
+                    'sort_order' => 1,
+                ]
+            );
         }
 
         // 4. Create 5 Shops per Bit (25 shops total)

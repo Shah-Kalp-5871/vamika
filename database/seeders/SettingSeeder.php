@@ -12,10 +12,10 @@ class SettingSeeder extends Seeder
      */
     public function run(): void
     {
-        Setting::create([
-            'key' => 'working_hours',
-            'value' => json_encode(['start' => '09:00', 'end' => '18:00']),
-        ]);
+        Setting::updateOrCreate(
+            ['key' => 'working_hours'],
+            ['value' => json_encode(['start' => '09:00', 'end' => '18:00'])]
+        );
         
         // Add more settings here as needed
     }
