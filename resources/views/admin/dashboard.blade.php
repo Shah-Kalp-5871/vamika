@@ -321,7 +321,7 @@ $pageConfig = [
         <section>
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-semibold text-slate-900">Recent Activity</h3>
-                <a href="#"
+                <a href="{{ route('admin.orders.index') }}"
                     class="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center">
                     View all <iconify-icon icon="lucide:chevron-right" width="12" class="ml-1"></iconify-icon>
                 </a>

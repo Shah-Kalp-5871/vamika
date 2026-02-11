@@ -347,13 +347,10 @@ $pageConfig = [
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <div class="export-dropdown">
-                    <button id="exportBtn" class="btn btn-success">
-                        <iconify-icon icon="lucide:download" width="16"></iconify-icon>
-                        Export Report
-                    </button>
-                    <!-- ... export menu ... -->
-                </div>
+                <button id="exportBtn" class="btn btn-success" onclick="exportReport('excel')">
+                    <iconify-icon icon="lucide:file-spreadsheet" width="16"></iconify-icon>
+                    Export Report (Excel)
+                </button>
                 <button onclick="window.print()" class="btn btn-secondary">
                     <iconify-icon icon="lucide:printer" width="16"></iconify-icon>
                     Print
@@ -587,19 +584,6 @@ $pageConfig = [
         const exportBtn = document.getElementById('exportBtn');
         const exportMenu = document.getElementById('exportMenu');
 
-        exportBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            exportMenu.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function() {
-            exportMenu.classList.remove('show');
-        });
-
-        exportMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-
         // Filter type change
         document.getElementById('filterType').addEventListener('change', function() {
             const filterType = this.value;
@@ -773,31 +757,14 @@ $pageConfig = [
         const shopName = "{{ addslashes($shop->name ?? 'Shop') }}";
         const period = "{{ $dateFrom ?? '' }} to {{ $dateTo ?? '' }}";
         
-        let message = '';
-        
-        switch(format) {
-            case 'pdf':
-                message = `Generating PDF report for ${shopName}...`;
-                generatePDFReport();
-                break;
-            case 'word':
-                message = `Generating Word report for ${shopName}...`;
-                generateWordReport();
-                break;
-            case 'excel':
-                message = `Generating Excel report for ${shopName}...`;
-                generateExcelReport();
-                break;
-        }
+        let message = `Generating Excel report for ${shopName}...`;
+        generateExcelReport();
         
         showToast({
             message: message,
             subtext: `Period: ${period}`,
             type: 'info'
         });
-        
-        // Hide export menu
-        document.getElementById('exportMenu').classList.remove('show');
     }
 
     function generatePDFReport() {

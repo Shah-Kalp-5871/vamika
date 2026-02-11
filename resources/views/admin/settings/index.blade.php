@@ -9,194 +9,162 @@ $pageConfig = [
 @extends('layouts.admin')
 
 @section('content')
-<style>
-    .main-content {
-        max-width: 100%;
-        margin: 0 auto;
-        min-height: 100vh;
-        background-color: #FAFAFA;
-    }
+<div class="max-w-2xl mx-auto p-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">System Settings</h1>
+        <p class="text-sm text-slate-500 mt-1">Manage global configurations and company details.</p>
+    </div>
 
-    @media (min-width: 640px) {
-        .main-content {
-            max-width: 42rem;
-            margin: 2rem auto;
-            min-height: calc(100vh - 4rem);
-            background-color: white;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            border-radius: 1rem;
-            border: 1px solid #E2E8F0;
-        }
-    }
+    <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
+        @csrf
+        
+        @if(session('success'))
+            <div class="p-4 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-start gap-3">
+                <iconify-icon icon="lucide:check-circle" width="20" class="mt-0.5 flex-shrink-0"></iconify-icon>
+                <div class="text-sm font-medium">{{ session('success') }}</div>
+            </div>
+        @endif
 
-    .form-input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #E2E8F0;
-        border-radius: 0.75rem;
-        background: white;
-        color: #1E293B;
-        font-size: 0.875rem;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: 500;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-    }
-
-    .settings-section {
-        background: white;
-        border: 1px solid #E2E8F0;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .section-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #1E293B;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-    .form-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #475569;
-        margin-bottom: 0.5rem;
-    }
-
-    .logo-upload {
-        width: 120px;
-        height: 120px;
-        border: 2px dashed #CBD5E1;
-        border-radius: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #F8FAFC;
-        margin: 0 auto 2rem;
-    }
-
-    .logo-upload:hover {
-        border-color: #667eea;
-        background: #F1F5F9;
-        transform: scale(1.05);
-    }
-</style>
-
-<div class="main-content">
-        <form action="{{ route('admin.settings.update') }}" method="POST">
-            @csrf
-            
-            @if(session('success'))
-                <div class="mb-4 p-4 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 text-sm">
-                    {{ session('success') }}
+        <!-- Global Configuration -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <iconify-icon icon="lucide:clock" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Working Hours</h3>
+                        <p class="text-xs text-slate-500 font-medium">Global configuration for salespersons</p>
+                    </div>
                 </div>
-            @endif
+            </div>
+            
+            <div class="p-6 grid grid-cols-2 gap-4">
+                <div class="col-span-2">
+                    <div class="p-3 rounded-xl bg-amber-50 border border-amber-100 flex items-start gap-3">
+                        <iconify-icon icon="lucide:info" width="16" class="mt-0.5 text-amber-600 flex-shrink-0"></iconify-icon>
+                        <p class="text-xs text-amber-700 font-medium leading-relaxed">
+                            These hours enforce "View-Only" mode for all salespersons outside of the specified window.
+                        </p>
+                    </div>
+                </div>
 
-            <!-- Salesperson Working Hours -->
-            <div class="settings-section">
-                <h3 class="section-title">
-                    <iconify-icon icon="lucide:clock" class="mr-2"></iconify-icon>
-                    Salesperson Working Hours (Global)
-                </h3>
-                <p class="text-xs text-slate-500 mb-4 italic">These hours will apply to all salespersons for "View-Only" mode enforcement.</p>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Start Time (IST)</label>
+                    <div class="relative">
+                        <input type="time" name="salesperson_work_start" 
+                               value="{{ $settings['salesperson_work_start'] ?? '09:00' }}"
+                               class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all">
+                    </div>
+                </div>
                 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Global Start Time (IST)</label>
-                        <input type="time" name="salesperson_work_start" class="form-input" 
-                               value="{{ $settings['salesperson_work_start'] ?? '09:00' }}">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">End Time (IST)</label>
+                    <div class="relative">
+                        <input type="time" name="salesperson_work_end" 
+                               value="{{ $settings['salesperson_work_end'] ?? '18:00' }}"
+                               class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Information -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <iconify-icon icon="lucide:building-2" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Company Details</h3>
+                        <p class="text-xs text-slate-500 font-medium">Information displayed on invoices</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Company Name</label>
+                    <input type="text" name="company_name" 
+                           value="{{ $settings['company_name'] ?? 'Vamika Enterprise' }}"
+                           class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all"
+                           placeholder="Enter company name">
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Email</label>
+                        <div class="relative">
+                            <iconify-icon icon="lucide:mail" width="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
+                            <input type="email" name="contact_email" 
+                                   value="{{ $settings['contact_email'] ?? 'info@vamikaenterprise.com' }}"
+                                   class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all">
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Global End Time (IST)</label>
-                        <input type="time" name="salesperson_work_end" class="form-input" 
-                               value="{{ $settings['salesperson_work_end'] ?? '18:00' }}">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Phone Number</label>
+                        <div class="relative">
+                            <iconify-icon icon="lucide:phone" width="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
+                            <input type="tel" name="phone_number" maxlength="10"
+                                   value="{{ $settings['phone_number'] ?? '9212345678' }}"
+                                   oninput="this.value = this.value.replace(/[^0-9-]/g, '')"
+                                   class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all">
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Company Information -->
-            <div class="settings-section">
-                <h3 class="section-title">Company Information</h3>
-                
-                <div class="form-group">
-                    <label class="form-label">Company Name</label>
-                    <input type="text" name="company_name" class="form-input" value="{{ $settings['company_name'] ?? 'Vamika Enterprise' }}">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Contact Email</label>
-                    <input type="email" name="contact_email" class="form-input" value="{{ $settings['contact_email'] ?? 'info@vamikaenterprise.com' }}">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone_number" class="form-input" maxlength="10"
-                           value="{{ $settings['phone_number'] ?? '9212345678' }}"
-                           oninput="this.value = this.value.replace(/[^0-9-]/g, '')">
-                </div>
+        <!-- Save Action -->
+        <div class="sticky bottom-6 z-10">
+            <button type="submit" 
+                    class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-xl shadow-slate-200 hover:bg-slate-800 hover:shadow-2xl hover:-translate-y-0.5 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:save" width="20"></iconify-icon>
+                Save Changes
+            </button>
+        </div>
+    </form>
+
+    <!-- Danger Zone -->
+    <div class="mt-8 pt-8 border-t border-slate-200">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Danger Zone</h3>
+        
+        <div class="bg-rose-50 rounded-2xl border border-rose-100 p-6 flex items-center justify-between gap-4">
+            <div>
+                <h4 class="text-sm font-bold text-rose-700">Sign Out</h4>
+                <p class="text-xs text-rose-600/80 mt-1">End your current session securely.</p>
             </div>
-
-            <!-- Save Button -->
-            <button type="submit" class="btn-primary">Save All Changes</button>
-        </form>
-    </main>
+            
+            <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="button" onclick="confirmLogout()" 
+                        class="bg-white text-rose-600 text-xs font-bold px-4 py-2.5 rounded-lg border border-rose-100 shadow-sm hover:shadow-md hover:border-rose-200 active:scale-95 transition-all flex items-center gap-2">
+                    <iconify-icon icon="lucide:log-out" width="14"></iconify-icon>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
-function uploadLogo() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    
-    input.onchange = function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File too large',
-                    text: 'File size must be less than 2MB'
-                });
-                return;
+    function confirmLogout() {
+        Swal.fire({
+            title: 'Logout?',
+            text: "Are you sure you want to end your session?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, Logout'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
             }
-            
-            const logoUpload = document.querySelector('.logo-upload');
-            logoUpload.innerHTML = `
-                <iconify-icon icon="lucide:check-circle" width="32" class="text-green-500 mb-2"></iconify-icon>
-                <span class="text-sm text-slate-500">Logo Uploaded</span>
-                <span class="text-xs text-slate-400 mt-1">Click to change</span>
-            `;
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Logo uploaded successfully!',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
-    };
-    
-    input.click();
-}
+        });
+    }
 </script>
 @endsection

@@ -6,7 +6,7 @@
     <header class="p-6 bg-white border-b border-slate-100 flex items-center justify-between">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Welcome, {{ explode(' ', $user->name)[0] }}!</h2>
-            <p class="text-xs text-slate-500 font-medium">{{ $shop->name }} • {{ $shop->area->name ?? 'No Area' }}</p>
+            <p class="text-xs text-slate-500 font-medium">{{ $shop->name }} • {{ $shop->bit->name ?? 'No Area' }}</p>
         </div>
         <div class="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
             <iconify-icon icon="lucide:user" width="20"></iconify-icon>
