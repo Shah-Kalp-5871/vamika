@@ -51,7 +51,8 @@ return new class extends Migration
         // Fix SHOPS table
         Schema::table('shops', function (Blueprint $table) {
             if (!Schema::hasColumn('shops', 'bit_id')) {
-                $column = $table->foreignId('bit_id')->constrained('bits')->onDelete('cascade');
+                // Add as nullable first to handle existing data
+                $column = $table->foreignId('bit_id')->nullable()->constrained('bits')->nullOnDelete();
                 if (Schema::hasColumn('shops', 'user_id')) {
                     $column->after('user_id');
                 }
