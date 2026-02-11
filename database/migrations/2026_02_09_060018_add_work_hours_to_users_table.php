@@ -12,8 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->time('work_start_time')->nullable()->after('bit_id');
-            $table->time('work_end_time')->nullable()->after('work_start_time');
+            if (!Schema::hasColumn('users', 'work_start_time')) {
+                $column = $table->time('work_start_time')->nullable();
+                if (Schema::hasColumn('users', 'bit_id')) {
+                    $column->after('bit_id');
+                }
+            }
+
+            if (!Schema::hasColumn('users', 'work_end_time')) {
+                $table->time('work_end_time')->nullable()->after('work_start_time');
+            }
         });
     }
 
