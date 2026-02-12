@@ -255,83 +255,129 @@
         <form id="registerForm" method="POST" action="{{ route('register') }}">
             @csrf
             
-            <div class="form-row">
+            <!-- Step 1: Account Details -->
+            <div id="step1">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-input" name="first_name" 
+                               value="{{ old('first_name') }}" required>
+                        @error('first_name')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-input" name="last_name" 
+                               value="{{ old('last_name') }}" required>
+                        @error('last_name')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                
                 <div class="form-group">
-                    <label class="form-label">First Name</label>
-                    <input type="text" class="form-input" name="first_name" 
-                           value="{{ old('first_name') }}" required>
-                    @error('first_name')
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" name="email" 
+                           value="{{ old('email') }}" required>
+                    @error('email')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+                
                 <div class="form-group">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" class="form-input" name="last_name" 
-                           value="{{ old('last_name') }}" required>
-                    @error('last_name')
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" name="phone" 
+                           value="{{ old('phone') }}" required maxlength="10">
+                    @error('phone')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" name="password" required>
+                        @error('password')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" name="password_confirmation" required>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button type="button" class="btn-primary" style="width: 100%;" onclick="nextStep(2)">
+                        Next: Shop Details →
+                    </button>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-input" name="email" 
-                       value="{{ old('email') }}" required>
-                @error('email')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" class="form-input" name="phone" 
-                       value="{{ old('phone') }}" required>
-                @error('phone')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-            
-            <div class="form-row">
+
+            <!-- Step 2: Shop Details -->
+            <div id="step2" style="display: none;">
                 <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" name="password" required>
-                    @error('password')
+                    <label class="form-label">Shop Name</label>
+                    <input type="text" class="form-input" name="shop_name" 
+                           value="{{ old('shop_name') }}" placeholder="Enter your business name">
+                    @error('shop_name')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
                 <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" class="form-input" name="password_confirmation" required>
+                    <label class="form-label">Area (Bit)</label>
+                    <select class="form-input" name="bit_id">
+                        <option value="">Select your area</option>
+                        @foreach($bits as $bit)
+                            <option value="{{ $bit->id }}" {{ old('bit_id') == $bit->id ? 'selected' : '' }}>
+                                {{ $bit->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('bit_id')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Shop Address</label>
+                    <textarea class="form-input" name="shop_address" rows="3" placeholder="Enter full shop address">{{ old('shop_address') }}</textarea>
+                    @error('shop_address')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="referral-section">
+                    <h4>Have a referral code? (Optional)</h4>
+                    <p>Enter code to give your friend ₹300 bonus</p>
+                    <div class="referral-code">
+                        <input type="text" class="referral-input" name="referral_code"
+                               placeholder="Enter referral code" value="{{ old('referral_code') }}">
+                        <button type="button" class="copy-btn">Apply</button>
+                    </div>
+                    @error('referral_code')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
+                        I agree to Terms & Conditions
+                    </label>
+                </div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="button" class="btn-primary" style="flex: 1; background: #999;" onclick="nextStep(1)">
+                        ← Back
+                    </button>
+                    <button type="submit" class="btn-primary" style="flex: 2;">
+                        Create Account & Get ₹500 Bonus
+                    </button>
                 </div>
             </div>
-            
-            <div class="referral-section">
-                <h4>Have a referral code? (Optional)</h4>
-                <p>Enter code to give your friend ₹300 bonus</p>
-                <div class="referral-code">
-                    <input type="text" class="referral-input" name="referral_code"
-                           placeholder="Enter referral code" value="{{ old('referral_code') }}">
-                    <button type="button" class="copy-btn">Apply</button>
-                </div>
-                @error('referral_code')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <input type="checkbox" name="terms" required {{ old('terms') ? 'checked' : '' }}>
-                    I agree to Terms & Conditions and Privacy Policy
-                </label>
-                @error('terms')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-            
-            <button type="submit" class="btn-primary" style="width: 100%;">
-                Create Account & Get ₹500 Bonus
-            </button>
         </form>
         
         <div class="login-footer">
@@ -343,27 +389,41 @@
 
 @section('scripts')
 <script>
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-        // Laravel will handle the form submission and validation
-        // You can add additional client-side validation here if needed
-        
-        // For demo purposes only (remove in production)
-        // This simulates the demo behavior from the original code
-        if (window.location.href.includes('demo=true')) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'success',
-                title: 'Account Created',
-                text: 'Account created successfully! ₹500 credited to your wallet.',
-                confirmButtonText: 'Login Now'
-            }).then(() => {
-                window.location.href = "{{ route('login') }}?role=shop-owner";
+    function nextStep(step) {
+        if (step === 2) {
+            // Basic validation for Step 1
+            const requiredFields = document.querySelectorAll('#step1 [required]');
+            let valid = true;
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    valid = false;
+                    field.style.borderColor = 'red';
+                } else {
+                    field.style.borderColor = '#ddd';
+                }
             });
+
+            if (!valid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please fill in all required account details.'
+                });
+                return;
+            }
+
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.querySelectorAll('.step')[1].classList.add('active');
+        } else if (step === 1) {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            document.querySelectorAll('.step')[1].classList.remove('active');
         }
-    });
-    
+    }
+
     // Apply referral code button
-    document.querySelector('.copy-btn').addEventListener('click', function() {
+    document.querySelector('.copy-btn')?.addEventListener('click', function() {
         const referralInput = document.querySelector('.referral-input');
         if (referralInput.value.trim()) {
             Swal.fire({
@@ -375,5 +435,12 @@
             });
         }
     });
+
+    // Handle old input for step persistence
+    @if(old('shop_name') || $errors->has('shop_name') || $errors->has('bit_id') || $errors->has('shop_address'))
+        document.addEventListener('DOMContentLoaded', function() {
+            nextStep(2);
+        });
+    @endif
 </script>
 @endsection
