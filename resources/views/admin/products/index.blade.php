@@ -721,7 +721,7 @@ $pageConfig = [
                 mrp: parseFloat(product.mrp || product.price),
                 price: parseFloat(product.price),
                 status: product.status === 'active' ? 'Active' : 'Inactive',
-                image: product.images && product.images.length > 0 ? '/storage/' + product.images[0].image_path : null,
+                image: product.images && product.images.length > 0 ? "{{ asset('storage') }}/" + product.images[0].image_path : null,
                 lastUpdated: product.updated_at
             };
         });
