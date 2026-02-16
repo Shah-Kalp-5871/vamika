@@ -225,7 +225,7 @@
             productCard.className = 'product-card bg-white rounded-xl border border-slate-200 transition-all overflow-hidden';
 
             const primaryImage = product.images && product.images.length > 0 
-                ? `/storage/${product.images[0].image_path}` 
+                ? `{{ asset('storage') }}/${product.images[0].image_path}` 
                 : `https://placehold.co/200x200/e2e8f0/94a3b8?text=${product.name.substring(0, 1)}`;
 
             if (version === 'Mobile') {
