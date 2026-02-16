@@ -14,6 +14,8 @@ class Product extends Model
         'sub_brand', 'unit', 'mrp'
     ];
 
+    protected $appends = ['image_url'];
+
     public const CATEGORIES = [
         'food' => 'Food',
         'beverages' => 'Beverages',

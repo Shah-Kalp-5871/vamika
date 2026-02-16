@@ -49,8 +49,12 @@
                 @foreach($order->items as $item)
                 <div class="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
                     <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-50">
-                            <iconify-icon icon="lucide:package" width="20"></iconify-icon>
+                        <div class="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-50 overflow-hidden">
+                            @if($item->product->image_url)
+                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" class="h-full w-full object-cover">
+                            @else
+                                <iconify-icon icon="lucide:package" width="20"></iconify-icon>
+                            @endif
                         </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900">{{ $item->product->name }}</p>
