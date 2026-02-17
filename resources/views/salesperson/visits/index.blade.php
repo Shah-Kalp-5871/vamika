@@ -395,7 +395,7 @@
         const container = document.getElementById('modal-container');
         const form = document.getElementById('no-order-form');
         
-        form.action = `/salesperson/visits/${shopId}/no-order`;
+        form.action = `{{ route('salesperson.visits.no-order', ['id' => ':id']) }}`.replace(':id', shopId);
         
         modal.classList.remove('hidden');
         setTimeout(() => {
