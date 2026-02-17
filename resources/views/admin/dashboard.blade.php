@@ -192,126 +192,131 @@ $pageConfig = [
 <div id="mainContent" class="main-content" style="display: none;">
     <main class="p-6 space-y-8">
         <!-- Primary Stats Card (Revenue) -->
-        <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-900 to-black p-6 text-white shadow-lg">
+        <div class="admin-card bg-slate-900 border-none relative overflow-hidden text-white shadow-xl animate-in">
             <div class="relative z-10">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="p-2 bg-white/10 rounded-lg border border-white/20">
-                        <iconify-icon icon="lucide:trending-up" width="20" class="text-white"></iconify-icon>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="p-3 bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm">
+                        <iconify-icon icon="lucide:trending-up" width="24" class="text-emerald-400"></iconify-icon>
                     </div>
-                    <span class="text-xs font-medium text-slate-300 bg-white/10 px-2 py-1 rounded border border-white/20">This Month</span>
+                    <span class="text-[10px] font-bold tracking-widest uppercase text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-400/20">Monthly Growth</span>
                 </div>
-                <p class="text-sm text-slate-300 font-medium">Total Revenue</p>
-                <h3 id="monthlyRevenue" class="text-3xl font-semibold tracking-tight mt-1 text-white">₹0</h3>
+                <p class="text-sm text-slate-400 font-semibold uppercase tracking-wider">Total Revenue</p>
+                <h3 id="monthlyRevenue" class="text-4xl font-bold tracking-tight mt-2 text-white font-outfit">₹0</h3>
             </div>
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-indigo-500 rounded-full blur-3xl opacity-20"></div>
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
         </div>
 
         <!-- Secondary Stats Grid -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-5">
             <!-- Total Shops -->
-            <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-slate-300 transition-colors animate-slide-up"
-                style="animation-delay: 0.1s;">
-                <div class="mb-3">
-                    <iconify-icon icon="lucide:store" width="20" class="text-emerald-600"></iconify-icon>
+            <div class="admin-card admin-card-emerald animate-in" style="animation-delay: 0.1s;">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100">
+                        <iconify-icon icon="lucide:store" width="22"></iconify-icon>
+                    </div>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="totalShops">0</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Total Shops</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight font-outfit" id="totalShops">0</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Total Shops</p>
             </div>
 
             <!-- Pending Orders -->
-            <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-slate-300 transition-colors animate-slide-up"
-                style="animation-delay: 0.2s;">
-                <div class="mb-3">
-                    <iconify-icon icon="lucide:package" width="20" class="text-amber-500"></iconify-icon>
+            <div class="admin-card admin-card-amber animate-in" style="animation-delay: 0.2s;">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shadow-sm border border-amber-100">
+                        <iconify-icon icon="lucide:package" width="22"></iconify-icon>
+                    </div>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="pendingOrders">0</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Pending Orders</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight font-outfit" id="pendingOrders">0</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Pending Orders</p>
             </div>
 
             <!-- Active Salespersons -->
-            <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-slate-300 transition-colors animate-slide-up"
-                style="animation-delay: 0.3s;">
-                <div class="mb-3">
-                    <iconify-icon icon="lucide:users" width="20" class="text-indigo-600"></iconify-icon>
+            <div class="admin-card admin-card-blue animate-in" style="animation-delay: 0.3s;">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
+                        <iconify-icon icon="lucide:users" width="22"></iconify-icon>
+                    </div>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight" id="activeSalespersons">0</p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Active Salespersons</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight font-outfit" id="activeSalespersons">0</p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Active Salespersons</p>
             </div>
 
             <!-- Today's Revenue -->
-            <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-slate-300 transition-colors animate-slide-up"
-                style="animation-delay: 0.4s;">
-                <div class="mb-3">
-                    <iconify-icon icon="lucide:dollar-sign" width="20" class="text-rose-600"></iconify-icon>
+            <div class="admin-card admin-card-rose animate-in" style="animation-delay: 0.4s;">
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
+                        <iconify-icon icon="lucide:dollar-sign" width="22"></iconify-icon>
+                    </div>
                 </div>
-                <p class="text-2xl font-semibold text-slate-900 tracking-tight">₹<span id="todayRevenue">0</span></p>
-                <p class="text-xs text-slate-500 font-medium mt-1">Today's Revenue</p>
+                <p class="text-2xl font-bold text-slate-900 tracking-tight font-outfit">₹<span id="todayRevenue">0</span></p>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Today's Revenue</p>
             </div>
         </div>
 
         <!-- Redesigned Quick Actions -->
         <section>
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-semibold text-slate-900">Quick Actions</h3>
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Core Actions</h3>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-5">
                 <!-- Consolidation -->
                 <button onclick="window.location.href='{{ route('admin.orders.consolidation') }}'"
-                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all duration-300 overflow-hidden text-left">
-                    <div class="mb-4 p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                    class="group relative flex flex-col items-start p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 overflow-hidden text-left animate-in" style="animation-delay: 0.5s;">
+                    <div class="mb-5 p-4 bg-emerald-50 rounded-xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-sm">
                         <iconify-icon icon="lucide:layers" width="24"></iconify-icon>
                     </div>
                     <div>
-                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Consolidation</span>
-                        <span class="block text-[10px] text-slate-500 font-medium">Aggregate order items</span>
+                        <span class="block text-sm font-bold text-slate-900 mb-1">Consolidation</span>
+                        <span class="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Item Aggregation</span>
                     </div>
-                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <iconify-icon icon="lucide:layers" width="64"></iconify-icon>
+                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                        <iconify-icon icon="lucide:layers" width="96"></iconify-icon>
                     </div>
                 </button>
 
                 <!-- Offers -->
                 <button onclick="window.location.href='{{ route('admin.offers.index') }}'"
-                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-100 transition-all duration-300 overflow-hidden text-left">
-                    <div class="mb-4 p-3 bg-rose-50 rounded-xl text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors duration-300">
+                    class="group relative flex flex-col items-start p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300 overflow-hidden text-left animate-in" style="animation-delay: 0.6s;">
+                    <div class="mb-5 p-4 bg-amber-50 rounded-xl text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300 shadow-sm">
                         <iconify-icon icon="lucide:tag" width="24"></iconify-icon>
                     </div>
                     <div>
-                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Offers</span>
-                        <span class="block text-[10px] text-slate-500 font-medium">Manage promotions</span>
+                        <span class="block text-sm font-bold text-slate-900 mb-1">Offers</span>
+                        <span class="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Promotions</span>
                     </div>
-                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <iconify-icon icon="lucide:tag" width="64"></iconify-icon>
+                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                        <iconify-icon icon="lucide:tag" width="96"></iconify-icon>
                     </div>
                 </button>
 
                 <!-- Reports -->
                 <button onclick="window.location.href='{{ route('admin.reports.index') }}'"
-                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-100 transition-all duration-300 overflow-hidden text-left">
-                    <div class="mb-4 p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                    class="group relative flex flex-col items-start p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden text-left animate-in" style="animation-delay: 0.7s;">
+                    <div class="mb-5 p-4 bg-blue-50 rounded-xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
                         <iconify-icon icon="lucide:bar-chart-3" width="24"></iconify-icon>
                     </div>
                     <div>
-                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Reports</span>
-                        <span class="block text-[10px] text-slate-500 font-medium">View sales analytics</span>
+                        <span class="block text-sm font-bold text-slate-900 mb-1">Reports</span>
+                        <span class="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Analytics</span>
                     </div>
-                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <iconify-icon icon="lucide:bar-chart-3" width="64"></iconify-icon>
+                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                        <iconify-icon icon="lucide:bar-chart-3" width="96"></iconify-icon>
                     </div>
                 </button>
 
                 <!-- Settings -->
                 <button onclick="window.location.href='{{ route('admin.settings.index') }}'"
-                    class="group relative flex flex-col items-start p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-100 transition-all duration-300 overflow-hidden text-left">
-                    <div class="mb-4 p-3 bg-amber-50 rounded-xl text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                    class="group relative flex flex-col items-start p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 overflow-hidden text-left animate-in" style="animation-delay: 0.8s;">
+                    <div class="mb-5 p-4 bg-slate-50 rounded-xl text-slate-600 group-hover:bg-slate-600 group-hover:text-white transition-all duration-300 shadow-sm">
                         <iconify-icon icon="lucide:settings" width="24"></iconify-icon>
                     </div>
                     <div>
-                        <span class="block text-sm font-bold text-slate-900 mb-0.5">Settings</span>
-                        <span class="block text-[10px] text-slate-500 font-medium">System configuration</span>
+                        <span class="block text-sm font-bold text-slate-900 mb-1">Settings</span>
+                        <span class="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Configuration</span>
                     </div>
-                    <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <iconify-icon icon="lucide:settings" width="64"></iconify-icon>
+                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                        <iconify-icon icon="lucide:settings" width="96"></iconify-icon>
                     </div>
                 </button>
             </div>
@@ -415,26 +420,29 @@ $pageConfig = [
 
         adminData.recentActivities.forEach(activity => {
             const activityDiv = document.createElement('div');
-            activityDiv.className = 'p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-slate-300 transition-colors cursor-pointer group animate-slide-up';
+            activityDiv.className = 'admin-card p-4 hover:border-emerald-200 transition-all cursor-pointer group animate-in';
 
             const iconClass = getActivityColor(activity.type);
             const iconName = getActivityIcon(activity.type);
 
             activityDiv.innerHTML = `
-            <div class="flex items-start gap-3 mb-3">
-                <div class="h-10 w-10 rounded-full flex items-center justify-center ${iconClass.split(' ')[1]} border ${iconClass.split(' ')[2]} flex-shrink-0">
-                    <iconify-icon icon="lucide:${iconName}" width="16" class="${iconClass.split(' ')[0]}"></iconify-icon>
+            <div class="flex items-start gap-4 mb-4">
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center ${iconClass.split(' ')[1]} border ${iconClass.split(' ')[2]} flex-shrink-0 shadow-sm">
+                    <iconify-icon icon="lucide:${iconName}" width="20" class="${iconClass.split(' ')[0]}"></iconify-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-semibold text-slate-900 truncate">${activity.title}</h4>
-                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">${activity.description}</p>
+                    <h4 class="text-sm font-bold text-slate-900 truncate">${activity.title}</h4>
+                    <p class="text-[10px] font-medium text-slate-500 mt-1 line-clamp-2 leading-relaxed">${activity.description}</p>
                 </div>
             </div>
-            <div class="flex items-center justify-between">
-                <span class="text-[10px] font-medium px-2 py-1 rounded-full ${iconClass.split(' ')[1]} ${iconClass.split(' ')[0]} border ${iconClass.split(' ')[2]}">
-                    ${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
+            <div class="flex items-center justify-between pt-3 border-t border-slate-50">
+                <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg ${iconClass.split(' ')[1]} ${iconClass.split(' ')[0]} border ${iconClass.split(' ')[2]}">
+                    ${activity.type}
                 </span>
-                <span class="text-[10px] text-slate-400">${activity.time}</span>
+                <span class="text-[10px] font-medium text-slate-400 flex items-center">
+                    <iconify-icon icon="lucide:clock" width="10" class="mr-1"></iconify-icon>
+                    ${activity.time}
+                </span>
             </div>
         `;
 

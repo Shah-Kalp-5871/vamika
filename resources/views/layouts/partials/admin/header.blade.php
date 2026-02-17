@@ -8,38 +8,41 @@ $backUrl  = $pageConfig['backUrl'] ?? 'javascript:history.back()';
 $role     = $pageConfig['role'] ?? 'Admin';
 @endphp
 
-<header class="sticky top-0 z-20 bg-white border-b border-slate-100">
-    <div class="px-6 py-4 flex items-start justify-between">
+<header class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <div class="px-6 py-4 flex items-center justify-between">
 
-        <div class="flex items-start gap-3">
+        <div class="flex items-center gap-4">
             @if ($showBack)
                 <a href="{{ $backUrl }}"
-                   class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50">
-                    <iconify-icon icon="lucide:arrow-left" width="18"></iconify-icon>
+                   class="p-2 rounded-xl border border-slate-200 bg-white shadow-sm hover:bg-slate-50 transition-all">
+                    <iconify-icon icon="lucide:arrow-left" width="20" class="text-slate-600"></iconify-icon>
                 </a>
             @endif
 
-            <img src="{{ asset('assets/images/logo.png') }}"
-                 class="h-10 w-10 object-contain rounded-md border border-slate-200 mt-1">
+            <div class="relative">
+                <img src="{{ asset('assets/images/logo.png') }}"
+                     class="h-10 w-10 object-contain rounded-xl border border-slate-100 shadow-sm">
+                <div class="absolute -bottom-1 -right-1 h-3 w-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+            </div>
 
             <div>
-                <h1 class="text-xl font-semibold text-slate-900 tracking-tight">
+                <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-tight">
                     {{ $title }}
                 </h1>
                 @if ($subtitle)
-                    <p class="text-xs text-slate-500">{{ $subtitle }}</p>
+                    <p class="text-[10px] font-medium text-slate-500 uppercase tracking-widest">{{ $subtitle }}</p>
                 @endif
-                {!! $pageHeaderLeft ?? '' !!}
             </div>
         </div>
 
-        <div class="flex flex-col items-end gap-2">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs
-                         bg-indigo-50 text-indigo-600 border border-indigo-100">
-                <iconify-icon icon="carbon:user-admin" width="12" class="mr-1.5"></iconify-icon>
-                {{ $role }}
-            </span>
-            <span class="text-xs text-slate-400" id="currentDate"></span>
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex flex-col items-end mr-2">
+                <span class="text-xs font-bold text-slate-900">{{ $role }}</span>
+                <span class="text-[10px] font-medium text-slate-400" id="currentDate"></span>
+            </div>
+            <div class="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+                <iconify-icon icon="carbon:user-admin" width="22"></iconify-icon>
+            </div>
             {!! $pageHeaderRight ?? '' !!}
         </div>
 
