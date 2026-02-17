@@ -26,9 +26,9 @@ $pageConfig['role'] = $pageConfig['role'] ?? 'Admin';
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Common CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/admin-theme.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/bottom-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/css/app.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/css/admin-theme.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bottom-nav.css') }}?v={{ time() }}">
     
     @yield('styles') 
     {{-- maadar css BSDK--}}
