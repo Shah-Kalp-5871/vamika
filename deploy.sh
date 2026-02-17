@@ -27,7 +27,16 @@ php artisan view:cache
 
 # 5. SYNC ASSETS (Crucial Step!)
 echo "🔄 Syncing assets to public_html..."
-# Copy contents of public/ to public_html/
 cp -r public/* "$PUBLIC_HTML_DIR/"
+
+# 6. FIX PATHS in public_html/index.php (Server specific)
+echo "🛠 Fixing paths in index.php for server environment..."
+sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/../../vamikanew/vendor/autoload.php'|g" "$PUBLIC_HTML_DIR/index.php"
+sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/../../vamikanew/bootstrap/app.php'|g" "$PUBLIC_HTML_DIR/index.php"
+sed -i "s|__DIR__.'/../storage/framework/maintenance.php'|__DIR__.'/../../vamikanew/storage/framework/maintenance.php'|g" "$PUBLIC_HTML_DIR/index.php"
+
+# 7. FIX PERMISSIONS (Common 500 error fix)
+echo "🔑 Adjusting permissions for storage and cache..."
+chmod -R 775 storage bootstrap/cache
 
 echo "✅ Deployment Complete!"
