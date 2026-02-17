@@ -44,6 +44,7 @@ class ProductController extends Controller
             'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // Single image up to 5MB
         ]);
 
@@ -90,6 +91,7 @@ class ProductController extends Controller
             'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'remove_image' => 'nullable|boolean',
         ]);
@@ -254,5 +256,15 @@ class ProductController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => count($ids) . ' product(s) deleted successfully.']);
+    }
+
+    public function stock(Request $request)
+    {
+        $id = $request->get('id');
+        if (!$id) {
+            return redirect()->route('admin.products.index');
+        }
+        $product = Product::with('images')->findOrFail($id);
+        return view('admin.products.stock', compact('product'));
     }
 }

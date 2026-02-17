@@ -495,8 +495,8 @@
             </div>
 
             <div class="details-section">
-                <h3 class="details-section-title">Pricing</h3>
-                <div class="grid-3">
+                <h3 class="details-section-title">Pricing & Stock</h3>
+                <div class="grid-2">
                     <div class="form-group">
                         <label class="form-label" for="mrp">MRP (₹) *</label>
                         <input type="number" id="mrp" name="mrp" class="form-input" required step="0.01"
@@ -512,6 +512,17 @@
                             placeholder="0.00" min="0"
                             value="{{ old('price', $product->price ?? '') }}">
                         @error('price')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+                <div class="grid-2">
+                     <div class="form-group">
+                        <label class="form-label" for="stock">Current Stock *</label>
+                        <input type="number" id="stock" name="stock" class="form-input" required
+                            placeholder="0" min="0"
+                            value="{{ old('stock', $product->stock ?? 0) }}">
+                        @error('stock')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

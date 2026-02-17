@@ -60,9 +60,16 @@ class OrderController extends Controller
             foreach ($request->items as $itemData) {
                 $product = Product::findOrFail($itemData['product_id']);
                 
+                // Check for stock availability
+                if ($product->stock < $itemData['quantity']) {
+                    throw new \Exception("Not enough stock for product: {$product->name}. Available: {$product->stock}, Requested: {$itemData['quantity']}.");
+                }
 
                 $subtotal = $product->price * $itemData['quantity'];
                 $totalAmount += $subtotal;
+
+                // Decrement Stock
+                $product->decrementStock($itemData['quantity']);
 
                 OrderItem::create([
                     'order_id' => $order->id,

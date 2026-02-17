@@ -11,10 +11,21 @@ class Product extends Model
     protected $fillable = [
         'name', 'sku', 'description', 'price', 
         'category', 'status', 'brand', 'division', 
-        'sub_brand', 'unit', 'mrp'
+        'sub_brand', 'unit', 'mrp', 'stock'
     ];
 
     protected $appends = ['image_url'];
+
+    protected static function booted()
+    {
+        static::saving(function ($product) {
+            if ($product->stock <= 0) {
+                $product->status = 'inactive';
+            } elseif ($product->isDirty('stock') && $product->stock > 0 && $product->status === 'inactive') {
+                $product->status = 'active';
+            }
+        });
+    }
 
     public const CATEGORIES = [
         'food' => 'Food',
@@ -76,5 +87,14 @@ class Product extends Model
     {
         $path = $this->primary_image;
         return $path ? asset('storage/' . $path) : null;
+    }
+
+    public function decrementStock($quantity)
+    {
+        if ($this->stock < $quantity) {
+            throw new \Exception("Insufficient stock for product: {$this->name}");
+        }
+        
+        $this->decrement('stock', $quantity);
     }
 }

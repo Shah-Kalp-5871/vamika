@@ -720,6 +720,7 @@ $pageConfig = [
                 packSize: product.unit || '-',
                 mrp: parseFloat(product.mrp || product.price),
                 price: parseFloat(product.price),
+                stock: parseInt(product.stock || 0),
                 status: product.status === 'active' ? 'Active' : 'Inactive',
                 image: product.images && product.images.length > 0 ? "{{ asset('storage') }}/" + product.images[0].image_path : null,
                 lastUpdated: product.updated_at
@@ -892,6 +893,28 @@ $pageConfig = [
                         <div class="font-semibold text-emerald-600">₹${cell.getValue()}</div>
                         ${discount > 0 ? `<div class="text-rose-600 text-2xs">${discount}% off</div>` : ''}
                     </div>`;
+                }
+            },
+            {
+                title: "STOCK",
+                field: "stock",
+                width: 100,
+                sorter: "number",
+                resizable: false,
+                formatter: function(cell) {
+                    const stock = cell.getValue();
+                    let color = 'stock-instock';
+                    let statusText = 'In Stock';
+                    if (stock <= 0) {
+                        color = 'stock-out';
+                        statusText = 'Out of Stock';
+                    } else if (stock <= 10) {
+                        color = 'stock-low';
+                        statusText = 'Low Stock';
+                    }
+                    return `<span class="status-badge ${color}">
+                        ${stock} (${statusText})
+                    </span>`;
                 }
             },
             {

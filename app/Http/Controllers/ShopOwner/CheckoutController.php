@@ -50,8 +50,16 @@ class CheckoutController extends Controller
                     throw new \Exception("Product: {$product->name} is currently unavailable.");
                 }
 
+                // Check for stock availability
+                if ($product->stock < $item['quantity']) {
+                    throw new \Exception("Not enough stock for product: {$product->name}. Available: {$product->stock}, Requested: {$item['quantity']}.");
+                }
+
                 $subtotal = $product->price * $item['quantity'];
                 $totalAmount += $subtotal;
+
+                // Decrement Stock
+                $product->decrementStock($item['quantity']);
 
                 OrderItem::create([
                     'order_id' => $order->id,

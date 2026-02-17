@@ -174,6 +174,10 @@
                 <span class="info-value">₹{{ number_format($product->price, 2) }}</span>
             </div>
             <div class="info-row">
+                <span class="info-label">Current Stock</span>
+                <span class="info-value">{{ $product->stock }}</span>
+            </div>
+            <div class="info-row">
                 <span class="info-label">Status</span>
                 <span class="status-badge {{ $product->status === 'active' ? 'status-active' : 'status-inactive' }}">
                     <iconify-icon icon="lucide:{{ $product->status === 'active' ? 'check-circle' : 'x-circle' }}" width="14"></iconify-icon>
