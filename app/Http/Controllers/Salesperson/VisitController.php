@@ -70,7 +70,7 @@ class VisitController extends Controller
             ]
         );
         
-        return redirect()->back()->with('success', 'Visit marked as No Order');
+        return redirect()->route('salesperson.visits.index')->with('success', 'Visit marked as No Order');
     }
 
     public function store(Request $request)
