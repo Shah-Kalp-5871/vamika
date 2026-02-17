@@ -1,25 +1,24 @@
 #!/bin/bash
 
-# Configuration - ADJUST THESE TO YOUR SERVER PATHS
-PROJECT_DIR="/home/u362391755/domains/vardaansmartsolutions.com/vamikanew"
+# Configuration
+# This script is designed to be run from INSIDE the /vamikanew folder
 PUBLIC_HTML_DIR="/home/u362391755/domains/vardaansmartsolutions.com/public_html/vamikanew"
 
-echo "🚀 Starting Robust Deployment..."
+echo "🚀 Starting Project-Level Deployment..."
 
 # 1. Pull Latest Code
 echo "📥 Pulling latest code..."
 git pull origin main
 
-# 2. FORCE CLEAR BOOTSTRAP CACHE (Prevents Provider not found errors)
+# 2. FORCE CLEAR BOOTSTRAP CACHE (Fixes the 500 'Collision' error)
 echo "🧹 Cleaning bootstrap cache files..."
-rm -f "$PROJECT_DIR/bootstrap/cache/config.php"
-rm -f "$PROJECT_DIR/bootstrap/cache/packages.php"
-rm -f "$PROJECT_DIR/bootstrap/cache/routes.php"
-rm -f "$PROJECT_DIR/bootstrap/cache/services.php"
+rm -f bootstrap/cache/config.php
+rm -f bootstrap/cache/packages.php
+rm -f bootstrap/cache/routes.php
+rm -f bootstrap/cache/services.php
 
 # 3. Install Dependencies
 echo "📦 Installing composer dependencies..."
-# We use --no-dev for production, but if you need dev tools, remove the flag
 composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # 4. Run Migrations
@@ -44,11 +43,11 @@ if [ -d "$PUBLIC_HTML_DIR" ]; then
     sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/../../vamikanew/bootstrap/app.php'|g" "$PUBLIC_HTML_DIR/index.php"
     sed -i "s|__DIR__.'/../storage/framework/maintenance.php'|__DIR__.'/../../vamikanew/storage/framework/maintenance.php'|g" "$PUBLIC_HTML_DIR/index.php"
 else
-    echo "⚠️ Warning: PUBLIC_HTML_DIR not found. Skipping asset sync."
+    echo "⚠️ Warning: $PUBLIC_HTML_DIR not found."
 fi
 
 # 8. FIX PERMISSIONS
 echo "🔑 Adjusting permissions..."
 chmod -R 775 storage bootstrap/cache
 
-echo "✅ Deployment Complete! Site should be live."
+echo "✅ Project Deployment Complete!"
