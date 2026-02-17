@@ -21,7 +21,7 @@ $role     = $pageConfig['role'] ?? 'Admin';
 
             <div class="relative">
                 <img src="{{ asset('assets/images/logo.png') }}"
-                     class="h-10 w-10 object-contain rounded-xl border border-slate-100 shadow-sm">
+                     class="h-14 w-14 object-contain rounded-xl border border-slate-100 shadow-sm">
                 <div class="absolute -bottom-1 -right-1 h-3 w-3 bg-emerald-500 border-2 border-white rounded-full"></div>
             </div>
 
