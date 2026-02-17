@@ -25,7 +25,7 @@ class OrderController extends Controller
             return redirect()->route('salesperson.shops.index')->with('error', 'Please select a shop first.');
         }
 
-        $products = Product::where('status', 'active')->get();
+        $products = Product::where('status', 'active')->where('stock', '>', 0)->get();
         $categories = Product::CATEGORIES;
         $brands = Product::BRANDS;
         $subBrands = Product::SUB_BRANDS;

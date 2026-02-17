@@ -9,7 +9,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::where('status', 'active')->get();
+        $products = Product::where('status', 'active')->where('stock', '>', 0)->get();
         return view('shop-owner.products.index', compact('products'));
     }
 }
