@@ -555,7 +555,7 @@ $pageConfig = [
             <!-- Inactive Products -->
             <div class="mobile-stat-card">
                 <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:dash-circle" width="18" class="text-slate-400"></iconify-icon>
+                    <iconify-icon icon="lucide:x-circle" width="18" class="text-slate-400"></iconify-icon>
                     <span class="text-xs text-slate-500">Inactive</span>
                 </div>
                 <p class="text-xl font-bold text-slate-900" id="mobileInactive">0</p>
