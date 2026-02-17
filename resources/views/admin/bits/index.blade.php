@@ -646,7 +646,7 @@ $pageConfig = [
                         </div>
                     </div>
                 </div>
-                <a href="/admin/users/${shop.user_id}/edit" class="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-600 hover:text-white transition-all">
+                <a href="${'{{ route('admin.users.edit', ':id') }}'.replace(':id', shop.user_id)}" class="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-600 hover:text-white transition-all">
                     <iconify-icon icon="lucide:external-link" width="18"></iconify-icon>
                 </a>
             `;
@@ -755,7 +755,7 @@ $pageConfig = [
                                 <div class="text-xs text-slate-500">${shop.salesperson ? 'SP: ' + shop.salesperson.name : 'Unassigned'}</div>
                             </div>
                         </div>
-                        <a href="/admin/users/${shop.user_id}/edit" class="text-slate-400 hover:text-indigo-600 transition-colors">
+                        <a href="${'{{ route('admin.users.edit', ':id') }}'.replace(':id', shop.user_id)}" class="text-slate-400 hover:text-indigo-600 transition-colors">
                             <iconify-icon icon="lucide:external-link" width="16"></iconify-icon>
                         </a>
                     </div>
