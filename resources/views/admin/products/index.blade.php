@@ -560,6 +560,15 @@ $pageConfig = [
                 </div>
                 <p class="text-xl font-bold text-slate-900" id="mobileInactive">0</p>
             </div>
+
+            <!-- Out of Stock Products -->
+            <div class="mobile-stat-card">
+                <div class="flex items-center justify-between mb-2">
+                    <iconify-icon icon="lucide:alert-triangle" width="18" class="text-rose-500"></iconify-icon>
+                    <span class="text-xs text-slate-500">Out of Stock</span>
+                </div>
+                <p class="text-xl font-bold text-slate-900" id="mobileOutOfStock">0</p>
+            </div>
         </div>
 
         <!-- Mobile Bulk Actions -->
@@ -598,6 +607,10 @@ $pageConfig = [
             <button onclick="showInactiveOnly()" class="mobile-quick-action-btn">
                 <iconify-icon icon="lucide:eye-off" width="12"></iconify-icon>
                 Inactive
+            </button>
+            <button onclick="showOutOfStockOnly()" class="mobile-quick-action-btn">
+                <iconify-icon icon="lucide:alert-triangle" width="12"></iconify-icon>
+                Out of Stock
             </button>
             <button onclick="exportToExcel()" class="mobile-quick-action-btn">
                 <iconify-icon icon="lucide:download" width="12"></iconify-icon>
@@ -642,6 +655,7 @@ $pageConfig = [
                             <option value="all">All Status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
+                            <option value="out_of_stock">Out of Stock</option>
                         </select>
                     </div>
                 </div>
@@ -1035,11 +1049,13 @@ $pageConfig = [
         const totalProducts = allProducts.length;
         const activeProducts = allProducts.filter(p => p.status === 'Active').length;
         const inactiveProducts = allProducts.filter(p => p.status === 'Inactive').length;
+        const outOfStockProducts = allProducts.filter(p => p.stock <= 0).length;
 
         // Update mobile stats
         document.getElementById('mobileTotalProducts').textContent = totalProducts.toLocaleString();
         document.getElementById('mobileActive').textContent = activeProducts.toLocaleString();
         document.getElementById('mobileInactive').textContent = inactiveProducts.toLocaleString();
+        document.getElementById('mobileOutOfStock').textContent = outOfStockProducts.toLocaleString();
     }
 
     function applyMobileFilters() {
@@ -1053,8 +1069,12 @@ $pageConfig = [
         }
         
         if (status !== 'all') {
-            const statusValue = status === 'active' ? 'Active' : 'Inactive';
-            filters.push({field: "status", type: "=", value: statusValue});
+            if (status === 'out_of_stock') {
+                filters.push({field: "stock", type: "<=", value: 0});
+            } else {
+                const statusValue = status === 'active' ? 'Active' : 'Inactive';
+                filters.push({field: "status", type: "=", value: statusValue});
+            }
         }
         
         if (filters.length > 0) {
@@ -1089,6 +1109,11 @@ $pageConfig = [
 
     function showInactiveOnly() {
         document.getElementById('mobileStatusFilter').value = 'inactive';
+        applyMobileFilters();
+    }
+
+    function showOutOfStockOnly() {
+        document.getElementById('mobileStatusFilter').value = 'out_of_stock';
         applyMobileFilters();
     }
 
