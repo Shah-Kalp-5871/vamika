@@ -1,0 +1,51 @@
+2️⃣ Create new branch
+git checkout -b ui-redesign
+
+
+Now you are working inside the new branch.
+
+3️⃣ Work on new UI safely
+
+Make all design changes here.
+
+Commit normally:
+
+git add .
+git commit -m "New UI redesign for client review"
+
+
+Push branch:
+
+git push origin ui-redesign
+
+🚀 How To Show Client
+
+You can:
+
+Deploy this branch to staging
+
+Or host it in a subfolder
+
+Or give preview link
+
+🔄 If Client Likes It
+
+Merge into main:
+
+git checkout main
+git merge ui-redesign
+git push origin main
+
+❌ If Client Doesn't Like It
+
+Just go back:
+
+git checkout main
+
+
+That’s it. Old design is untouched.
+
+If needed you can delete branch:
+
+git branch -d ui-redesign
+git push origin --delete ui-redesign

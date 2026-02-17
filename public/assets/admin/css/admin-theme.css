@@ -1,0 +1,198 @@
+/* ======================================================
+   ADMIN THEME - PREMIMUM REDESIGN
+   Inspired by reference images: Greens, Oranges, Deep Grays
+   ====================================================== */
+
+:root {
+    /* Primary Color Palette */
+    --admin-primary: #10B981;
+    /* Emerald-500 */
+    --admin-primary-dark: #059669;
+    /* Emerald-600 */
+    --admin-primary-light: #D1FAE5;
+    /* Emerald-100 */
+
+    --admin-secondary: #F59E0B;
+    /* Amber-500 */
+    --admin-secondary-dark: #D97706;
+    /* Amber-600 */
+    --admin-secondary-light: #FEF3C7;
+    /* Amber-100 */
+
+    --admin-accent: #3B82F6;
+    /* Blue-500 */
+
+    /* Backgrounds */
+    --admin-bg-soft: #F8FAFC;
+    --admin-bg-white: #FFFFFF;
+
+    /* Text */
+    --admin-text-main: #1E293B;
+    --admin-text-muted: #64748B;
+    --admin-text-light: #94A3B8;
+
+    /* Borders */
+    --admin-border-light: #F1F5F9;
+    --admin-border-base: #E2E8F0;
+}
+
+/* Global Styles */
+body {
+    background-color: var(--admin-bg-soft);
+    color: var(--admin-text-main);
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Redesigned Card with Left-Accent Border */
+.admin-card {
+    background: var(--admin-bg-white);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    position: relative;
+    border: 1px solid var(--admin-border-base);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.admin-card-emerald {
+    border-left: 4px solid var(--admin-primary);
+}
+
+.admin-card-amber {
+    border-left: 4px solid var(--admin-secondary);
+}
+
+.admin-card-blue {
+    border-left: 4px solid var(--admin-accent);
+}
+
+.admin-card-rose {
+    border-left: 4px solid #F43F5E;
+}
+
+/* Tag/Badge Styles */
+.admin-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.admin-badge-emerald {
+    background-color: var(--admin-primary-light);
+    color: var(--admin-primary-dark);
+}
+
+.admin-badge-amber {
+    background-color: var(--admin-secondary-light);
+    color: var(--admin-secondary-dark);
+}
+
+.admin-badge-outline {
+    background-color: white;
+    border: 1px solid var(--admin-border-base);
+    color: var(--admin-text-muted);
+}
+
+/* Button Refinement */
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.admin-btn-primary {
+    background-color: var(--admin-primary);
+    color: white;
+}
+
+.admin-btn-primary:hover {
+    background-color: var(--admin-primary-dark);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.admin-btn-secondary {
+    background-color: white;
+    border-color: var(--admin-border-base);
+    color: var(--admin-text-main);
+}
+
+.admin-btn-secondary:hover {
+    background-color: var(--admin-bg-soft);
+    border-color: var(--admin-text-light);
+}
+
+/* Form Elements */
+.admin-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--admin-border-base);
+    background-color: white;
+    transition: all 0.2s;
+    font-family: inherit;
+    color: var(--admin-text-main);
+}
+
+.admin-input:focus {
+    outline: none;
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 4px var(--admin-primary-light);
+}
+
+/* Specific Card Variants for Lists */
+.admin-list-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid var(--admin-border-base);
+    transition: all 0.2s;
+}
+
+.admin-list-card:hover {
+    border-color: var(--admin-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Micro-animations */
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInSlide 0.4s ease-out forwards;
+}
+
+/* Responsive Container Adjustments */
+@media (max-width: 640px) {
+    .admin-card {
+        padding: 1rem;
+    }
+}

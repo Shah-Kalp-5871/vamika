@@ -24,9 +24,10 @@ $pageConfig['role'] = $pageConfig['role'] ?? 'Admin';
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Common CSS -->
     <link rel="stylesheet" href="{{ asset('assets/admin/css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/css/admin-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bottom-nav.css') }}">
     
     @yield('styles') 
