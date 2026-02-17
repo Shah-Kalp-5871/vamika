@@ -51,7 +51,7 @@
     <!-- Actions Bar -->
     <div class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 mb-6 flex items-center justify-between sm:rounded-xl sm:mx-4 sm:top-4 section-no-print">
         <div class="flex items-center gap-3">
-            <a href="{{ route('salesperson.orders.show', $order->id) }}" class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+            <a href="{{ route('salesperson.orders.review', $order->id) }}" class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
                 <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
             </a>
             <span class="font-bold text-gray-800">Invoice #{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</span>
