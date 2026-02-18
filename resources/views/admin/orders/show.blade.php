@@ -143,6 +143,7 @@
             $words[$point = $point % 10] : '';
         return $result . "Rupees Only";
     }
+    $gstin = \App\Models\Setting::where('key', 'gstin')->value('value') ?? 'N/A';
 @endphp
 
 <!-- Main Admin Content (Visible on Screen) -->
@@ -291,7 +292,7 @@
                     <div class="text-xs text-slate-500 mt-1 leading-relaxed">
                         <p>123, Business Park, Main Road</p>
                         <p>Ahmedabad, Gujarat - 380001</p>
-                        <p>GSTIN: <span class="font-mono font-medium text-slate-700">24ABCDE1234F1Z5</span></p>
+                        <p>GSTIN: <span class="font-mono font-medium text-slate-700">{{ $gstin }}</span></p>
                         <p>Email: info@vamika.com | Ph: +91 98765 43210</p>
                     </div>
                 </div>

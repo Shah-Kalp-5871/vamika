@@ -115,6 +115,20 @@ $pageConfig = [
                         </div>
                     </div>
                 </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">GSTIN</label>
+                    <div class="relative">
+                        <iconify-icon icon="lucide:receipt-text" width="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
+                        <input type="text" name="gstin"
+                               value="{{ $settings['gstin'] ?? '' }}"
+                               maxlength="15"
+                               oninput="this.value = this.value.toUpperCase()"
+                               placeholder="e.g. 24ABCDE1234F1Z5"
+                               class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-mono font-medium text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all tracking-wider">
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1.5 pl-1">15-character GST Identification Number. Displayed on all invoices.</p>
+                </div>
             </div>
         </div>
 
