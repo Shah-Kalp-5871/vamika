@@ -290,8 +290,8 @@
                 <div class="w-1/2 text-right">
                     <h2 class="text-lg font-bold text-slate-900">VAMIKA ENTERPRISE</h2>
                     <div class="text-xs text-slate-500 mt-1 leading-relaxed">
-                        <p>123, Business Park, Main Road</p>
-                        <p>Ahmedabad, Gujarat - 380001</p>
+                        <p>SHYAM SHRUSHTI APPARTMENT, B-BLOCK-1, GROUND FLOOR</p>
+                        <p>NR. KUNTESHWAR MAHADEV MANDIR, NEW RANIP, AHMEDABAD-382470</p>
                         <p>GSTIN: <span class="font-mono font-medium text-slate-700">{{ $gstin }}</span></p>
                         <p>Email: info@vamika.com | Ph: +91 98765 43210</p>
                     </div>

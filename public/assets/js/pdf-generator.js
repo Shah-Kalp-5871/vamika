@@ -12,8 +12,8 @@ function generatePDFInvoice(orderData) {
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.text('Wholesale Distributor', 105, 27, { align: 'center' });
-    doc.text('Delhi NCR, India | GSTIN: ' + (orderData.gstin || window.appGstin || 'N/A'), 105, 32, { align: 'center' });
-    doc.text('Phone: 011-12345678 | Email: info@vamikaenterprise.com', 105, 37, { align: 'center' });
+    doc.text('AHMEDABAD, GUJARAT | GSTIN: ' + (orderData.gstin || window.appGstin || 'N/A'), 105, 32, { align: 'center' });
+    doc.text('NR. KUNTESHWAR MAHADEV MANDIR, NEW RANIP - 382470', 105, 37, { align: 'center' });
 
     // Invoice Title
     doc.setFontSize(16);
