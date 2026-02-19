@@ -321,6 +321,22 @@ $pageConfig = [
                 
                 <div class="form-grid">
                     <div class="form-group">
+                        <label class="form-label">Bit <span class="form-required">*</span></label>
+                        <select class="form-input" name="bit_id" required>
+                            <option value="">Select bit</option>
+                            @foreach($bits as $bit)
+                                <option value="{{ $bit->id }}" {{ old('bit_id') == $bit->id ? 'selected' : '' }}>
+                                    {{ $bit->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('bit_id')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                        <a href="{{ route('admin.bits.index') }}" class=" text-blue-500 hover:text-blue-600 padding-16px">Add New Bit</a>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Full Name <span class="form-required">*</span></label>
                         <input type="text" class="form-input" name="name" placeholder="Enter full name" 
                                value="{{ old('name') }}" required>
@@ -357,21 +373,6 @@ $pageConfig = [
                         @enderror
                     </div>
 
-                   <div class="form-group">
-                        <label class="form-label">Bit <span class="form-required">*</span></label>
-                        <select class="form-input" name="bit_id" required>
-                            <option value="">Select bit</option>
-                            @foreach($bits as $bit)
-                                <option value="{{ $bit->id }}" {{ old('bit_id') == $bit->id ? 'selected' : '' }}>
-                                    {{ $bit->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('bit_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                        <a href="{{ route('admin.bits.index') }}" class=" text-blue-500 hover:text-blue-600 padding-16px">Add New Bit</a>
-                    </div>
 
                     <div class="form-group">
                         <label class="form-label">Address <span class="form-required">*</span></label>
