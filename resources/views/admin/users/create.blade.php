@@ -337,6 +337,15 @@ $pageConfig = [
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Shop Name <span class="form-required">*</span></label>
+                        <input type="text" class="form-input" name="shop_name" placeholder="Enter shop name" 
+                               value="{{ old('shop_name') }}" required>
+                        @error('shop_name')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Full Name <span class="form-required">*</span></label>
                         <input type="text" class="form-input" name="name" placeholder="Enter full name" 
                                value="{{ old('name') }}" required>
@@ -360,15 +369,6 @@ $pageConfig = [
                                value="{{ old('phone') }}" maxlength="10" pattern="[0-9]{10}"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)" required>
                         @error('phone')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Shop Name <span class="form-required">*</span></label>
-                        <input type="text" class="form-input" name="shop_name" placeholder="Enter shop name" 
-                               value="{{ old('shop_name') }}" required>
-                        @error('shop_name')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
