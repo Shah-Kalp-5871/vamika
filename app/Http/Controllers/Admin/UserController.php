@@ -35,6 +35,16 @@ class UserController extends Controller
             });
         }
 
+        if ($request->has('source') && in_array($request->source, ['self', 'admin', 'salesperson'])) {
+            if ($request->source === 'self') {
+                $query->whereNull('created_by');
+            } else {
+                $query->whereHas('creator', function ($q) use ($request) {
+                    $q->where('role', $request->source);
+                });
+            }
+        }
+
         $users = $query->latest()->paginate(10);
         $totalShopOwners = User::where('role', 'shop-owner')->count();
         $totalSalespersons = User::where('role', 'salesperson')->count();
@@ -54,7 +64,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'nullable|string|max:20',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => $request->user_type === 'shop-owner' ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
             'user_type' => 'required|in:shop-owner,salesperson',
             'bit_id' => 'required_if:user_type,shop-owner|exists:bits,id',
             'work_start_time' => 'nullable|date_format:H:i',
@@ -77,13 +87,14 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($request->password ?: ($request->user_type === 'shop-owner' ? 'demo1234' : $request->password)),
                 'role' => $request->user_type === 'shop-owner' ? 'shop-owner' : 'salesperson',
                 'status' => 'active',
                 'bit_id' => ($request->user_type === 'salesperson' && $bit) ? $bit->id : null,
                 'employee_id' => $request->user_type === 'salesperson' ? $request->employee_id : null,
                 'work_start_time' => $request->work_start_time,
                 'work_end_time' => $request->work_end_time,
+                'created_by' => auth()->id(),
             ]);
 
             if ($request->user_type === 'shop-owner') {

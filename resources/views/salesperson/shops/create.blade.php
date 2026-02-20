@@ -87,22 +87,6 @@
                     <p class="text-[10px] text-slate-400">This will be used as the username for the shop owner app.</p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label for="password" class="text-sm font-medium text-slate-700">Password <span class="text-rose-500">*</span></label>
-                        <input type="password" name="password" id="password" required
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all"
-                            placeholder="Min. 8 chars">
-                        @error('password') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    
-                    <div class="space-y-1">
-                        <label for="password_confirmation" class="text-sm font-medium text-slate-700">Confirm <span class="text-rose-500">*</span></label>
-                        <input type="password" name="password_confirmation" id="password_confirmation" required
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all"
-                            placeholder="Repeat password">
-                    </div>
-                </div>
             </div>
 
             <div class="pt-4 pb-8">

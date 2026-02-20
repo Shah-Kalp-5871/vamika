@@ -44,7 +44,8 @@ class RegisterController extends Controller
                     'phone' => $request->phone,
                     'password' => Hash::make($request->password),
                     'role' => 'shop-owner',
-                    'status' => 'active', 
+                    'status' => 'active',
+                    'created_by' => null, // Explicitly NULL for self-registration
                 ]);
 
                 // 2. Find a Salesperson for this Bit

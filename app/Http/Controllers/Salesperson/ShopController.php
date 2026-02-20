@@ -88,7 +88,6 @@ class ShopController extends Controller
             'phone' => 'required|string|max:20',
             'bit_id' => 'required|exists:bits,id',
             'address' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
         ]);
 
         try {
@@ -99,10 +98,11 @@ class ShopController extends Controller
                 'name' => $request->owner_name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
-                'role' => 'shop-owner',
-                'status' => 'active',
-            ]);
+            'password' => Hash::make('demo1234'),
+            'role' => 'shop-owner',
+            'status' => 'active',
+            'created_by' => auth()->id(),
+        ]);
 
             // 2. Create Shop
             $shop = Shop::create([

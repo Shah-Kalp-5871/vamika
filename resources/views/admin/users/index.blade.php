@@ -397,6 +397,22 @@ $pageConfig = [
                     @endif
                 </form>
             </div>
+            <div class="flex-shrink-0">
+                <form action="{{ route('admin.users.index') }}" method="GET" class="flex gap-2">
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    @if(request('role'))
+                        <input type="hidden" name="role" value="{{ request('role') }}">
+                    @endif
+                    <select name="source" class="search-input !pl-4" onchange="this.form.submit()">
+                        <option value="">All Sources</option>
+                        <option value="self" {{ request('source') == 'self' ? 'selected' : '' }}>Self Registered</option>
+                        <option value="admin" {{ request('source') == 'admin' ? 'selected' : '' }}>Admin Created</option>
+                        <option value="salesperson" {{ request('source') == 'salesperson' ? 'selected' : '' }}>Salesperson Created</option>
+                    </select>
+                </form>
+            </div>
             <a href="{{ route('admin.users.create') }}" class="btn-primary">
                 <iconify-icon icon="lucide:plus" width="16"></iconify-icon>
                 Add New User
@@ -430,6 +446,7 @@ $pageConfig = [
                             <th>Contact</th>
                             <th>Bit</th>
                             <th>Status</th>
+                            <th>Source</th>
                             <th>Join Date</th>
                             <th>Actions</th>
                         </tr>
@@ -493,6 +510,29 @@ $pageConfig = [
                                         width="12" class="mr-1"></iconify-icon>
                                     {{ ucfirst($user->status) }}
                                 </span>
+                            </td>
+                            <td>
+                                @if(!$user->created_by)
+                                    <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                                        <iconify-icon icon="lucide:user-plus" width="12" class="mr-1"></iconify-icon>
+                                        Self
+                                    </span>
+                                @elseif($user->creator && $user->creator->role == 'admin')
+                                    <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full border border-purple-100">
+                                        <iconify-icon icon="lucide:shield-check" width="12" class="mr-1"></iconify-icon>
+                                        Admin
+                                    </span>
+                                @elseif($user->creator && $user->creator->role == 'salesperson')
+                                    <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">
+                                        <iconify-icon icon="lucide:briefcase" width="12" class="mr-1"></iconify-icon>
+                                        Salesperson
+                                    </span>
+                                @else
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded-full border border-slate-100">
+                                        <iconify-icon icon="lucide:help-circle" width="12" class="mr-1"></iconify-icon>
+                                        Unknown
+                                    </span>
+                                @endif
                             </td>
                             <td>
                                 <div class="flex items-center gap-1 text-sm">

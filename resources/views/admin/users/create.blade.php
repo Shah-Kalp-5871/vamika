@@ -382,30 +382,7 @@ $pageConfig = [
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Password <span class="form-required">*</span></label>
-                        <div class="password-wrapper">
-                            <input type="password" class="form-input pr-10" name="password" placeholder="Set password" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
-                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
-                            </button>
-                        </div>
-                        @error('password')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Confirm Password <span class="form-required">*</span></label>
-                        <div class="password-wrapper">
-                            <input type="password" class="form-input pr-10" name="password_confirmation" 
-                                   placeholder="Confirm password" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
-                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
-                            </button>
-                        </div>
-                    </div>
+                    {{-- Password auto-set to demo1234 --}}
                 </div>
 
                 <div class="form-actions">
@@ -579,20 +556,7 @@ $pageConfig = [
 
     // Handle shop owner form submission
     document.getElementById('shopOwnerFormData').addEventListener('submit', function(e) {
-        // Laravel will handle validation and form submission
-        // Client-side validation for password match
-        const password = this.querySelector('input[name="password"]').value;
-        const confirmPassword = this.querySelector('input[name="password_confirmation"]').value;
-        
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Passwords do not match!'
-            });
-            return;
-        }
+        // Password is now auto-set
     });
 
     // Handle salesperson form submission

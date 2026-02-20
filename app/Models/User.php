@@ -22,6 +22,7 @@ class User extends Authenticatable
         'bit_id',
         'work_start_time',
         'work_end_time',
+        'created_by',
     ];
 
     public function managedShops()
@@ -50,6 +51,11 @@ class User extends Authenticatable
     public function shop()
     {
         return $this->hasOne(Shop::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function salespersonOrders()
