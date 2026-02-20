@@ -439,14 +439,19 @@ $pageConfig = [
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="user-avatar" style="background: {{ $user->role == 'shop-owner' ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)' }}">
-                                        {{ substr($user->name, 0, 1) }}
+                                        {{ substr($user->role == 'shop-owner' && $user->shop ? $user->shop->name : $user->name, 0, 1) }}
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-semibold text-slate-900">{{ $user->name }}</h4>
-                                        <p class="text-xs text-slate-500 mt-0.5">{{ $user->email }}</p>
                                         @if($user->role == 'shop-owner' && $user->shop)
-                                            <p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:store" width="12" class="mr-1"></iconify-icon> {{ $user->shop->name }}</p>
-                                        @elseif($user->role == 'salesperson' && $user->employee_id)
+                                            <h4 class="text-sm font-semibold text-slate-900">{{ $user->shop->name }}</h4>
+                                            <p class="text-xs text-slate-600 font-medium mt-0.5">{{ $user->name }}</p>
+                                        @else
+                                            <h4 class="text-sm font-semibold text-slate-900">{{ $user->name }}</h4>
+                                        @endif
+                                        
+                                        <p class="text-[10px] text-slate-400 mt-1">{{ $user->email }}</p>
+
+                                        @if($user->role == 'salesperson' && $user->employee_id)
                                             <p class="text-xs text-slate-500 mt-1"><iconify-icon icon="lucide:id-card" width="12" class="mr-1"></iconify-icon> {{ $user->employee_id }}</p>
                                         @endif
                                     </div>
