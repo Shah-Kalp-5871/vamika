@@ -55,4 +55,42 @@ class OrderController extends Controller
 
         return view('shop-owner.invoice.show', compact('order'));
     }
+
+    public function cancel($id)
+    {
+        $order = Order::with('items')->findOrFail($id);
+        
+        if ($order->shop_id !== Auth::user()->shop->id) {
+            abort(403);
+        }
+
+        if (!in_array($order->status, ['pending', 'processing'])) {
+            return back()->with('error', 'Order cannot be cancelled in its current status.');
+        }
+
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            // Restore stock
+            foreach ($order->items as $item) {
+                $product = \App\Models\Product::find($item->product_id);
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update([
+                'status' => 'cancelled',
+                'payment_status' => 'failed'
+            ]);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()->route('shop-owner.orders.index')->with('success', 'Order cancelled successfully.');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return back()->with('error', 'Failed to cancel order: ' . $e->getMessage());
+        }
+    }
 }

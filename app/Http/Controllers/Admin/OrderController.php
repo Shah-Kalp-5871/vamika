@@ -60,12 +60,32 @@ class OrderController extends Controller
             $oldStatus = $order->status;
             $newStatus = $request->status;
 
+            // Handle stock restoration if order is cancelled
+            if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+                foreach ($order->items as $item) {
+                    $product = \App\Models\Product::find($item->product_id);
+                    if ($product) {
+                        $product->increment('stock', $item->quantity);
+                    }
+                }
+            }
+            // Handle stock reduction if a cancelled order is reinstated (less common but good for consistency)
+            elseif ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+                foreach ($order->items as $item) {
+                    $product = \App\Models\Product::find($item->product_id);
+                    if ($product) {
+                        if ($product->stock < $item->quantity) {
+                            throw new \Exception("Insufficient stock to reinstate order for product: {$product->name}");
+                        }
+                        $product->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+
             $order->update([
                 'status' => $newStatus,
                 'payment_status' => $request->payment_status,
             ]);
-
-
         });
 
         return redirect()->route('admin.orders.index')->with('success', 'Order status updated successfully');

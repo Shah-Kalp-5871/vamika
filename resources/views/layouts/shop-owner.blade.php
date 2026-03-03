@@ -39,6 +39,7 @@ $backUrl = $backUrl ?? route('shop-owner.dashboard');
     @include('layouts.partials.bottom-nav.shop')
 
     <!-- Common Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="{{ asset('assets/js/toast.js') }}"></script>

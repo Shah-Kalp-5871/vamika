@@ -73,9 +73,16 @@
                 <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Grand Total</p>
                 <h3 class="text-2xl font-black text-white">₹{{ number_format($order->total_amount, 2) }}</h3>
             </div>
-            <a href="{{ route('shop-owner.invoices.show', $order->id) }}" class="h-12 px-6 rounded-xl bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-center border border-white/20 hover:bg-white/20 transition-all">
-                View Invoice
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('shop-owner.invoices.show', $order->id) }}" class="h-12 px-4 rounded-xl bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-center border border-white/20 hover:bg-white/20 transition-all">
+                    Invoice
+                </a>
+                @if(in_array($order->status, ['pending', 'processing']))
+                <button onclick="confirmCancelOrder()" class="h-12 w-12 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center hover:bg-rose-500/20 transition-all">
+                    <iconify-icon icon="lucide:trash-2" width="20"></iconify-icon>
+                </button>
+                @endif
+            </div>
         </div>
 
         <!-- Timeline / Additional Info -->
@@ -87,4 +94,36 @@
         @endif
     </main>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function confirmCancelOrder() {
+        Swal.fire({
+            title: 'Cancel Order?',
+            text: "Are you sure you want to cancel this order? This action will restore product stock.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{{ route('shop-owner.orders.cancel', $order->id) }}";
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = "{{ csrf_token() }}";
+                
+                form.appendChild(csrfToken);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
 @endsection

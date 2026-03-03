@@ -185,6 +185,7 @@ Route::prefix('salesperson')->name('salesperson.')->middleware(['auth', 'salespe
     Route::post('/orders', [SalespersonOrder::class, 'store'])->name('orders.store')->middleware('working_hours');
     Route::get('/orders/{id}/review', [SalespersonOrder::class, 'review'])->name('orders.review');
     Route::get('/orders/{id}/invoice', [SalespersonOrder::class, 'invoice'])->name('orders.invoice');
+    Route::post('/orders/{id}/cancel', [SalespersonOrder::class, 'cancel'])->name('orders.cancel');
     
     // Visits
     Route::get('/visits', [SalespersonVisit::class, 'index'])->name('visits.index');
@@ -215,6 +216,7 @@ Route::prefix('shop-owner')->name('shop-owner.')->middleware(['auth', 'shop-owne
     Route::get('/orders', [ShopOwnerOrder::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [ShopOwnerOrder::class, 'show'])->name('orders.show');
     Route::get('/orders/{id}/details', [ShopOwnerOrder::class, 'details'])->name('orders.details');
+    Route::post('/orders/{id}/cancel', [ShopOwnerOrder::class, 'cancel'])->name('orders.cancel');
     
     // Cart
     Route::get('/cart', [ShopOwnerCart::class, 'index'])->name('cart.index');

@@ -63,6 +63,12 @@ class OrderController extends Controller
                 $subtotal = $product->price * $itemData['quantity'];
                 $totalAmount += $subtotal;
 
+                // Check and decrement stock
+                if ($product->stock < $itemData['quantity']) {
+                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                }
+                $product->decrement('stock', $itemData['quantity']);
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
@@ -109,5 +115,46 @@ class OrderController extends Controller
     {
         $order = Order::with(['shop', 'items.product'])->findOrFail($id);
         return view('salesperson.orders.invoice', compact('order'));
+    }
+
+    public function cancel($id)
+    {
+        $order = Order::with('items')->findOrFail($id);
+
+        if ($order->salesperson_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!in_array($order->status, ['pending', 'processing'])) {
+            return back()->with('error', 'Order cannot be cancelled in its current status.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Restore stock
+            foreach ($order->items as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update([
+                'status' => 'cancelled',
+                'payment_status' => 'failed' // Or kept as pending, but usually cancelled orders are 'failed' or 'cancelled'
+            ]);
+
+            // Update visit if applicable
+            \App\Models\Visit::where('order_id', $order->id)->update(['status' => 'cancelled']);
+
+            DB::commit();
+
+            return redirect()->route('salesperson.dashboard')->with('success', 'Order cancelled successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to cancel order: ' . $e->getMessage());
+        }
     }
 }

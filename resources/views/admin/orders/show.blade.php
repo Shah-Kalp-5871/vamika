@@ -263,7 +263,16 @@
                 Print Invoice
             </button>
             @if($order->status !== 'cancelled')
-            <button type="button" onclick="confirmDeleteOrder('{{ $order->id }}')" class="btn-danger">
+            <button type="button" onclick="confirmCancelOrder('{{ $order->id }}')" class="btn-danger">
+                <iconify-icon icon="lucide:ban" width="16"></iconify-icon>
+                Cancel Order
+            </button>
+            <form id="cancel-order-{{ $order->id }}" action="{{ route('admin.orders.update-status', $order->id) }}" method="POST" style="display: none;">
+                @csrf
+                <input type="hidden" name="status" value="cancelled">
+                <input type="hidden" name="payment_status" value="cancelled">
+            </form>
+            <button type="button" onclick="confirmDeleteOrder('{{ $order->id }}')" class="btn-secondary">
                 <iconify-icon icon="lucide:trash-2" width="16"></iconify-icon>
                 Delete Order
             </button>
@@ -459,6 +468,22 @@
         setTimeout(() => {
             window.print();
         }, 500);
+    }
+
+    function confirmCancelOrder(orderId) {
+        Swal.fire({
+            title: 'Cancel Order?',
+            text: "Are you sure you want to cancel this order? This action will restore product stock.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E11D48',
+            cancelButtonColor: '#64748B',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('cancel-order-' + orderId).submit();
+            }
+        });
     }
 
     function confirmDeleteOrder(orderId) {

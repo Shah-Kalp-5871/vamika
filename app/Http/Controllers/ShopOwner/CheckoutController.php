@@ -53,6 +53,12 @@ class CheckoutController extends Controller
                 $subtotal = $product->price * $item['quantity'];
                 $totalAmount += $subtotal;
 
+                // Check and decrement stock
+                if ($product->stock < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                }
+                $product->decrement('stock', $item['quantity']);
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,

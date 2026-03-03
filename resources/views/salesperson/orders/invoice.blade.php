@@ -63,6 +63,11 @@
             <button onclick="window.print()" class="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
                 <iconify-icon icon="lucide:printer" width="20"></iconify-icon>
             </button>
+            @if(in_array($order->status, ['pending', 'processing']))
+            <button onclick="confirmCancelOrder()" class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Cancel Order">
+                <iconify-icon icon="lucide:trash-2" width="20"></iconify-icon>
+            </button>
+            @endif
         </div>
     </div>
 
@@ -317,6 +322,34 @@
             btn.innerHTML = originalContent;
             btn.disabled = false;
         }
+    }
+
+    function confirmCancelOrder() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to cancel this order? This action will restore product stock.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{{ route('salesperson.orders.cancel', $order->id) }}";
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = "{{ csrf_token() }}";
+                
+                form.appendChild(csrfToken);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
 </script>
 @endsection
