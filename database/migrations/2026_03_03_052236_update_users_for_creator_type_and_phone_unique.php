@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->enum('creator_type', ['admin', 'salesperson', 'self'])->default('self')->after('created_by');
-            $table->string('phone')->unique()->change();
+            $table->string('phone')->change();
         });
     }
 
