@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('creator_type', ['admin', 'salesperson', 'self'])->default('self')->after('created_by');
+            if (!Schema::hasColumn('users', 'creator_type')) {
+                $table->enum('creator_type', ['admin', 'salesperson', 'self'])->default('self')->after('created_by');
+            }
             $table->string('phone')->change();
         });
     }
