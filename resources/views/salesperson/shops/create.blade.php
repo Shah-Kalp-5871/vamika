@@ -76,6 +76,13 @@
                             placeholder="Primary contact number">
                         @error('phone') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    <div class="space-y-1">
+                        <label for="dob" class="text-sm font-medium text-slate-700">Date of Birth</label>
+                        <input type="date" name="dob" id="dob" value="{{ old('dob') }}"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all">
+                        @error('dob') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div class="space-y-1">

@@ -52,9 +52,6 @@
     <!-- Actions Bar -->
     <div class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 mb-6 flex items-center justify-between sm:rounded-xl sm:mx-4 sm:top-4 section-no-print">
         <div class="flex items-center gap-3">
-            <a href="{{ route('salesperson.orders.review', $order->id) }}" class="p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
-                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
-            </a>
             <span class="font-bold text-gray-800">Invoice #{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</span>
         </div>
         <div class="flex items-center gap-2">
@@ -214,7 +211,13 @@
             </div>
 
             <!-- Authorised Signatory -->
-            <div class="flex justify-end mt-8 pt-8 relative">
+            <div class="flex justify-between items-end mt-8 pt-8 border-t border-slate-100">
+                <div class="section-no-print">
+                    <a href="{{ route('salesperson.dashboard') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-black transition-all font-semibold text-[11px] uppercase tracking-wider shadow-md active:scale-95">
+                        <iconify-icon icon="lucide:check-circle" width="14"></iconify-icon>
+                        Confirm & Finish
+                    </a>
+                </div>
                 <div class="text-center w-40">
                     <!-- <img src="" class="h-12 w-auto mx-auto mb-2 opacity-80" alt="Signature"> -->
                     <div class="h-12 w-full"></div> <!-- Placeholder for branding/signature -->

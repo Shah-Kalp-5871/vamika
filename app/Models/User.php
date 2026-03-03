@@ -24,6 +24,7 @@ class User extends Authenticatable
         'work_end_time',
         'created_by',
         'creator_type',
+        'dob',
     ];
 
     public function managedShops()
@@ -41,6 +42,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'dob' => 'date',
         ];
     }
 

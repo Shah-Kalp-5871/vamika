@@ -44,7 +44,7 @@ class ProductController extends Controller
             'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // Single image up to 5MB
         ]);
 
@@ -91,7 +91,7 @@ class ProductController extends Controller
             'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'stock' => 'required|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'remove_image' => 'nullable|boolean',
         ]);

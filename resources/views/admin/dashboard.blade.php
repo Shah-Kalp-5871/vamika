@@ -319,6 +319,29 @@ $pageConfig = [
                         <iconify-icon icon="lucide:settings" width="96"></iconify-icon>
                     </div>
                 </button>
+
+                <!-- Birthday Hub -->
+                <button onclick="window.location.href='{{ route('admin.birthdays.index') }}'"
+                    class="group relative flex flex-col items-start p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-xl hover:border-rose-200 transition-all duration-300 overflow-hidden text-left animate-in" style="animation-delay: 0.9s;">
+                    <div class="mb-5 p-4 bg-rose-50 rounded-xl text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300 shadow-sm relative">
+                        <iconify-icon icon="lucide:cake" width="24"></iconify-icon>
+                        @if($data['todayBirthdaysCount'] > 0)
+                        <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[8px] text-white items-center justify-center font-bold">
+                                {{ $data['todayBirthdaysCount'] }}
+                            </span>
+                        </span>
+                        @endif
+                    </div>
+                    <div>
+                        <span class="block text-sm font-bold text-slate-900 mb-1">Birthday Hub</span>
+                        <span class="block text-[10px] text-slate-500 font-medium uppercase tracking-wider">Celebrations</span>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-10 transition-opacity text-rose-500">
+                        <iconify-icon icon="lucide:cake" width="96"></iconify-icon>
+                    </div>
+                </button>
             </div>
         </section>
 

@@ -96,8 +96,6 @@ class ReportController extends Controller
         // New Customers (in period)
         $newShopsCount = Shop::whereBetween('created_at', [$start, $end])->count();
 
-        // Low Stock Alert
-
         // Recent Activities
         $recentOrders = Order::with(['shop'])
             ->latest()

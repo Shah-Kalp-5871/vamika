@@ -561,14 +561,6 @@ $pageConfig = [
                 <p class="text-xl font-bold text-slate-900" id="mobileInactive">0</p>
             </div>
 
-            <!-- Out of Stock Products -->
-            <div class="mobile-stat-card">
-                <div class="flex items-center justify-between mb-2">
-                    <iconify-icon icon="lucide:alert-triangle" width="18" class="text-rose-500"></iconify-icon>
-                    <span class="text-xs text-slate-500">Out of Stock</span>
-                </div>
-                <p class="text-xl font-bold text-slate-900" id="mobileOutOfStock">0</p>
-            </div>
         </div>
 
         <!-- Mobile Bulk Actions -->
@@ -655,7 +647,6 @@ $pageConfig = [
                             <option value="all">All Status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
-                            <option value="out_of_stock">Out of Stock</option>
                         </select>
                     </div>
                 </div>
@@ -1049,13 +1040,11 @@ $pageConfig = [
         const totalProducts = allProducts.length;
         const activeProducts = allProducts.filter(p => p.status === 'Active').length;
         const inactiveProducts = allProducts.filter(p => p.status === 'Inactive').length;
-        const outOfStockProducts = allProducts.filter(p => p.stock <= 0).length;
 
         // Update mobile stats
         document.getElementById('mobileTotalProducts').textContent = totalProducts.toLocaleString();
         document.getElementById('mobileActive').textContent = activeProducts.toLocaleString();
         document.getElementById('mobileInactive').textContent = inactiveProducts.toLocaleString();
-        document.getElementById('mobileOutOfStock').textContent = outOfStockProducts.toLocaleString();
     }
 
     function applyMobileFilters() {
@@ -1069,12 +1058,8 @@ $pageConfig = [
         }
         
         if (status !== 'all') {
-            if (status === 'out_of_stock') {
-                filters.push({field: "stock", type: "<=", value: 0});
-            } else {
-                const statusValue = status === 'active' ? 'Active' : 'Inactive';
-                filters.push({field: "status", type: "=", value: statusValue});
-            }
+            const statusValue = status === 'active' ? 'Active' : 'Inactive';
+            filters.push({field: "status", type: "=", value: statusValue});
         }
         
         if (filters.length > 0) {
@@ -1112,10 +1097,6 @@ $pageConfig = [
         applyMobileFilters();
     }
 
-    function showOutOfStockOnly() {
-        document.getElementById('mobileStatusFilter').value = 'out_of_stock';
-        applyMobileFilters();
-    }
 
     function bulkExportProducts() {
         if (selectedProducts.length === 0) {
@@ -1217,18 +1198,11 @@ $pageConfig = [
                         newStock = product.stock + quantity;
                         break;
                     case 'subtract':
-                        newStock = Math.max(0, product.stock - quantity);
+                        newStock = product.stock - quantity;
                         break;
                 }
                 
                 product.stock = newStock;
-                
-                // Update stock status
-                if (newStock === 0) product.stockStatus = 'out';
-                else if (newStock <= 10) product.stockStatus = 'low';
-                else product.stockStatus = 'instock';
-                
-                product.status = product.stockStatus === 'out' ? 'Inactive' : 'Active';
                 product.lastUpdated = new Date().toISOString().split('T')[0];
             }
         });

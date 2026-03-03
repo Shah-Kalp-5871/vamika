@@ -63,6 +63,7 @@ class UserController extends Controller
             'bit_id' => 'required_if:user_type,shop-owner|exists:bits,id',
             'work_start_time' => 'nullable|date_format:H:i',
             'work_end_time' => 'nullable|date_format:H:i',
+            'dob' => 'nullable|date',
         ]);
         
         if ($request->user_type === 'shop-owner') {
@@ -90,6 +91,7 @@ class UserController extends Controller
                 'work_end_time' => $request->work_end_time,
                 'created_by' => auth()->id(),
                 'creator_type' => 'admin',
+                'dob' => $request->dob,
             ]);
 
             if ($request->user_type === 'shop-owner') {
@@ -133,6 +135,7 @@ class UserController extends Controller
             'status' => 'nullable|in:active,inactive',
             'work_start_time' => 'nullable|string', // Support H:i or H:i:s
             'work_end_time' => 'nullable|string',
+            'dob' => 'nullable|date',
         ]);
 
         $status = $request->has('status') ? 'active' : 'inactive';
@@ -147,6 +150,7 @@ class UserController extends Controller
                 'status' => $status,
                 'work_start_time' => $request->work_start_time,
                 'work_end_time' => $request->work_end_time,
+                'dob' => $request->dob,
             ];
 
             if ($user->role === 'salesperson') {

@@ -239,15 +239,14 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h4 class="text-sm font-semibold text-slate-900 truncate">${product.name}</h4>
-                                <p class="text-xs text-slate-500">${product.brand || 'No Brand'} • ${product.unit || 'No Unit'}</p>
+                                <h4 class="text-sm font-semibold text-slate-900 leading-tight">${product.name}</h4>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-sm font-semibold text-slate-900">₹${product.price}</span>
                             <span class="text-xs text-slate-400 line-through">₹${product.mrp}</span>
                             <span class="text-[10px] px-1 py-0.5 rounded bg-red-50 text-red-600 font-medium">
-                                Save ₹${product.mrp - product.price}
+                                Benefits ₹${product.mrp - product.price}
                             </span>
                         </div>
                         <div class="mt-2">
@@ -267,16 +266,15 @@
                     </div>
                     <div class="space-y-2">
                         <div class="flex items-start justify-between">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-semibold text-slate-900 truncate">${product.name}</h4>
-                                <p class="text-xs text-slate-500">${product.brand || 'No Brand'} • ${product.unit || 'No Unit'}</p>
+                            <div class="flex-1 min-w-0 pr-1">
+                                <h4 class="text-sm font-semibold text-slate-900 leading-tight">${product.name}</h4>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-lg font-semibold text-slate-900">₹${product.price}</span>
                             <span class="text-sm text-slate-400 line-through">₹${product.mrp}</span>
                             <span class="text-xs px-1.5 py-0.5 rounded bg-red-50 text-red-600 font-medium">
-                                Save ₹${product.mrp - product.price}
+                                Benefits ₹${product.mrp - product.price}
                             </span>
                         </div>
                         <div class="flex items-center justify-between pt-2 border-t border-slate-100">

@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrder;
 use App\Http\Controllers\Admin\OfferController as AdminOffer;
 use App\Http\Controllers\Admin\ReportController as AdminReport;
 use App\Http\Controllers\Admin\SettingsController as AdminSettings;
+use App\Http\Controllers\Admin\BirthdayController as AdminBirthday;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +151,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Settings
     Route::get('/settings', [AdminSettings::class, 'index'])->name('settings.index');
     Route::post('/settings', [AdminSettings::class, 'update'])->name('settings.update');
+    
+    // Birthdays
+    Route::get('/birthdays', [AdminBirthday::class, 'index'])->name('birthdays.index');
 });
 
 /*

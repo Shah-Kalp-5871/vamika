@@ -46,6 +46,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentOrders = Order::with('shop')
+            ->withCount('items')
             ->where('salesperson_id', $salespersonId)
             ->latest()
             ->limit(5)

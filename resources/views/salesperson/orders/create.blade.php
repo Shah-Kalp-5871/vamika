@@ -114,6 +114,9 @@
                             <span class="text-xs font-bold text-indigo-600">₹{{ number_format($product->price, 2) }}</span>
                             @if($product->mrp > $product->price)
                                 <span class="text-[10px] text-slate-400 line-through">₹{{ number_format($product->mrp, 2) }}</span>
+                                <span class="text-[10px] px-1 py-0.5 rounded bg-red-50 text-red-600 font-medium ml-1">
+                                    Benefits ₹{{ number_format($product->mrp - $product->price, 2) }}
+                                </span>
                             @endif
                             <span class="text-[10px] text-slate-400">•</span>
                             <span class="text-[10px] text-slate-500">{{ $product->unit ?? 'No Unit' }}</span>

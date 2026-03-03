@@ -88,6 +88,7 @@ class ShopController extends Controller
             'phone' => 'required|string|max:20',
             'bit_id' => 'required|exists:bits,id',
             'address' => 'required|string',
+            'dob' => 'nullable|date',
         ]);
 
         try {
@@ -103,6 +104,7 @@ class ShopController extends Controller
             'status' => 'active',
             'created_by' => auth()->id(),
             'creator_type' => 'salesperson',
+            'dob' => $request->dob,
         ]);
 
             // 2. Create Shop

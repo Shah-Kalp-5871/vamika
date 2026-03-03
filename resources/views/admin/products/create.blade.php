@@ -520,7 +520,7 @@
                      <div class="form-group">
                         <label class="form-label" for="stock">Current Stock *</label>
                         <input type="number" id="stock" name="stock" class="form-input" required
-                            placeholder="0" min="0"
+                            placeholder="0"
                             value="{{ old('stock', $product->stock ?? 0) }}">
                         @error('stock')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

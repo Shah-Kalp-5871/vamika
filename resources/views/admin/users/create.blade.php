@@ -373,6 +373,14 @@ $pageConfig = [
                         @enderror
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-input" name="dob" value="{{ old('dob') }}">
+                        @error('dob')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
 
                     <div class="form-group">
                         <label class="form-label">Address <span class="form-required">*</span></label>

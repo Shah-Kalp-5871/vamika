@@ -36,6 +36,21 @@ $role     = $pageConfig['role'] ?? 'Admin';
         </div>
 
         <div class="flex items-center gap-3">
+            @php
+                $headerBirthdays = \App\Models\User::whereMonth('dob', now()->month)->whereDay('dob', now()->day)->count();
+            @endphp
+            @if($headerBirthdays > 0)
+            <a href="{{ route('admin.birthdays.index') }}" class="group relative h-10 w-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shadow-sm hover:bg-rose-600 hover:text-white transition-all">
+                <iconify-icon icon="lucide:cake" width="22" class="group-hover:animate-bounce"></iconify-icon>
+                <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[8px] text-white items-center justify-center font-bold">
+                        {{ $headerBirthdays }}
+                    </span>
+                </span>
+            </a>
+            @endif
+
             <div class="hidden sm:flex flex-col items-end mr-2">
                 <span class="text-xs font-bold text-slate-900">{{ $role }}</span>
                 <span class="text-[10px] font-medium text-slate-400" id="currentDate"></span>

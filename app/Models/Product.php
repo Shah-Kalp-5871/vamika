@@ -18,13 +18,7 @@ class Product extends Model
 
     protected static function booted()
     {
-        static::saving(function ($product) {
-            if ($product->stock <= 0) {
-                $product->status = 'inactive';
-            } elseif ($product->isDirty('stock') && $product->stock > 0 && $product->status === 'inactive') {
-                $product->status = 'active';
-            }
-        });
+        // Removed auto-deactivation on zero stock
     }
 
     public const CATEGORIES = [
@@ -89,12 +83,4 @@ class Product extends Model
         return $path ? asset('storage/' . $path) : null;
     }
 
-    public function decrementStock($quantity)
-    {
-        if ($this->stock < $quantity) {
-            throw new \Exception("Insufficient stock for product: {$this->name}");
-        }
-        
-        $this->decrement('stock', $quantity);
-    }
 }

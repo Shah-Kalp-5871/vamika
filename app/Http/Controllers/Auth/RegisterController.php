@@ -33,6 +33,7 @@ class RegisterController extends Controller
             'bit_id' => 'required|exists:bits,id',
             'shop_address' => 'required|string',
             'terms' => 'required',
+            'dob' => 'nullable|date',
         ]);
 
         try {
@@ -47,6 +48,7 @@ class RegisterController extends Controller
                     'status' => 'active',
                     'created_by' => null, // Explicitly NULL for self-registration
                     'creator_type' => 'self',
+                    'dob' => $request->dob,
                 ]);
 
                 // 2. Find a Salesperson for this Bit

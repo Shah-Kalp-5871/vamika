@@ -37,11 +37,18 @@
 
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-900 truncate">{{ $product->name }}</h4>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{{ $product->unit }}</p>
+                            <div class="pr-2">
+                                <h4 class="text-sm font-bold text-slate-900 leading-tight">{{ $product->name }}</h4>
                             </div>
-                            <p class="text-sm font-black text-indigo-600">₹{{ number_format($product->price, 2) }}</p>
+                            <div class="text-right">
+                                <p class="text-sm font-black text-indigo-600">₹{{ number_format($product->price, 2) }}</p>
+                                @if($product->mrp > $product->price)
+                                    <p class="text-[10px] text-slate-400 line-through">₹{{ number_format($product->mrp, 2) }}</p>
+                                    <span class="text-[9px] px-1 py-0.5 rounded bg-red-50 text-red-600 font-bold">
+                                        BENEFITS ₹{{ number_format($product->mrp - $product->price, 2) }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                         
                              <div class="flex items-center justify-between mt-3">

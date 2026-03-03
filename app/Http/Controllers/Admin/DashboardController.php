@@ -34,6 +34,11 @@ class DashboardController extends Controller
             ->where('status', 'active')
             ->count();
 
+        // 6. Today's Birthdays
+        $todayBirthdaysCount = User::whereMonth('dob', Carbon::today()->month)
+            ->whereDay('dob', Carbon::today()->day)
+            ->count();
+
         // 6. Recent Activities (Mocked for now or fetch from multiple tables)
         // For simplicity, let's fetch recent 5 orders
         $recentOrders = Order::with('shop')
@@ -58,6 +63,7 @@ class DashboardController extends Controller
             'totalShops' => $totalShops,
             'pendingOrders' => $pendingOrders,
             'activeSalespersons' => $activeSalespersons,
+            'todayBirthdaysCount' => $todayBirthdaysCount,
             'recentActivities' => $recentActivities
         ];
 

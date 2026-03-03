@@ -444,7 +444,7 @@ $pageConfig = [
                             <th>User</th>
                             <th>Type</th>
                             <th>Contact</th>
-                            <th>Bit</th>
+                             <th>Bit</th>
                             <th>Status</th>
                             <th>Source</th>
                             <th>Join Date</th>
