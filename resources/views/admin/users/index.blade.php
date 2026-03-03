@@ -512,17 +512,17 @@ $pageConfig = [
                                 </span>
                             </td>
                             <td>
-                                @if(!$user->created_by)
+                                @if($user->creator_type == 'self')
                                     <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
                                         <iconify-icon icon="lucide:user-plus" width="12" class="mr-1"></iconify-icon>
                                         Self
                                     </span>
-                                @elseif($user->creator && $user->creator->role == 'admin')
+                                @elseif($user->creator_type == 'admin')
                                     <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full border border-purple-100">
                                         <iconify-icon icon="lucide:shield-check" width="12" class="mr-1"></iconify-icon>
                                         Admin
                                     </span>
-                                @elseif($user->creator && $user->creator->role == 'salesperson')
+                                @elseif($user->creator_type == 'salesperson')
                                     <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">
                                         <iconify-icon icon="lucide:briefcase" width="12" class="mr-1"></iconify-icon>
                                         Salesperson
@@ -530,7 +530,7 @@ $pageConfig = [
                                 @else
                                     <span class="text-xs font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded-full border border-slate-100">
                                         <iconify-icon icon="lucide:help-circle" width="12" class="mr-1"></iconify-icon>
-                                        Unknown
+                                        {{ ucfirst($user->creator_type ?? 'Unknown') }}
                                     </span>
                                 @endif
                             </td>

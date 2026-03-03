@@ -27,7 +27,7 @@ class RegisterController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'required|string|max:15|unique:users',
+            'phone' => 'required|string|max:15',
             'password' => 'required|string|min:8|confirmed',
             'shop_name' => 'required|string|max:255',
             'bit_id' => 'required|exists:bits,id',
@@ -46,6 +46,7 @@ class RegisterController extends Controller
                     'role' => 'shop-owner',
                     'status' => 'active',
                     'created_by' => null, // Explicitly NULL for self-registration
+                    'creator_type' => 'self',
                 ]);
 
                 // 2. Find a Salesperson for this Bit

@@ -36,13 +36,7 @@ class UserController extends Controller
         }
 
         if ($request->has('source') && in_array($request->source, ['self', 'admin', 'salesperson'])) {
-            if ($request->source === 'self') {
-                $query->whereNull('created_by');
-            } else {
-                $query->whereHas('creator', function ($q) use ($request) {
-                    $q->where('role', $request->source);
-                });
-            }
+            $query->where('creator_type', $request->source);
         }
 
         $users = $query->latest()->paginate(10);
@@ -95,6 +89,7 @@ class UserController extends Controller
                 'work_start_time' => $request->work_start_time,
                 'work_end_time' => $request->work_end_time,
                 'created_by' => auth()->id(),
+                'creator_type' => 'admin',
             ]);
 
             if ($request->user_type === 'shop-owner') {

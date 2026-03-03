@@ -102,6 +102,7 @@ class ShopController extends Controller
             'role' => 'shop-owner',
             'status' => 'active',
             'created_by' => auth()->id(),
+            'creator_type' => 'salesperson',
         ]);
 
             // 2. Create Shop

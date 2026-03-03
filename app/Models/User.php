@@ -23,6 +23,7 @@ class User extends Authenticatable
         'work_start_time',
         'work_end_time',
         'created_by',
+        'creator_type',
     ];
 
     public function managedShops()
