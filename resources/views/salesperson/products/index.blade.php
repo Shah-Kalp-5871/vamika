@@ -62,52 +62,9 @@
                         <h4 class="text-xs font-medium text-slate-500 mb-2">PRODUCT CATEGORY</h4>
                         <div class="flex gap-2 overflow-x-auto pb-2">
                             <div onclick="filterByCategory('all', 'Mobile')" class="filter-chip active">All</div>
-                            <div onclick="filterByCategory('food', 'Mobile')" class="filter-chip">Food</div>
-                            <div onclick="filterByCategory('beverages', 'Mobile')" class="filter-chip">Beverages</div>
-                            <div onclick="filterByCategory('personal-care', 'Mobile')" class="filter-chip">Personal Care</div>
-                            <div onclick="filterByCategory('home-care', 'Mobile')" class="filter-chip">Home Care</div>
-                            <div onclick="filterByCategory('snacks', 'Mobile')" class="filter-chip">Snacks</div>
-                            <div onclick="filterByCategory('dairy', 'Mobile')" class="filter-chip">Dairy</div>
-                            <div onclick="filterByCategory('staples', 'Mobile')" class="filter-chip">Staples</div>
-                            <div onclick="filterByCategory('household', 'Mobile')" class="filter-chip">Household</div>
-                            <div onclick="filterByCategory('bakery', 'Mobile')" class="filter-chip">Bakery</div>
-                            <div onclick="filterByCategory('frozen', 'Mobile')" class="filter-chip">Frozen</div>
-                            <div onclick="filterByCategory('others', 'Mobile')" class="filter-chip">Others</div>
-                        </div>
-                    </div>
-
-                    <!-- Product Brand Filter -->
-                    <div>
-                        <h4 class="text-xs font-medium text-slate-500 mb-2">PRODUCT BRAND</h4>
-                        <div class="flex gap-2 overflow-x-auto pb-2">
-                            <div onclick="filterByBrand('all', 'Mobile')" class="filter-chip active">All</div>
-                            <div onclick="filterByBrand('ashirwad', 'Mobile')" class="filter-chip">Ashirwad</div>
-                            <div onclick="filterByBrand('tata', 'Mobile')" class="filter-chip">Tata</div>
-                            <div onclick="filterByBrand('amul', 'Mobile')" class="filter-chip">Amul</div>
-                            <div onclick="filterByBrand('coca-cola', 'Mobile')" class="filter-chip">Coca-Cola</div>
-                            <div onclick="filterByBrand('lays', 'Mobile')" class="filter-chip">Lays</div>
-                            <div onclick="filterByBrand('parle', 'Mobile')" class="filter-chip">Parle</div>
-                            <div onclick="filterByBrand('india-gate', 'Mobile')" class="filter-chip">India Gate</div>
-                            <div onclick="filterByBrand('fortune', 'Mobile')" class="filter-chip">Fortune</div>
-                            <div onclick="filterByBrand('madhur', 'Mobile')" class="filter-chip">Madhur</div>
-                            <div onclick="filterByBrand('colgate', 'Mobile')" class="filter-chip">Colgate</div>
-                            <div onclick="filterByBrand('surf-excel', 'Mobile')" class="filter-chip">Surf Excel</div>
-                            <div onclick="filterByBrand('taj-mahal', 'Mobile')" class="filter-chip">Taj Mahal</div>
-                            <div onclick="filterByBrand('others', 'Mobile')" class="filter-chip">Others</div>
-                        </div>
-                    </div>
-
-                    <!-- Product Sub-Brand Filter -->
-                    <div>
-                        <h4 class="text-xs font-medium text-slate-500 mb-2">PRODUCT SUB-BRAND</h4>
-                        <div class="flex gap-2 overflow-x-auto pb-2">
-                            <div onclick="filterBySubBrand('all', 'Mobile')" class="filter-chip active">All</div>
-                            <div onclick="filterBySubBrand('select', 'Mobile')" class="filter-chip">Select</div>
-                            <div onclick="filterBySubBrand('premium', 'Mobile')" class="filter-chip">Premium</div>
-                            <div onclick="filterBySubBrand('regular', 'Mobile')" class="filter-chip">Regular</div>
-                            <div onclick="filterBySubBrand('gold', 'Mobile')" class="filter-chip">Gold</div>
-                            <div onclick="filterBySubBrand('fresh', 'Mobile')" class="filter-chip">Fresh</div>
-                            <div onclick="filterBySubBrand('others', 'Mobile')" class="filter-chip">Others</div>
+                            @foreach(\App\Models\Product::CATEGORIES as $key => $label)
+                                <div onclick="filterByCategory('{{ $key }}', 'Mobile')" class="filter-chip">{{ $label }}</div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -116,7 +73,7 @@
                 <div class="relative mb-4">
                     <iconify-icon icon="lucide:search" width="18"
                         class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></iconify-icon>
-                    <input type="text" id="productSearchMobile" placeholder="Search products by name or brand..."
+                    <input type="text" id="productSearchMobile" placeholder="Search products by name..."
                         class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm placeholder-slate-400 transition-all"
                         onkeyup="searchProducts('Mobile')">
                 </div>
@@ -179,8 +136,6 @@
 
     let currentCategory = 'all';
     let currentSearch = '';
-    let currentBrand = 'all';
-    let currentSubBrand = 'all';
     let isGridView = true;
 
     function initializePage() {
@@ -194,17 +149,14 @@
 
         if (!productList) return;
 
-        // Filter products based on all criteria
+        // Filter products based on category and search
         const filteredProducts = productData.products.filter(product => {
             const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
             const matchesSearch = !currentSearch ||
                 product.name.toLowerCase().includes(currentSearch) ||
-                (product.brand && product.brand.toLowerCase().includes(currentSearch)) ||
                 (product.category && product.category.toLowerCase().includes(currentSearch));
-            const matchesBrand = currentBrand === 'all' || (product.brand && product.brand.toLowerCase().includes(currentBrand));
-            const matchesSubBrand = currentSubBrand === 'all' || product.sub_brand === currentSubBrand;
 
-            return matchesCategory && matchesSearch && matchesBrand && matchesSubBrand;
+            return matchesCategory && matchesSearch;
         });
 
         // Update empty state
@@ -313,28 +265,6 @@
         loadProducts(version);
     }
 
-    function filterByBrand(brand, version) {
-        if (currentBrand === brand && brand !== 'all') {
-            currentBrand = 'all';
-        } else {
-            currentBrand = brand;
-        }
-
-        updateUIActiveState(event.currentTarget, currentBrand, version);
-        loadProducts(version);
-    }
-
-    function filterBySubBrand(subBrand, version) {
-        if (currentSubBrand === subBrand && subBrand !== 'all') {
-            currentSubBrand = 'all';
-        } else {
-            currentSubBrand = subBrand;
-        }
-
-        updateUIActiveState(event.currentTarget, currentSubBrand, version);
-        loadProducts(version);
-    }
-
     function updateUIActiveState(clickedElement, value, version) {
         const container = clickedElement.parentElement;
         container.querySelectorAll('.filter-chip').forEach(chip => {
@@ -373,12 +303,9 @@
             const matchesCategory = currentCategory === 'all' || product.category === currentCategory;
             const matchesSearch = !currentSearch ||
                 product.name.toLowerCase().includes(currentSearch) ||
-                (product.brand && product.brand.toLowerCase().includes(currentSearch)) ||
                 (product.category && product.category.toLowerCase().includes(currentSearch));
-            const matchesBrand = currentBrand === 'all' || (product.brand && product.brand.toLowerCase().includes(currentBrand));
-            const matchesSubBrand = currentSubBrand === 'all' || product.sub_brand === currentSubBrand;
 
-            return matchesCategory && matchesSearch && matchesBrand && matchesSubBrand;
+            return matchesCategory && matchesSearch;
         });
 
         // Update mobile count

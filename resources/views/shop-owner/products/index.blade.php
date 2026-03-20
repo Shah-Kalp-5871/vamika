@@ -18,11 +18,31 @@
                 class="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-indigo-100 transition-all text-sm font-medium">
         </div>
 
+        <!-- Category Filter -->
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <button onclick="filterByCategory('all')" class="category-chip px-4 py-2 rounded-xl border border-slate-100 bg-slate-50 text-xs font-bold text-slate-600 active whitespace-nowrap">All</button>
+            @foreach(\App\Models\Product::CATEGORIES as $key => $label)
+                <button onclick="filterByCategory('{{ $key }}')" class="category-chip px-4 py-2 rounded-xl border border-slate-100 bg-slate-50 text-xs font-bold text-slate-600 whitespace-nowrap">{{ $label }}</button>
+            @endforeach
+        </div>
+
+        <style>
+            .category-chip.active {
+                background-color: #4F46E5 !important;
+                color: white !important;
+                border-color: #4F46E5 !important;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        </style>
+
         <!-- Product List -->
         <div id="productList" class="grid grid-cols-1 gap-4">
             @forelse($products as $product)
                 <div class="product-card p-4 rounded-2xl border border-slate-100 bg-white shadow-sm hover:border-indigo-100 transition-all flex items-center gap-4"
                     data-name="{{ strtolower($product->name) }}"
+                    data-category="{{ $product->category }}"
                     data-id="{{ $product->id }}"
                     data-price="{{ $product->price }}"
                     data-unit="{{ $product->unit }}">
@@ -157,17 +177,43 @@
         updateCart();
     });
 
+    let currentCategory = 'all';
+    let currentSearch = '';
+
+    function filterByCategory(category) {
+        currentCategory = category;
+        
+        // Update UI
+        document.querySelectorAll('.category-chip').forEach(chip => {
+            chip.classList.remove('active');
+            if (chip.textContent.trim() === (category === 'all' ? 'All' : @json(\App\Models\Product::CATEGORIES)[category])) {
+                chip.classList.add('active');
+            }
+        });
+
+        applyFilters();
+    }
+
     // Search functionality
     document.getElementById('productSearch').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
+        currentSearch = e.target.value.toLowerCase();
+        applyFilters();
+    });
+
+    function applyFilters() {
         document.querySelectorAll('.product-card').forEach(card => {
             const name = card.dataset.name;
-            if (name.includes(query)) {
+            const category = card.dataset.category;
+            
+            const matchesSearch = name.includes(currentSearch);
+            const matchesCategory = currentCategory === 'all' || category === currentCategory;
+
+            if (matchesSearch && matchesCategory) {
                 card.style.display = 'flex';
             } else {
                 card.style.display = 'none';
             }
         });
-    });
+    }
 </script>
 @endsection

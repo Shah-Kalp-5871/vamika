@@ -446,33 +446,9 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="brand">Brand</label>
-                    <select id="brand" name="brand" class="form-select">
-                        <option value="">Select Brand</option>
-                        @foreach($brands as $key => $label)
-                            <option value="{{ $key }}" {{ (old('brand', $product->brand ?? '') == $key) ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    @error('brand')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
             </div>
 
-            <div class="grid-3">
-                <div class="form-group">
-                    <label class="form-label" for="sub_brand">Sub-Brand</label>
-                    <select id="sub_brand" name="sub_brand" class="form-select">
-                        <option value="">Select Sub-Brand</option>
-                        @foreach($subBrands as $key => $label)
-                            <option value="{{ $key }}" {{ (old('sub_brand', $product->sub_brand ?? '') == $key) ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                    @error('sub_brand')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div class="grid-2">
                 <div class="form-group">
                     <label class="form-label" for="unit">Unit (e.g. 5kg, 500ml)</label>
                     <input type="text" id="unit" name="unit" class="form-input"

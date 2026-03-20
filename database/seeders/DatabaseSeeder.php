@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     {
         // 0. Base Settings
         $this->call(SettingSeeder::class);
-        $this->call(AhmedabadDataSeeder::class);
+        // $this->call(AhmedabadDataSeeder::class);
 
         // 1. Create Users
         $admin = User::create([
@@ -68,42 +68,43 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Create Products
-        $product1 = Product::create([
-            'name' => 'Paracetamol 500mg',
-            'sku' => 'MED001',
-            'description' => 'Effective pain reliever and fever reducer.',
-            'price' => 20.00,
-            'category' => 'Medicine',
-            'status' => 'active',
-            'brand' => 'Glaxo',
-            'mrp' => 25.00,
-        ]);
+        $products = [
+            ['name' => 'Durby Special', 'sku' => 'DBS-001', 'category' => 'durby', 'price' => 1200, 'unit' => '1kg', 'mrp' => 1500, 'stock' => 50],
+            ['name' => 'Forolly Premium', 'sku' => 'FRP-002', 'category' => 'forolly', 'price' => 850, 'unit' => '500g', 'mrp' => 1000, 'stock' => 30],
+            ['name' => 'Million Gold', 'sku' => 'MLG-003', 'category' => 'million', 'price' => 2100, 'unit' => '2kg', 'mrp' => 2500, 'stock' => 20],
+            ['name' => 'Michi\'s Choice', 'sku' => 'MIC-004', 'category' => 'michi-s', 'price' => 450, 'unit' => '1pc', 'mrp' => 500, 'stock' => 100],
+            ['name' => 'Oshon Classic', 'sku' => 'OSC-005', 'category' => 'oshon', 'price' => 125, 'unit' => '100g', 'mrp' => 150, 'stock' => 200],
+            ['name' => 'Crazzy\'s Delight', 'sku' => 'CZD-006', 'category' => 'crazzy-s', 'price' => 95, 'unit' => '150g', 'mrp' => 110, 'stock' => 150],
+            ['name' => 'Ankit Regular', 'sku' => 'ANR-007', 'category' => 'ankit', 'price' => 650, 'unit' => '500g', 'mrp' => 750, 'stock' => 45],
+            ['name' => 'Mayora Treat', 'sku' => 'MYT-008', 'category' => 'mayora', 'price' => 280, 'unit' => '250g', 'mrp' => 320, 'stock' => 75],
+            ['name' => 'Confito Mix', 'sku' => 'CFM-009', 'category' => 'confito', 'price' => 550, 'unit' => '400g', 'mrp' => 600, 'stock' => 60],
+            ['name' => 'Bakemate Fresh', 'sku' => 'BKF-010', 'category' => 'bakemate', 'price' => 180, 'unit' => '500g', 'mrp' => 200, 'stock' => 80],
+        ];
 
-        $product2 = Product::create([
-            'name' => 'Vitamin C Supplements',
-            'sku' => 'SUP001',
-            'description' => 'Immunity booster supplements.',
-            'price' => 150.00,
-            'category' => 'Supplements',
-            'status' => 'active',
-            'brand' => 'HealthKart',
-            'mrp' => 200.00,
-        ]);
+        foreach ($products as $pData) {
+            $product = Product::create([
+                'name' => $pData['name'],
+                'sku' => $pData['sku'],
+                'category' => $pData['category'],
+                'price' => $pData['price'],
+                'unit' => $pData['unit'],
+                'mrp' => $pData['mrp'],
+                'stock' => $pData['stock'],
+                'status' => 'active',
+                'description' => 'Quality product from ' . ucfirst($pData['category']),
+            ]);
+        }
 
         // 3.1 Product Images
-        ProductImage::create([
-            'product_id' => $product1->id,
-            'image_path' => 'https://placehold.co/600x400?text=Paracetamol',
-            'is_primary' => true,
-            'sort_order' => 1,
-        ]);
-
-         ProductImage::create([
-            'product_id' => $product2->id,
-            'image_path' => 'https://placehold.co/600x400?text=Vitamin+C',
-            'is_primary' => true,
-            'sort_order' => 1,
-        ]);
+        // 3.1 Product Images
+        foreach (Product::all() as $index => $product) {
+             ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => 'https://placehold.co/600x400?text=' . urlencode($product->name),
+                'is_primary' => true,
+                'sort_order' => 1,
+            ]);
+        }
 
 
         // 4. Create Shops

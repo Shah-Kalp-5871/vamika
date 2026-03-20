@@ -18,17 +18,14 @@ class ProductController extends Controller
         }])->orderBy('created_at', 'desc')->get();
         
         $categories = Product::CATEGORIES;
-        $brands = Product::BRANDS;
         
-        return view('admin.products.index', compact('products', 'categories', 'brands'));
+        return view('admin.products.index', compact('products', 'categories'));
     }
     
     public function create()
     {
         $categories = Product::CATEGORIES;
-        $brands = Product::BRANDS;
-        $subBrands = Product::SUB_BRANDS;
-        return view('admin.products.create', compact('categories', 'brands', 'subBrands'));
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -40,12 +37,10 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'brand' => 'nullable|string|max:100',
-            'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
             'stock' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // Single image up to 5MB
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $product = Product::create($validated);
@@ -71,9 +66,7 @@ class ProductController extends Controller
     {
         $product = Product::with('images')->findOrFail($id);
         $categories = Product::CATEGORIES;
-        $brands = Product::BRANDS;
-        $subBrands = Product::SUB_BRANDS;
-        return view('admin.products.create', compact('product', 'categories', 'brands', 'subBrands')); // Reusing create view
+        return view('admin.products.create', compact('product', 'categories')); // Reusing create view
     }
 
     public function update(Request $request, $id)
@@ -87,8 +80,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'status' => 'required|in:active,inactive',
-            'brand' => 'nullable|string|max:100',
-            'sub_brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'mrp' => 'nullable|numeric|min:0',
             'stock' => 'required|integer',

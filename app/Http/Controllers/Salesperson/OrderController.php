@@ -27,10 +27,8 @@ class OrderController extends Controller
 
         $products = Product::where('status', 'active')->get();
         $categories = Product::CATEGORIES;
-        $brands = Product::BRANDS;
-        $subBrands = Product::SUB_BRANDS;
         
-        return view('salesperson.orders.create', compact('shop', 'products', 'categories', 'brands', 'subBrands'));
+        return view('salesperson.orders.create', compact('shop', 'products', 'categories'));
     }
     
     public function store(Request $request)

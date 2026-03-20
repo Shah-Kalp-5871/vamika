@@ -10,8 +10,7 @@ class Product extends Model
     use HasFactory;
     protected $fillable = [
         'name', 'sku', 'description', 'price', 
-        'category', 'status', 'brand', 'division', 
-        'sub_brand', 'unit', 'mrp', 'stock'
+        'category', 'status', 'unit', 'mrp', 'stock'
     ];
 
     protected $appends = ['image_url'];
@@ -22,42 +21,16 @@ class Product extends Model
     }
 
     public const CATEGORIES = [
-        'food' => 'Food',
-        'beverages' => 'Beverages',
-        'personal-care' => 'Personal Care',
-        'home-care' => 'Home Care',
-        'snacks' => 'Snacks',
-        'dairy' => 'Dairy',
-        'staples' => 'Staples',
-        'household' => 'Household',
-        'bakery' => 'Bakery',
-        'frozen' => 'Frozen',
-        'others' => 'Others'
-    ];
-
-    public const BRANDS = [
-        'ashirwad' => 'Ashirwad',
-        'tata' => 'Tata',
-        'amul' => 'Amul',
-        'coca-cola' => 'Coca-Cola',
-        'lays' => 'Lays',
-        'parle' => 'Parle',
-        'india-gate' => 'India Gate',
-        'fortune' => 'Fortune',
-        'madhur' => 'Madhur',
-        'colgate' => 'Colgate',
-        'surf-excel' => 'Surf Excel',
-        'taj-mahal' => 'Taj Mahal',
-        'others' => 'Others'
-    ];
-
-    public const SUB_BRANDS = [
-        'select' => 'Select',
-        'premium' => 'Premium',
-        'regular' => 'Regular',
-        'gold' => 'Gold',
-        'fresh' => 'Fresh',
-        'others' => 'Others'
+        'durby' => 'Durby',
+        'forolly' => 'Forolly',
+        'million' => 'Million',
+        'michi-s' => "Michi's",
+        'oshon' => 'Oshon',
+        'crazzy-s' => "Crazzy's",
+        'ankit' => 'Ankit',
+        'mayora' => 'Mayora',
+        'confito' => 'Confito',
+        'bakemate' => 'Bakemate'
     ];
 
     public function images()

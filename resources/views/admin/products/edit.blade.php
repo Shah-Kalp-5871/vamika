@@ -496,29 +496,14 @@
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label class="form-label" for="category_id">Category *</label>
-                    <select id="category_id" name="category_id" class="form-select" required>
+                    <label class="form-label" for="category">Category *</label>
+                    <select id="category" name="category" class="form-select" required>
                         <option value="">Select Category</option>
-                        <option value="1" {{ old('category_id', $product->category_id) == '1' ? 'selected' : '' }}>Groceries</option>
-                        <option value="2" {{ old('category_id', $product->category_id) == '2' ? 'selected' : '' }}>Food</option>
-                        <option value="3" {{ old('category_id', $product->category_id) == '3' ? 'selected' : '' }}>Home Care</option>
-                        <option value="4" {{ old('category_id', $product->category_id) == '4' ? 'selected' : '' }}>Personal Care</option>
-                        <option value="5" {{ old('category_id', $product->category_id) == '5' ? 'selected' : '' }}>Beverages</option>
-                        <option value="6" {{ old('category_id', $product->category_id) == '6' ? 'selected' : '' }}>Dairy</option>
-                        <option value="7" {{ old('category_id', $product->category_id) == '7' ? 'selected' : '' }}>Snacks</option>
-                        <option value="8" {{ old('category_id', $product->category_id) == '8' ? 'selected' : '' }}>Bakery</option>
-                        <option value="9" {{ old('category_id', $product->category_id) == '9' ? 'selected' : '' }}>Biscuits</option>
+                        @foreach($categories as $key => $label)
+                            <option value="{{ $key }}" {{ old('category', $product->category) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
-                    @error('category_id')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="brand">Brand *</label>
-                    <input type="text" id="brand" name="brand" class="form-input" required
-                        placeholder="Enter brand name"
-                        value="{{ old('brand', $product->brand) }}">
-                    @error('brand')
+                    @error('category')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -752,12 +737,11 @@
     function validateForm() {
         const skuInput = document.getElementById('sku');
         const nameInput = document.getElementById('name');
-        const categoryInput = document.getElementById('category_id');
-        const brandInput = document.getElementById('brand');
+        const categoryInput = document.getElementById('category');
         const mrpInput = document.getElementById('mrp');
         const priceInput = document.getElementById('price');
 
-        if (!skuInput || !nameInput || !categoryInput || !brandInput || !mrpInput || !priceInput) {
+        if (!skuInput || !nameInput || !categoryInput || !mrpInput || !priceInput) {
             console.error('Some form fields are missing');
             return true; // Allow submission if elements are missing to prevent total lock
         }
@@ -765,13 +749,12 @@
         const sku = skuInput.value.trim();
         const name = nameInput.value.trim();
         const category = categoryInput.value;
-        const brand = brandInput.value.trim();
         
         const mrp = parseFloat(mrpInput.value) || 0;
         const price = parseFloat(priceInput.value) || 0;
 
         // Check required fields
-        if (!sku || !name || !category || !brand) {
+        if (!sku || !name || !category) {
             showToast('Please fill in all required fields', 'error');
             return false;
         }

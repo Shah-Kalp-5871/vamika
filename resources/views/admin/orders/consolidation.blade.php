@@ -1222,7 +1222,6 @@ $pageConfig = [
                 const searchableText = [
                     product.name,
                     product.category,
-                    product.brand,
                     product.description,
                     product.sku
                 ].join(' ').toLowerCase();
@@ -1506,8 +1505,6 @@ $pageConfig = [
                             <span class="font-medium text-slate-900 truncate-text" title="${product.name}">${product.name}</span>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="text-xs text-slate-500">SKU: ${product.sku}</span>
-                                <span class="text-xs text-slate-400">•</span>
-                                <span class="text-xs text-slate-500">${product.brand}</span>
                             </div>
                         </div>
                     </td>
@@ -1734,7 +1731,6 @@ $pageConfig = [
                                 </h3>
                                 <div class="flex items-center gap-2 mt-2">
                                     <span class="category-badge ${categoryClass}">${product.category}</span>
-                                    <span class="text-xs text-slate-500">${product.brand}</span>
                                 </div>
                             </div>
                             <div class="p-2 bg-indigo-50 rounded-lg border border-indigo-100 ml-2">
@@ -1909,7 +1905,6 @@ $pageConfig = [
                         <div class="flex items-center gap-3 flex-wrap">
                             <span class="category-badge ${categoryClass}">${product.category}</span>
                             <span class="text-sm text-slate-600">SKU: ${product.sku}</span>
-                            <span class="text-sm text-slate-600">Brand: ${product.brand}</span>
                         </div>
                     </div>
                     <div class="text-right">
@@ -1990,7 +1985,6 @@ $pageConfig = [
         let csv = `Product Report: ${product.name}\n`;
         csv += `Category: ${product.category}\n`;
         csv += `SKU: ${product.sku}\n`;
-        csv += `Brand: ${product.brand}\n`;
         csv += `Unit: ${product.unit}\n`;
         csv += `Unit Price: ₹${product.price}\n`;
         csv += `Total Required: ${totalQuantity}\n`;
@@ -2052,13 +2046,13 @@ $pageConfig = [
         csv += `Filters: ${Object.entries(state.filters).filter(([k, v]) => v !== 'all').map(([k, v]) => `${k}: ${v}`).join(', ')}\n`;
         csv += `Search: ${state.searchQuery || 'None'}\n\n`;
 
-        csv += 'Product Name,Category,Brand,SKU,Unit,Unit Price,Total Quantity,Total Value,Orders Count\n';
+        csv += 'Product Name,Category,SKU,Unit,Unit Price,Total Quantity,Total Value,Orders Count\n';
 
         state.filteredProducts.forEach(product => {
             const totalQuantity = product.currentOrders.reduce((sum, order) => sum + order.quantity, 0);
             const totalValue = totalQuantity * product.price;
 
-            csv += `"${product.name}","${product.category}","${product.brand}","${product.sku}","${product.unit}",₹${product.price},${totalQuantity},₹${totalValue},${product.currentOrders.length}\n`;
+            csv += `"${product.name}","${product.category}","${product.sku}","${product.unit}",₹${product.price},${totalQuantity},₹${totalValue},${product.currentOrders.length}\n`;
         });
 
         // Create and trigger download

@@ -33,7 +33,9 @@ $pageConfig['title'] = $pageConfig['title'] ?? 'Sales Panel';
             </div>
         </div>
     @endif
-    @include('layouts.partials.salesperson.header')
+    @if(empty($pageConfig['hideHeader']))
+        @include('layouts.partials.salesperson.header')
+    @endif
     
     <main class="page-wrapper">
         @yield('content')

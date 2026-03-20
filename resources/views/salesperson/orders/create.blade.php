@@ -1,5 +1,13 @@
 @extends('layouts.salesperson')
 
+@php
+    $pageConfig = [
+        'title' => 'Create Order',
+        'hideHeader' => true,
+        'showBottomNav' => false
+    ];
+@endphp
+
 @section('content')
 <style>
     .filter-chip {
@@ -51,7 +59,7 @@
         <div class="space-y-3">
             <div class="relative">
                 <iconify-icon icon="lucide:search" width="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></iconify-icon>
-                <input type="text" id="productSearch" oninput="filterProducts()" placeholder="Search items, brands..." 
+                <input type="text" id="productSearch" oninput="filterProducts()" placeholder="Search items..." 
                     class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all">
             </div>
 
@@ -65,28 +73,6 @@
                     @endforeach
                 </div>
             </div>
-
-            <!-- Brand Filter -->
-            <div>
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Brand</h4>
-                <div class="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-                    <div onclick="filterByBrand('all')" class="filter-chip active brand-chip">All Brands</div>
-                    @foreach($brands as $key => $label)
-                        <div onclick="filterByBrand('{{ $key }}')" class="filter-chip brand-chip">{{ $label }}</div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Sub-Brand Filter -->
-            <div>
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">Product Type</h4>
-                <div class="flex gap-2 overflow-x-auto hide-scrollbar">
-                    <div onclick="filterBySubBrand('all')" class="filter-chip active sub-brand-chip">All Types</div>
-                    @foreach($subBrands as $key => $label)
-                        <div onclick="filterBySubBrand('{{ $key }}')" class="filter-chip sub-brand-chip">{{ $label }}</div>
-                    @endforeach
-                </div>
-            </div>
         </div>
     </header>
 
@@ -96,8 +82,6 @@
             @foreach($products as $product)
                 <div class="product-item bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3" 
                      data-name="{{ strtolower($product->name) }}" 
-                     data-brand="{{ strtolower($product->brand ?? '') }}"
-                     data-sub-brand="{{ strtolower($product->sub_brand ?? '') }}"
                      data-category="{{ $product->category }}">
                     
                     <div class="h-16 w-16 bg-slate-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden border border-slate-100">
@@ -223,25 +207,12 @@
 </div>
 @endsection
 
-@push('pageConfig')
-@php
-    $pageConfig = [
-        'title' => 'Create Order',
-        'showBack' => true,
-        'showBottomNav' => false
-    ];
-@endphp
-@endpush
-
 @section('scripts')
 <script>
     let cart = {};
     const products = @json($products);
     let currentCategory = 'all';
-    let currentBrand = 'all';
-    let currentSubBrand = 'all';
     let currentSearch = '';
-
     function filterByCategory(category) {
         if (currentCategory === category && category !== 'all') {
             currentCategory = 'all';
@@ -249,26 +220,6 @@
             currentCategory = category;
         }
         updateUIActiveState(event.currentTarget, currentCategory, 'category');
-        filterProducts();
-    }
-
-    function filterByBrand(brand) {
-        if (currentBrand === brand && brand !== 'all') {
-            currentBrand = 'all';
-        } else {
-            currentBrand = brand;
-        }
-        updateUIActiveState(event.currentTarget, currentBrand, 'brand');
-        filterProducts();
-    }
-
-    function filterBySubBrand(subBrand) {
-        if (currentSubBrand === subBrand && subBrand !== 'all') {
-            currentSubBrand = 'all';
-        } else {
-            currentSubBrand = subBrand;
-        }
-        updateUIActiveState(event.currentTarget, currentSubBrand, 'sub-brand');
         filterProducts();
     }
 
@@ -292,13 +243,10 @@
 
         items.forEach(item => {
             const matchesSearch = !currentSearch || 
-                item.dataset.name.includes(currentSearch) || 
-                item.dataset.brand.includes(currentSearch);
+                item.dataset.name.includes(currentSearch);
             const matchesCategory = currentCategory === 'all' || item.dataset.category === currentCategory;
-            const matchesBrand = currentBrand === 'all' || item.dataset.brand === currentBrand;
-            const matchesSubBrand = currentSubBrand === 'all' || item.dataset.subBrand === currentSubBrand;
 
-            if (matchesSearch && matchesCategory && matchesBrand && matchesSubBrand) {
+            if (matchesSearch && matchesCategory) {
                 item.style.display = 'flex';
                 count++;
             } else {

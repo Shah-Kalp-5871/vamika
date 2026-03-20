@@ -721,7 +721,6 @@ $pageConfig = [
                 sku: product.sku,
                 name: product.name,
                 category: product.category,
-                brand: product.brand || '-', 
                 packSize: product.unit || '-',
                 mrp: parseFloat(product.mrp || product.price),
                 price: parseFloat(product.price),
@@ -757,8 +756,7 @@ $pageConfig = [
                         [
                             {field: "sku", type: "like", value: e.target.value},
                             {field: "name", type: "like", value: e.target.value},
-                            {field: "category", type: "like", value: e.target.value},
-                            {field: "brand", type: "like", value: e.target.value}
+                            {field: "category", type: "like", value: e.target.value}
                         ]
                     ]);
                 }
@@ -851,7 +849,6 @@ $pageConfig = [
                     const row = cell.getRow().getData();
                     return `<div class="text-xs">
                         <div class="font-medium truncate">${row.name}</div>
-                        <div class="text-slate-500 text-2xs">${row.brand}</div>
                     </div>`;
                 }
             },
@@ -1108,9 +1105,9 @@ $pageConfig = [
         const selectedData = allProducts.filter(product => selectedProducts.includes(product.id));
         
         // Create CSV content
-        let csvContent = "SKU,Product Name,Category,Brand,Unit,Pack Size,MRP,Price,Stock,Status,Last Updated\n";
+        let csvContent = "SKU,Product Name,Category,Unit,Pack Size,MRP,Price,Stock,Status,Last Updated\n";
         selectedData.forEach(product => {
-            csvContent += `"${product.sku}","${product.name}","${product.category}","${product.brand}","${product.unit}","${product.packSize}",${product.mrp},${product.price},${product.stock},"${product.status}","${product.lastUpdated}"\n`;
+            csvContent += `"${product.sku}","${product.name}","${product.category}","${product.unit}","${product.packSize}",${product.mrp},${product.price},${product.stock},"${product.status}","${product.lastUpdated}"\n`;
         });
         
         // Download CSV

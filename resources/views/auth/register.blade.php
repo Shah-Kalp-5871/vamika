@@ -205,6 +205,71 @@
     .login-footer a:hover {
         text-decoration: underline;
     }
+
+    /* Responsive Adjustments */
+    @media (max-width: 640px) {
+        .register-container {
+            padding: 15px;
+        }
+
+        .register-card {
+            padding: 20px;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            width: 100%;
+        }
+
+        .step-indicator {
+            gap: 5px;
+        }
+
+        .step {
+            padding: 5px;
+            font-size: 11px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            font-size: 11px;
+        }
+
+        .step-line {
+            top: 17px;
+            left: 30px;
+            right: 30px;
+        }
+
+        .flex.gap-4.mt-6 {
+            flex-direction: column-reverse;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            width: 100% !important;
+            padding: 12px;
+        }
+
+        .register-card h1 {
+            font-size: 1.5rem;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .benefits-list {
+            padding: 12px;
+            font-size: 0.85rem;
+        }
+    }
 </style>
 @endsection
 

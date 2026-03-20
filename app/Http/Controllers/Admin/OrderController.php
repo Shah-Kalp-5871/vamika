@@ -123,7 +123,6 @@ class OrderController extends Controller
                 'price' => $product->price,
                 'sku' => $product->sku,
                 'description' => $product->description,
-                'brand' => $product->brand ?? 'Vamika',
                 'currentOrders' => $items->map(function($item) {
                     return [
                         'salesperson' => $item->order->salesperson->name ?? 'N/A',
