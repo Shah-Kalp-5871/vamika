@@ -24,14 +24,6 @@
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Shop Information</h3>
                 
                 <div class="space-y-1">
-                    <label for="name" class="text-sm font-medium text-slate-700">Shop Name <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all"
-                        placeholder="e.g. Krishna General Store">
-                    @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="space-y-1">
                     <label for="bit_id" class="text-sm font-medium text-slate-700">Select Bit <span class="text-rose-500">*</span></label>
                     <select name="bit_id" id="bit_id" required
                         class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all bg-white">
@@ -43,6 +35,14 @@
                         @endforeach
                     </select>
                     @error('bit_id') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="space-y-1">
+                    <label for="name" class="text-sm font-medium text-slate-700">Shop Name <span class="text-rose-500">*</span></label>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 text-sm transition-all"
+                        placeholder="e.g. Krishna General Store">
+                    @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-1">

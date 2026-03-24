@@ -392,15 +392,6 @@
             <!-- Step 2: Shop Details -->
             <div id="step2" style="display: none;">
                 <div class="form-group">
-                    <label class="form-label">Shop Name</label>
-                    <input type="text" class="form-input" name="shop_name" 
-                           value="{{ old('shop_name') }}" placeholder="Enter your business name">
-                    @error('shop_name')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">Area (Bit)</label>
                     <select class="form-input" name="bit_id">
                         <option value="">Select your area</option>
@@ -411,6 +402,15 @@
                         @endforeach
                     </select>
                     @error('bit_id')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Shop Name</label>
+                    <input type="text" class="form-input" name="shop_name" 
+                           value="{{ old('shop_name') }}" placeholder="Enter your business name">
+                    @error('shop_name')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
