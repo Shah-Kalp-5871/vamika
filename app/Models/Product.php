@@ -30,7 +30,8 @@ class Product extends Model
         'ankit' => 'Ankit',
         'mayora' => 'Mayora',
         'confito' => 'Confito',
-        'bakemate' => 'Bakemate'
+        'bakemate' => 'Bakemate',
+        'others' => 'Others'
     ];
 
     public function images()
