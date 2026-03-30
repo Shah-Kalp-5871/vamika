@@ -78,9 +78,20 @@
 
     <main class="p-4">
         <!-- Product Grid/List -->
+        @php $outOfStockHeaderShown = false; @endphp
         <div id="productList" class="grid grid-cols-1 gap-3">
             @foreach($products as $product)
-                <div class="product-item bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3" 
+                @if($product->stock <= 0 && !$outOfStockHeaderShown)
+                    <div class="col-span-1 mt-6 mb-2">
+                        <h3 class="text-[10px] font-bold text-red-400 uppercase tracking-widest px-1 flex items-center gap-2">
+                            <iconify-icon icon="lucide:slash" width="14"></iconify-icon>
+                            Out of Stock Items
+                        </h3>
+                    </div>
+                    @php $outOfStockHeaderShown = true; @endphp
+                @endif
+
+                <div class="product-item {{ $product->stock <= 0 ? 'opacity-70 grayscale-[0.5]' : 'bg-white' }} p-3 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3" 
                      data-name="{{ strtolower($product->name) }}" 
                      data-category="{{ $product->category }}">
                     
@@ -93,7 +104,12 @@
                     </div>
 
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-semibold text-slate-900 truncate">{{ $product->name }}</h4>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-semibold text-slate-900 truncate">{{ $product->name }}</h4>
+                            @if($product->stock > 0 && $product->stock <= 5)
+                                <span class="text-[8px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-bold border border-amber-100">LOW STOCK</span>
+                            @endif
+                        </div>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span class="text-xs font-bold text-indigo-600">₹{{ number_format($product->price, 2) }}</span>
                             @if($product->mrp > $product->price)
@@ -108,26 +124,34 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <div class="qty-control hidden" id="qty-{{ $product->id }}">
-                            <div class="flex items-center bg-slate-100 rounded-lg p-1">
-                                <button onclick="updateQty({{ $product->id }}, -1)" class="h-8 w-8 rounded-md flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm transition-all active:scale-95">
-                                    <iconify-icon icon="lucide:minus" width="14"></iconify-icon>
-                                </button>
-                                <span class="w-8 text-center text-sm font-semibold text-slate-900" id="val-{{ $product->id }}">0</span>
-                                <button onclick="updateQty({{ $product->id }}, 1)" class="h-8 w-8 rounded-md flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm transition-all active:scale-95">
-                                    <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
-                                </button>
+                        @if($product->stock > 0)
+                            <div class="qty-control hidden" id="qty-{{ $product->id }}">
+                                <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                                    <button onclick="updateQty({{ $product->id }}, -1)" class="h-8 w-8 rounded-md flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm transition-all active:scale-95">
+                                        <iconify-icon icon="lucide:minus" width="14"></iconify-icon>
+                                    </button>
+                                    <span class="w-8 text-center text-sm font-semibold text-slate-900" id="val-{{ $product->id }}">0</span>
+                                    <button onclick="updateQty({{ $product->id }}, 1)" class="h-8 w-8 rounded-md flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm transition-all active:scale-95">
+                                        <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <button onclick="showQty({{ $product->id }}, {{ $product->price }}, '{{ $product->name }}')" id="add-{{ $product->id }}" 
-                            @if($is_off_hours ?? false) disabled @endif
-                            class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold transition-all {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 active:scale-95 shadow-sm shadow-indigo-100' }}">
-                            Add
-                        </button>
+                            <button onclick="showQty({{ $product->id }}, {{ $product->price }}, '{{ $product->name }}')" id="add-{{ $product->id }}" 
+                                @if($is_off_hours ?? false) disabled @endif
+                                class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-semibold transition-all {{ ($is_off_hours ?? false) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-700 active:scale-95 shadow-sm shadow-indigo-100' }}">
+                                Add
+                            </button>
+                        @else
+                            <div class="px-3 py-2 rounded-lg bg-slate-100 text-slate-400 text-[10px] font-bold flex items-center gap-1 border border-slate-200">
+                                <iconify-icon icon="lucide:minus-circle" width="12"></iconify-icon>
+                                Unavailable
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
         </div>
+
 
         <!-- Empty State -->
         <div id="noProducts" class="hidden py-12 text-center text-slate-400">
