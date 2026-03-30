@@ -49,9 +49,31 @@ $pageConfig['title'] = $pageConfig['title'] ?? 'Sales Panel';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="{{ asset('assets/js/toast.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                showToast({
+                    text: "{{ session('success') }}",
+                    type: 'success'
+                });
+            @endif
+            @if(session('error'))
+                showToast({
+                    text: "{{ session('error') }}",
+                    type: 'error'
+                });
+            @endif
+            @if($errors->any())
+                showToast({
+                    text: "{{ $errors->first() }}",
+                    type: 'error'
+                });
+            @endif
+        });
+    </script>
     <!-- Chart.js JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     @yield('scripts')
 </body>
-</html>
+</html>

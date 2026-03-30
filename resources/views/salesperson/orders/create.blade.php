@@ -343,5 +343,19 @@
         content.classList.add('translate-y-full');
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
+
+    // Handle form submission
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn.disabled) return;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <iconify-icon icon="lucide:loader-2" width="18" class="animate-spin"></iconify-icon>
+            Placing Order...
+        `;
+        submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+    });
 </script>
+
 @endsection

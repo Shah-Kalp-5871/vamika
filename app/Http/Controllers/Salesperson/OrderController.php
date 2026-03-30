@@ -39,7 +39,12 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
+            'visit' => 'nullable|string', // Capture visit flag if passed
         ]);
+
+        if (empty($request->items)) {
+            return back()->with('error', 'Please add at least one item to your order.');
+        }
 
         try {
             DB::beginTransaction();
@@ -63,7 +68,7 @@ class OrderController extends Controller
 
                 // Check and decrement stock
                 if ($product->stock < $itemData['quantity']) {
-                    throw new \Exception("Insufficient stock for product: {$product->name}");
+                    throw new \Exception("Insufficient stock for product: {$product->name}. (Available: {$product->stock})");
                 }
                 $product->decrement('stock', $itemData['quantity']);
 
@@ -79,19 +84,27 @@ class OrderController extends Controller
 
             $order->update(['total_amount' => $totalAmount]);
 
-            // Always record this as a visit
-            \App\Models\Visit::updateOrCreate(
-                [
-                    'salesperson_id' => Auth::id(),
-                    'shop_id' => $request->shop_id,
-                    'visit_date' => now()->toDateString(),
-                ],
-                [
+            // Robust Visit recording - Check if a visit already exists for today
+            $visit = \App\Models\Visit::where('salesperson_id', Auth::id())
+                ->where('shop_id', $request->shop_id)
+                ->whereDate('visit_date', today())
+                ->first();
+
+            if ($visit) {
+                $visit->update([
                     'status' => 'ordered',
                     'order_id' => $order->id,
                     'visit_date' => now(), // Full timestamp
-                ]
-            );
+                ]);
+            } else {
+                \App\Models\Visit::create([
+                    'salesperson_id' => Auth::id(),
+                    'shop_id' => $request->shop_id,
+                    'visit_date' => now(),
+                    'status' => 'ordered',
+                    'order_id' => $order->id,
+                ]);
+            }
 
             DB::commit();
 
@@ -99,9 +112,16 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+            \Log::error('Order Placement Failed: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'shop_id' => $request->shop_id,
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }
+
     
     public function review($id)
     {
