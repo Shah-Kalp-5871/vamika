@@ -270,8 +270,31 @@
             const pdfBlob = await html2pdf().set(opt).from(element).output('blob');
             const file = new File([pdfBlob], `Invoice_${invoiceNo}.pdf`, { type: 'application/pdf' });
 
+            // App Bridge for Flutter WebView
+            if (window.FlutterShareChannel) {
+                const reader = new FileReader();
+                reader.readAsDataURL(pdfBlob);
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    window.FlutterShareChannel.postMessage(JSON.stringify({
+                        filename: `Invoice_${invoiceNo}.pdf`,
+                        base64: base64data,
+                        shopName: shopName,
+                        invoiceNo: invoiceNo
+                    }));
+                }
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Processing...',
+                    text: 'Opening share menu...',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'bottom-end'
+                });
+            } 
             // Web Share API
-            if (navigator.share && navigator.canShare({ files: [file] })) {
+            else if (navigator.share && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
                     title: `Invoice ${invoiceNo} - Vamika Enterprise`,
