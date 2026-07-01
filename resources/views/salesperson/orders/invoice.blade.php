@@ -283,15 +283,6 @@
                         invoiceNo: invoiceNo
                     }));
                 }
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Processing...',
-                    text: 'Opening share menu...',
-                    timer: 1500,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'bottom-end'
-                });
             } 
             // Web Share API
             else if (navigator.share && navigator.canShare({ files: [file] })) {

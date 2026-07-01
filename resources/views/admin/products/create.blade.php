@@ -381,11 +381,11 @@
             <div class="image-upload-container">
                 <label class="form-label">Product Images</label>
                 <div class="image-upload-box" id="imageUploadBox">
-                    <div class="upload-placeholder" id="uploadPlaceholder" style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:none;' : '' }}">
+                    <label class="upload-placeholder" for="imageInput" id="uploadPlaceholder" style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:none;' : 'cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%;' }}">
                         <iconify-icon icon="lucide:image" width="48" class="text-slate-400"></iconify-icon>
                         <span>Click to upload product image</span>
                         <span class="text-xs text-slate-500">PNG, JPG, GIF up to 5MB</span>
-                    </div>
+                    </label>
                     <div class="image-preview-container" id="imagePreviewContainer" style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:flex;' : 'display:none;' }}">
                         <img id="imagePreview" class="image-preview" 
                              src="{{ (isset($product) && $product->images->isNotEmpty()) ? asset('storage/' . $product->images->first()->image_path) : '' }}" 
@@ -393,16 +393,16 @@
                              style="{{ (isset($product) && $product->images->isNotEmpty()) ? 'display:block;' : 'display:none;' }}">
                         
                         <div class="image-actions">
-                            <button type="button" class="change-image-btn" onclick="document.getElementById('imageInput').click()">
+                            <label class="change-image-btn" for="imageInput" style="cursor: pointer; display: inline-block; text-align: center; line-height: 20px; padding: 6px 12px; margin: 0;">
                                 Change Image
-                            </button>
+                            </label>
                             <button type="button" class="remove-image-btn" onclick="removeImage()">
                                 Remove
                             </button>
                         </div>
                     </div>
                 </div>
-                <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <input type="file" id="imageInput" name="image" accept="image/*" style="width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1;" onchange="handleImageUpload(event)">
                 <input type="hidden" id="remove_image" name="remove_image" value="0">
                 @error('images')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
